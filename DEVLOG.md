@@ -58,3 +58,56 @@
 
 - Confirm Step 1 setup and Step 2 open questions.
 - Proceed to Step 2: Nothing-inspired UI shell, Canvas dot-matrix hero, `/terms`, `/privacy`, and custom geometric SVG favicon.
+
+## Milestone 2: Nothing UI Shell, Dot-Matrix Hero, Legal Pages, and Vercel Boot Fix
+
+- **Branch**: `feat/step-2-ui-shell`
+- **Status**: Complete (deployed to Vercel production)
+- **Date**: 2026-11-15
+
+### Completed Scope
+
+1. **Vercel 500 Boot Fix and Optional Server Env Validation**
+   - Diagnosed `HTTP/2 500 Internal Server Error` on `dittoh.vercel.app`: `src/instrumentation.ts` invoked strict `validateServerEnv` at boot when optional Admin/DB/OAuth env vars were not yet configured in Vercel.
+   - Added `validateBootEnv` in `src/lib/env.ts` so public routes boot cleanly while logging only missing admin env var names on server startup; updated `src/lib/cors.ts` to recognize `VERCEL_URL` and `VERCEL_PROJECT_PRODUCTION_URL`.
+2. **Brand Icon, Design Tokens, and Motion Provider**
+   - Installed `motion` (`14.14.0`) and `gsap` (`3.15.1`) only (zero disallowed animation libraries).
+   - Created geometric SVG favicon (`src/app/icon.svg`), `src/components/BrandMark.tsx`, and `src/components/MotionProvider.tsx` (`<MotionConfig reducedMotion="user">`).
+   - Kept Nothing palette tokens (`#000000`, `#ffffff`, `#d71921`, `#f4f4f4`, `#b1b3b3`), sharp `0px` to `4px` corners, and font variables in `src/app/globals.css`.
+3. **Nothing-Inspired Studio Header, Footer, and Shell**
+   - Added `src/lib/site-config.ts`, `src/components/SiteHeader.tsx`, and `src/components/SiteFooter.tsx` wired into `src/app/layout.tsx`.
+4. **Interactive Canvas Dot-Matrix Hero and Landing Shell**
+   - Implemented `src/components/DotMatrixHero.tsx` with HiDPI HTML5 Canvas rendering, `prefers-reduced-motion` support, and `isProcessing` pause hook.
+   - Built `src/components/LandingStudioShell.tsx` with lazy-loaded `gsap` landing choreography and Step 3/4 converter workspace slot on `src/app/page.tsx`.
+5. **Legal Pages and Unit/Compliance Tests**
+   - Added `src/app/terms/page.tsx` and `src/app/privacy/page.tsx` compliant with Indonesia UU No. 27 Tahun 2022 (UU PDP), distinguishing local browser media processing from optional server/admin telemetry.
+   - Added `tests/ui-shell.test.ts` and `tests/legal-pages.test.ts` verifying site config, zero pill buttons, zero em dashes, zero emojis, zero banned animation packages, and UU PDP sections.
+
+### Commit History (Step 2)
+
+- `c7fe28e` - `fix(env): validate optional server env at boot without crashing public routes`
+- `0b79391` - `feat(brand): add custom geometric SVG favicon, brand mark, and motion config`
+- `b02f8b9` - `feat(layout): implement Nothing-inspired header, footer, and studio shell`
+- `930d350` - `feat(hero): build interactive Canvas dot-matrix hero and lazy GSAP landing choreography`
+- `0795651` - `feat(legal): add /terms and UU PDP compliant /privacy pages`
+- `98f877c` - `test(ui): add unit tests for site config, negative style rules, and legal compliance`
+- `HEAD` - `docs(devlog): update DEVLOG.md for Step 2 UI shell milestone`
+
+### Verification Results
+
+- `npm run typecheck` (`tsc --noEmit`): Passed
+- `npm run lint` (`eslint .`): Passed
+- `npm test` (`vitest run`): 8 test files, 26 tests passed
+- `npm run build` (`prisma generate && next build` Turbopack): Passed (`/`, `/privacy`, `/terms`, `/icon.svg`, `/api/health`, `/api/auth/[...nextauth]`, `Proxy`)
+- `npm audit --omit=dev`: 0 production vulnerabilities
+
+### Unresolved Issues & Open Questions
+
+1. **Admin Database & OAuth Env Vars on Vercel**: `/admin` and full `ok` DB health require setting `DATABASE_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, and `GITHUB_ADMIN_IDS` in Vercel before Step 5 verification.
+2. **Client Media Pipeline Pending**: Image upload validation, RAW decoding (`libraw-wasm`), and client background removal (`@imgly/background-removal`) will be built in Step 3.
+
+### Next Steps
+
+- Push `feat/step-2-ui-shell` and deploy Step 2 to Vercel production (`dittoh.vercel.app`).
+- Proceed to Step 3 (`feat/step-3-media-pipeline`): inspect `@imgly/background-removal` license before bundling, build Web Worker media pipeline, RAW decoder (`libraw-wasm`), and checkerboard background-removal preview controls.
+
