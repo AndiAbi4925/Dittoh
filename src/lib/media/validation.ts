@@ -1,0 +1,333 @@
+import {
+  DEFAULT_ENABLED_RAW_FORMATS,
+  DEFAULT_MAX_IMAGE_SIZE_MB,
+  SUPPORTED_RASTER_EXTENSIONS,
+  SUPPORTED_RAW_EXTENSIONS,
+} from "@/lib/constants";
+import type {
+  MediaFormatKind,
+  MediaValidationConfig,
+  MediaValidationResult,
+  SupportedMediaExtension,
+  SupportedRasterExtension,
+  SupportedRawExtension,
+} from "@/lib/media/types";
+
+export interface MediaFileCandidate {
+  name: string;
+  size: number;
+  type?: string;
+  headerBytes?: Uint8Array;
+}
+
+export type SignatureCategory =
+  | "png"
+  | "jpeg"
+  | "webp"
+  | "bmp"
+  | "tiff"
+  | "isobmff-heic"
+  | "isobmff-avif"
+  | "isobmff-cr3"
+  | "isobmff-generic"
+  | "raf"
+  | "unknown";
+
+const RASTER_SET = new Set<string>(SUPPORTED_RASTER_EXTENSIONS);
+const RAW_SET = new Set<string>(SUPPORTED_RAW_EXTENSIONS);
+
+const MIME_BY_EXTENSION: Record<SupportedMediaExtension, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  heic: "image/heic",
+  heif: "image/heif",
+  tiff: "image/tiff",
+  tif: "image/tiff",
+  bmp: "image/bmp",
+  avif: "image/avif",
+  arw: "image/x-sony-arw",
+  dng: "image/x-adobe-dng",
+  cr2: "image/x-canon-cr2",
+  cr3: "image/x-canon-cr3",
+  nef: "image/x-nikon-nef",
+  raf: "image/x-fuji-raf",
+};
+
+const EXTENSION_BY_MIME: Record<string, SupportedMediaExtension> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+  "image/heic": "heic",
+  "image/heif": "heif",
+  "image/tiff": "tiff",
+  "image/x-tiff": "tiff",
+  "image/bmp": "bmp",
+  "image/x-ms-bmp": "bmp",
+  "image/avif": "avif",
+  "image/x-sony-arw": "arw",
+  "image/x-adobe-dng": "dng",
+};
+
+function matchesAscii(bytes: Uint8Array, offset: number, text: string): boolean {
+  if (bytes.length < offset + text.length) {
+    return false;
+  }
+  for (let i = 0; i < text.length; i += 1) {
+    if (bytes[offset + i] !== text.charCodeAt(i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function startsWithBytes(bytes: Uint8Array, expected: readonly number[]): boolean {
+  if (bytes.length < expected.length) {
+    return false;
+  }
+  for (let i = 0; i < expected.length; i += 1) {
+    if (bytes[i] !== expected[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function extractFileExtension(fileName: string): string {
+  const trimmed = fileName.trim();
+  const lastDot = trimmed.lastIndexOf(".");
+  if (lastDot <= 0 || lastDot === trimmed.length - 1) {
+    return "";
+  }
+  return trimmed.slice(lastDot + 1).toLowerCase();
+}
+
+export function inspectMagicBytes(bytes: Uint8Array): SignatureCategory {
+  if (startsWithBytes(bytes, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) {
+    return "png";
+  }
+  if (startsWithBytes(bytes, [0xff, 0xd8, 0xff])) {
+    return "jpeg";
+  }
+  if (matchesAscii(bytes, 0, "RIFF") && matchesAscii(bytes, 8, "WEBP")) {
+    return "webp";
+  }
+  if (startsWithBytes(bytes, [0x42, 0x4d])) {
+    return "bmp";
+  }
+  if (
+    startsWithBytes(bytes, [0x49, 0x49, 0x2a, 0x00]) ||
+    startsWithBytes(bytes, [0x4d, 0x4d, 0x00, 0x2a]) ||
+    startsWithBytes(bytes, [0x49, 0x49, 0x2b, 0x00])
+  ) {
+    return "tiff";
+  }
+  if (matchesAscii(bytes, 0, "FUJIFILMCCD-RAW")) {
+    return "raf";
+  }
+  if (bytes.length >= 12 && matchesAscii(bytes, 4, "ftyp")) {
+    const brand = String.fromCharCode(
+      bytes[8] ?? 0,
+      bytes[9] ?? 0,
+      bytes[10] ?? 0,
+      bytes[11] ?? 0
+    ).toLowerCase();
+    if (brand === "avif" || brand === "avis") {
+      return "isobmff-avif";
+    }
+    if (brand === "crx ") {
+      return "isobmff-cr3";
+    }
+    if (
+      brand === "heic" ||
+      brand === "heix" ||
+      brand === "hevc" ||
+      brand === "hevx" ||
+      brand === "mif1" ||
+      brand === "msf1"
+    ) {
+      return "isobmff-heic";
+    }
+    return "isobmff-generic";
+  }
+  return "unknown";
+}
+
+function matchesExpectedSignature(
+  extension: SupportedMediaExtension,
+  signature: SignatureCategory
+): boolean {
+  switch (extension) {
+    case "png":
+      return signature === "png";
+    case "jpg":
+    case "jpeg":
+      return signature === "jpeg";
+    case "webp":
+      return signature === "webp";
+    case "bmp":
+      return signature === "bmp";
+    case "tiff":
+    case "tif":
+    case "arw":
+    case "dng":
+    case "cr2":
+    case "nef":
+      return signature === "tiff";
+    case "raf":
+      return signature === "raf";
+    case "heic":
+    case "heif":
+      return signature === "isobmff-heic" || signature === "isobmff-generic";
+    case "avif":
+      return (
+        signature === "isobmff-avif" ||
+        signature === "isobmff-heic" ||
+        signature === "isobmff-generic"
+      );
+    case "cr3":
+      return signature === "isobmff-cr3" || signature === "isobmff-generic";
+  }
+}
+
+export function classifyFormatKind(
+  extension: SupportedMediaExtension
+): MediaFormatKind {
+  if (RAW_SET.has(extension)) {
+    return "raw";
+  }
+  if (extension === "tiff" || extension === "tif") {
+    return "tiff";
+  }
+  if (extension === "heic" || extension === "heif") {
+    return "heic";
+  }
+  return "raster";
+}
+
+export function getDefaultValidationConfig(): MediaValidationConfig {
+  return {
+    maxImageSizeMb: DEFAULT_MAX_IMAGE_SIZE_MB,
+    enabledRawFormats: [...DEFAULT_ENABLED_RAW_FORMATS],
+  };
+}
+
+export function buildAcceptAttribute(enabledRawFormats: readonly string[]): string {
+  const normalizedRaw = new Set(enabledRawFormats.map((f) => f.toLowerCase().trim()));
+  const parts: string[] = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".heic",
+    ".heif",
+    ".tiff",
+    ".tif",
+    ".bmp",
+    ".avif",
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+    "image/tiff",
+    "image/bmp",
+    "image/avif",
+  ];
+  for (const rawExt of SUPPORTED_RAW_EXTENSIONS) {
+    if (normalizedRaw.has(rawExt)) {
+      parts.push(`.${rawExt}`);
+    }
+  }
+  return parts.join(",");
+}
+
+export function validateMediaFile(
+  candidate: MediaFileCandidate,
+  config: MediaValidationConfig = getDefaultValidationConfig()
+): MediaValidationResult {
+  if (candidate.size <= 0) {
+    return {
+      ok: false,
+      code: "EMPTY_FILE",
+      message: "Selected file is empty (0 bytes). Choose a valid image or RAW file.",
+    };
+  }
+
+  const maxBytes = config.maxImageSizeMb * 1024 * 1024;
+  if (candidate.size > maxBytes) {
+    const actualMb = (candidate.size / (1024 * 1024)).toFixed(1);
+    return {
+      ok: false,
+      code: "FILE_TOO_LARGE",
+      message: `File size (${actualMb} MB) exceeds the configured ${config.maxImageSizeMb} MB limit.`,
+    };
+  }
+
+  const extFromName = extractFileExtension(candidate.name);
+  const normalizedMime = (candidate.type ?? "").trim().toLowerCase();
+  const extFromMime = EXTENSION_BY_MIME[normalizedMime];
+  const resolvedExt = extFromName || extFromMime || "";
+
+  if (!resolvedExt) {
+    return {
+      ok: false,
+      code: "UNSUPPORTED_FORMAT",
+      message:
+        "Could not determine image format. Supported formats: PNG, JPG, WebP, HEIC/HEIF, TIFF, BMP, AVIF, ARW, and DNG.",
+    };
+  }
+
+  const isRaster = RASTER_SET.has(resolvedExt);
+  const isRaw = RAW_SET.has(resolvedExt);
+
+  if (!isRaster && !isRaw) {
+    return {
+      ok: false,
+      code: "UNSUPPORTED_FORMAT",
+      message: `Format .${resolvedExt} is not supported. Supported images: PNG, JPG, WebP, HEIC/HEIF, TIFF, BMP, AVIF. Enabled RAW: ${config.enabledRawFormats.map((f) => `.${f.toUpperCase()}`).join(", ")}.`,
+    };
+  }
+
+  if (isRaw) {
+    const enabledSet = new Set(
+      config.enabledRawFormats.map((item) => item.trim().toLowerCase())
+    );
+    if (!enabledSet.has(resolvedExt)) {
+      const enabledLabel =
+        enabledSet.size > 0
+          ? Array.from(enabledSet)
+              .map((item) => `.${item.toUpperCase()}`)
+              .join(", ")
+          : "none";
+      return {
+        ok: false,
+        code: "RAW_FORMAT_DISABLED",
+        message: `Camera RAW format .${resolvedExt.toUpperCase()} is currently disabled until decoder verification completes. Currently enabled RAW formats: ${enabledLabel}. Convert to DNG or PNG to process immediately.`,
+      };
+    }
+  }
+
+  const typedExt = resolvedExt as SupportedRasterExtension | SupportedRawExtension;
+
+  if (candidate.headerBytes && candidate.headerBytes.length > 0) {
+    const detected = inspectMagicBytes(candidate.headerBytes);
+    if (!matchesExpectedSignature(typedExt, detected)) {
+      return {
+        ok: false,
+        code: "SIGNATURE_MISMATCH",
+        message: `File header does not match a valid .${typedExt.toUpperCase()} file. Verify the file is not corrupted or renamed from another type.`,
+      };
+    }
+  }
+
+  return {
+    ok: true,
+    extension: typedExt,
+    mimeType: normalizedMime || MIME_BY_EXTENSION[typedExt],
+    kind: classifyFormatKind(typedExt),
+    sizeBytes: candidate.size,
+  };
+}
