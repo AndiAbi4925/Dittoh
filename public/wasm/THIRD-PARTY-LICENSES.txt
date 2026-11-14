@@ -1,0 +1,25 @@
+Dottoh Client-Side Media Runtime Third-Party License Notices
+============================================================
+
+1. libraw-wasm (v1.6.0)
+   License: ISC
+   Source: https://github.com/ybouane/LibRaw-Wasm
+   Files: public/wasm/libraw/worker.js, public/wasm/libraw/libraw.js, public/wasm/libraw/libraw.wasm
+   Underlying LibRaw C++ library: LGPL-2.1 / CDDL-1.0 dual license (unmodified shared build).
+
+2. onnxruntime-web (v1.21.0)
+   License: MIT
+   Source: https://github.com/microsoft/onnxruntime
+   Files: public/wasm/ort/ort-wasm-simd-threaded.mjs, public/wasm/ort/ort-wasm-simd-threaded.wasm
+
+3. U-2-Netp ONNX Weights (BritishWerewolf/U-2-Netp)
+   License: Apache License 2.0
+   Source: https://huggingface.co/BritishWerewolf/U-2-Netp
+   Original Architecture: https://github.com/xuebinqin/U-2-Net (Apache-2.0)
+   Files: public/wasm/models/u2netp.onnx
+
+Note on @imgly/background-removal:
+   @imgly/background-removal uses GNU Affero General Public License v3 (AGPL-3.0)
+   and fetches remote CDN assets by default. It was intentionally excluded after
+   license verification in favor of MIT onnxruntime-web with self-hosted Apache-2.0
+   U-2-Netp weights running inside a local Web Worker.
