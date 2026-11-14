@@ -7,6 +7,9 @@ import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
 import "@fontsource/jetbrains-mono/700.css";
 import { MotionProvider } from "@/components/MotionProvider";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
+import { getContactEmail } from "@/lib/site-config";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,11 +29,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const contactEmail = getContactEmail();
+
   return (
     <html lang="en">
       <body className="min-h-screen bg-[#ffffff] text-[#000000] font-sans antialiased flex flex-col">
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider>
+          <SiteHeader />
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
+          <SiteFooter contactEmail={contactEmail} />
+        </MotionProvider>
       </body>
     </html>
   );
 }
+
