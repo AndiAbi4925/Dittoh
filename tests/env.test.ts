@@ -3,6 +3,7 @@ import {
   getOptionalServerEnv,
   getPublicEnv,
   parseAdminGithubIds,
+  validateBootEnv,
   validateServerEnv,
 } from "@/lib/env";
 
@@ -79,5 +80,21 @@ describe("env configuration", () => {
       "https://preview.dottoh.vercel.app"
     );
     expect(custom.NEXT_PUBLIC_TELEMETRY_ENABLED).toBe(false);
+  });
+
+  it("allows boot without admin credentials while flagging missing vars and failing on invalid values", () => {
+    const boot = validateBootEnv({ NODE_ENV: "production" });
+    expect(boot.publicEnv.NEXT_PUBLIC_APP_URL).toBe(
+      "https://dottoh.vercel.app"
+    );
+    expect(boot.missingAdminVars).toContain("DATABASE_URL");
+    expect(boot.missingAdminVars).toContain("AUTH_SECRET");
+
+    expect(() =>
+      validateBootEnv({
+        NODE_ENV: "production",
+        DATABASE_URL: "http://not-postgres",
+      })
+    ).toThrow(/DATABASE_URL/);
   });
 });

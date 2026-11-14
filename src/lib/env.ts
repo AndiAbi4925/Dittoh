@@ -186,3 +186,40 @@ export function getOptionalServerEnv(
   }
   return parsed.data;
 }
+
+const ADMIN_INFRA_KEYS = [
+  "DATABASE_URL",
+  "AUTH_SECRET",
+  "AUTH_GITHUB_ID",
+  "AUTH_GITHUB_SECRET",
+  "GITHUB_ADMIN_IDS",
+] as const;
+
+export interface BootEnvValidationResult {
+  publicEnv: PublicEnv;
+  serverEnv: PartialServerEnv;
+  missingAdminVars: string[];
+}
+
+/**
+ * Validates public env and any configured server env vars on server boot.
+ * Allows the local browser-only converter routes to start when optional
+ * admin/DB variables are not yet provisioned, while failing fast on malformed values.
+ */
+export function validateBootEnv(
+  rawEnv: Record<string, string | undefined> = process.env
+): BootEnvValidationResult {
+  assertServerContext();
+  const publicEnv = getPublicEnv({
+    NEXT_PUBLIC_APP_URL: rawEnv.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_TELEMETRY_ENABLED: rawEnv.NEXT_PUBLIC_TELEMETRY_ENABLED,
+  });
+  const serverEnv = getOptionalServerEnv(rawEnv);
+  const missingAdminVars = ADMIN_INFRA_KEYS.filter((key) => !serverEnv[key]);
+
+  return {
+    publicEnv,
+    serverEnv,
+    missingAdminVars,
+  };
+}

@@ -15,9 +15,31 @@ function normalizeOrigin(raw: string | null | undefined): string | null {
   }
 }
 
+function normalizeHostOrigin(host: string | undefined): string | null {
+  if (!host) {
+    return null;
+  }
+  const trimmed = host.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const withScheme =
+    trimmed.startsWith("http://") || trimmed.startsWith("https://")
+      ? trimmed
+      : `https://${trimmed}`;
+  return normalizeOrigin(withScheme);
+}
+
 export function getAllowedOrigins(
   requestUrl: string,
-  configuredAppUrl?: string
+  configuredAppUrl?: string,
+  vercelHosts: {
+    vercelUrl?: string;
+    vercelProductionUrl?: string;
+  } = {
+    vercelUrl: process.env.VERCEL_URL,
+    vercelProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  }
 ): Set<string> {
   const origins = new Set<string>();
   const requestOrigin = normalizeOrigin(requestUrl);
@@ -30,6 +52,16 @@ export function getAllowedOrigins(
   );
   if (appOrigin) {
     origins.add(appOrigin);
+  }
+
+  const previewOrigin = normalizeHostOrigin(vercelHosts.vercelUrl);
+  if (previewOrigin) {
+    origins.add(previewOrigin);
+  }
+
+  const prodOrigin = normalizeHostOrigin(vercelHosts.vercelProductionUrl);
+  if (prodOrigin) {
+    origins.add(prodOrigin);
   }
 
   return origins;
@@ -45,14 +77,14 @@ export function evaluateApiCors(
     originHeader: string | null;
     requestUrl: string;
     configuredAppUrl?: string;
+    vercelUrl?: string;
+    vercelProductionUrl?: string;
   }
 ): CorsDecision {
   const method = params.method.toUpperCase();
   const isPreflight = method === "OPTIONS";
   const requestOrigin = normalizeOrigin(params.originHeader);
 
-  // Requests without an Origin header (e.g. same-origin navigation or server-to-server)
-  // do not carry cross-origin browser credentials, except invalid preflights.
   if (!params.originHeader) {
     return {
       allowed: !isPreflight,
@@ -71,7 +103,12 @@ export function evaluateApiCors(
 
   const allowedOrigins = getAllowedOrigins(
     params.requestUrl,
-    params.configuredAppUrl
+    params.configuredAppUrl,
+    {
+      vercelUrl: params.vercelUrl ?? process.env.VERCEL_URL,
+      vercelProductionUrl:
+        params.vercelProductionUrl ?? process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    }
   );
 
   if (!allowedOrigins.has(requestOrigin)) {
@@ -102,4 +139,3 @@ export function applyCorsHeaders(
   headers.set("Access-Control-Max-Age", "300");
   headers.set("Vary", "Origin");
 }
-

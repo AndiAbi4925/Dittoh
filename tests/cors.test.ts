@@ -37,4 +37,17 @@ describe("strict API CORS policy", () => {
     });
     expect(missingOriginPreflight.allowed).toBe(false);
   });
+
+  it("permits Vercel preview and production host origins when explicitly configured", () => {
+    const decision = evaluateApiCors({
+      method: "POST",
+      originHeader: "https://dittoh.vercel.app",
+      requestUrl: "https://dittoh-preview.vercel.app/api/telemetry",
+      configuredAppUrl: "https://dottoh.vercel.app",
+      vercelProductionUrl: "dittoh.vercel.app",
+    });
+
+    expect(decision.allowed).toBe(true);
+    expect(decision.allowOrigin).toBe("https://dittoh.vercel.app");
+  });
 });
