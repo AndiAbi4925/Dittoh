@@ -11,6 +11,7 @@ import {
   IconUploadGrid,
 } from "@/components/BrandMark";
 import { DotMatrixHero } from "@/components/DotMatrixHero";
+import { ConverterWorkspace } from "@/components/studio/ConverterWorkspace";
 import {
   DEFAULT_ENABLED_RAW_FORMATS,
   DEFAULT_MAX_IMAGE_SIZE_MB,
@@ -98,6 +99,7 @@ function StageIcon({ kind }: { kind: PipelineStage["icon"] }) {
 export function LandingStudioShell() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [selectedStageId, setSelectedStageId] = useState<string>("input");
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   useEffect(() => {
     const container = rootRef.current;
@@ -178,10 +180,10 @@ export function LandingStudioShell() {
 
               <div data-hero-reveal className="mt-8 flex flex-wrap items-center gap-3">
                 <a
-                  href="#studio-pipeline"
+                  href="#studio-workspace"
                   className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-3 text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                 >
-                  <span>INSPECT PIPELINE</span>
+                  <span>LAUNCH CONVERTER</span>
                   <IconArrowRight className="h-4 w-4" />
                 </a>
 
@@ -218,8 +220,32 @@ export function LandingStudioShell() {
           </div>
 
           <div data-hero-reveal className="lg:col-span-6">
-            <DotMatrixHero />
+            <DotMatrixHero isProcessing={isProcessing} />
           </div>
+        </div>
+      </section>
+
+      <section
+        id="studio-workspace"
+        aria-label="Local media converter workspace"
+        className="border-b border-[#b1b3b3] bg-[#f4f4f4]"
+      >
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-14">
+          <div className="mb-6 flex flex-col justify-between gap-3 border-b border-[#b1b3b3] pb-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-widest text-[#d71921]">
+                STUDIO WORKSPACE / STAGE 01 TO 02
+              </p>
+              <h2 className="mt-1.5 font-display text-2xl tracking-tight text-[#000000] sm:text-3xl">
+                INPUT VALIDATION & BACKGROUND CUTOUT
+              </h2>
+            </div>
+            <span className="border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 font-mono text-xs uppercase text-[#525252]">
+              ZERO UPLOAD / WEB WORKERS ACTIVE
+            </span>
+          </div>
+
+          <ConverterWorkspace onProcessingChange={setIsProcessing} />
         </div>
       </section>
 
@@ -328,8 +354,9 @@ export function LandingStudioShell() {
                 </div>
 
                 <div className="mt-8 border border-[#b1b3b3] bg-[#f4f4f4] p-4 font-mono text-xs text-[#525252]">
-                  Active interactive upload dropzone and Web Worker pipeline are
-                  staged for Milestones 3 and 4 on this workspace shell.
+                  Input validation, LibRaw WASM decoding, and lazy U-2-Netp
+                  cutout are active in the workspace above. ASCII studio sliders
+                  and export generators follow in Milestone 4.
                 </div>
               </motion.div>
             )}
