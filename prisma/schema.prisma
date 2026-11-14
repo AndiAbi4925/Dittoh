@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminAllowlist {
+  id        String   @id @default(cuid())
+  githubId  String   @unique
+  username  String
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+}
+
+model AppConfig {
+  id                   String   @id @default("default")
+  maxImageSizeMb       Int      @default(50)
+  maxVideoSizeMb       Int      @default(100)
+  maxVideoDurationSec  Int      @default(30)
+  enabledRawFormats    String[] @default(["arw", "dng"])
+  enableVideoConverter Boolean  @default(false)
+  rateLimitPerMin      Int      @default(30)
+  updatedAt            DateTime @updatedAt
+  updatedBy            String?
+}
+
+model TelemetryEvent {
+  id           String   @id @default(cuid())
+  eventType    String
+  inputFormat  String?
+  outputFormat String?
+  durationMs   Int?
+  errorCode    String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([eventType, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  target    String?
+  metadata  Json?
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+}
+
