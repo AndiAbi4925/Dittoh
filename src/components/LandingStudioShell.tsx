@@ -234,10 +234,10 @@ export function LandingStudioShell() {
           <div className="mb-6 flex flex-col justify-between gap-3 border-b border-[#b1b3b3] pb-5 sm:flex-row sm:items-end">
             <div>
               <p className="font-mono text-xs uppercase tracking-widest text-[#d71921]">
-                STUDIO WORKSPACE / STAGE 01 TO 02
+                STUDIO WORKSPACE / STAGE 01 TO 05
               </p>
               <h2 className="mt-1.5 font-display text-2xl tracking-tight text-[#000000] sm:text-3xl">
-                INPUT VALIDATION & BACKGROUND CUTOUT
+                MEDIA DECODE, CUTOUT & ASCII MATRIX
               </h2>
             </div>
             <span className="border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 font-mono text-xs uppercase text-[#525252]">

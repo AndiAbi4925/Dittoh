@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { IconCloseCross } from "@/components/BrandMark";
+import { AsciiStudioSection } from "@/components/studio/AsciiStudioSection";
 import { BackgroundRemovalPanel } from "@/components/studio/BackgroundRemovalPanel";
 import { MediaDropzone } from "@/components/studio/MediaDropzone";
 import {
@@ -56,6 +57,8 @@ export function ConverterWorkspace({
   const [fill, setFill] = useState<BackgroundFillOption>(INITIAL_FILL);
   const [progress, setProgress] = useState<ProcessingProgress>(IDLE_PROGRESS);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [decodeEpoch, setDecodeEpoch] = useState(0);
+  const [asciiRendering, setAsciiRendering] = useState(false);
 
   const isBusy =
     progress.stage !== "IDLE" &&
@@ -63,8 +66,8 @@ export function ConverterWorkspace({
     progress.stage !== "ERROR";
 
   useEffect(() => {
-    onProcessingChange?.(isBusy);
-  }, [isBusy, onProcessingChange]);
+    onProcessingChange?.(isBusy || asciiRendering);
+  }, [asciiRendering, isBusy, onProcessingChange]);
 
   useEffect(() => {
     return () => {
@@ -93,6 +96,12 @@ export function ConverterWorkspace({
     return decoded;
   }, [cutout, decoded, fill, useCutout]);
 
+  const bufferRevision = useMemo(
+    () =>
+      `${decodeEpoch}:${useCutout && cutout ? `cutout:${fill.mode}:${fill.customHex}` : "raw"}`,
+    [cutout, decodeEpoch, fill.customHex, fill.mode, useCutout]
+  );
+
   const handleFileSelected = async (file: File) => {
     abortRef.current?.abort();
     const controller = new AbortController();
@@ -120,6 +129,7 @@ export function ConverterWorkspace({
 
       if (!controller.signal.aborted) {
         setDecoded(result);
+        setDecodeEpoch((prev) => prev + 1);
       }
     } catch (error) {
       if (
@@ -332,16 +342,12 @@ export function ConverterWorkspace({
           />
 
           {activeBufferPayload && (
-            <div className="border border-[#b1b3b3] bg-[#f4f4f4] p-4 font-mono text-xs text-[#525252]">
-              STAGE 03 HANDOFF READY:{" "}
-              <span className="text-[#000000]">
-                {activeBufferPayload.width} x {activeBufferPayload.height} RGBA
-                BUFFER (
-                {Math.round(activeBufferPayload.rgba.byteLength / 1024)} KB IN
-                MEMORY)
-              </span>{" "}
-              FOR ASCII STUDIO CONTROLS (MILESTONE 4).
-            </div>
+            <AsciiStudioSection
+              payload={activeBufferPayload}
+              bufferRevision={bufferRevision}
+              fileName={fileName ?? "dottoh-image"}
+              onRenderingChange={setAsciiRendering}
+            />
           )}
         </motion.div>
       )}
