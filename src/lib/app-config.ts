@@ -20,7 +20,7 @@ export const DEFAULT_PUBLIC_APP_CONFIG: PublicAppConfig = {
   maxVideoSizeMb: DEFAULT_MAX_VIDEO_SIZE_MB,
   maxVideoDurationSec: DEFAULT_MAX_VIDEO_DURATION_SEC,
   enabledRawFormats: [...DEFAULT_ENABLED_RAW_FORMATS],
-  enableVideoConverter: false,
+  enableVideoConverter: true,
   rateLimitPerMin: DEFAULT_RATE_LIMIT_PER_MIN,
   source: "default",
   updatedAt: null,

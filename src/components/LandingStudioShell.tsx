@@ -340,7 +340,7 @@ export function LandingStudioShell({
               </h2>
             </div>
             <span className="border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 font-mono text-xs uppercase text-[#525252]">
-              PHASE 1 MVP SHELL
+              {enableVideoConverter ? "PHASE 1 + 2 ACTIVE" : "PHASE 1 MVP SHELL"}
             </span>
           </div>
 

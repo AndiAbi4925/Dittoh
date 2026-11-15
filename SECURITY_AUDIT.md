@@ -1,8 +1,8 @@
 # Dottoh Security Audit and Verification Report
 
 - **Project**: Dottoh (Next.js 16 App Router, TypeScript, Tailwind CSS v4, Prisma 7, Auth.js v5)
-- **Branch**: `feat/step-6-security-audit`
-- **Audit Scope**: HTTP security headers, COOP/COEP isolation, CORS and Fetch Metadata enforcement, Content-Type and body size validation, authentication/allowlist fail-closed behavior, XSS/export sanitization, client bundle secret isolation, dependency audit (`npm audit`), exposed config/sensitive file probes, and full Git history secret scan.
+- **Branch**: `feat/step-7-phase2-video` (extending verified `main` Phase 1 audit)
+- **Audit Scope**: HTTP security headers, COOP/COEP isolation, CORS and Fetch Metadata enforcement, Content-Type and body size validation, authentication/allowlist fail-closed behavior, XSS/export sanitization, client bundle secret isolation, dependency audit (`npm audit`), exposed config/sensitive file probes, full Git history secret scan, and Phase 2 `ffmpeg.wasm` self-hosted asset/CSP review.
 - **Last Verified Date**: 2026-11-15
 
 ---
@@ -29,7 +29,7 @@ During Step 6 verification, three real hardening issues were uncovered and remed
 ### 2.2 Security Headers and Cross-Origin Isolation (`next.config.ts` & `src/proxy.ts`)
 - `poweredByHeader: false` and `reactStrictMode: true` configured in `next.config.ts`.
 - Global security headers attached to `/(.*)` and proxy responses:
-  - `Content-Security-Policy` (`script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'` allowing self-hosted LibRaw/ONNX WASM without `'unsafe-eval'`, `worker-src 'self' blob:`, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`)
+  - `Content-Security-Policy` (`script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'` allowing self-hosted LibRaw/ONNX/FFmpeg WASM without `'unsafe-eval'`, `worker-src 'self' blob:`, `media-src 'self' blob:` for client-side preview and encoded MP4/GIF playback, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`)
   - `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
   - `X-Frame-Options: DENY`
   - `X-Content-Type-Options: nosniff`
@@ -60,6 +60,7 @@ During Step 6 verification, three real hardening issues were uncovered and remed
   - `@imgly/background-removal` (`AGPL-3.0`) was audited and rejected prior to bundling.
   - Replaced with permissive self-hosted dependencies (`onnxruntime-web@1.21.0` MIT, `U-2-Netp` Apache-2.0 weights, `libraw-wasm@1.6.0` ISC, `utif@3.1.0` MIT), tracked in `public/wasm/THIRD-PARTY-LICENSES.txt`.
   - Embind dynamic `new Function` factories in `public/wasm/libraw/worker.js` and `libraw.js` were replaced with static closures (`1d3f01c`) so strict CSP without `'unsafe-eval'` succeeds.
+  - Phase 2 video processing self-hosts `@ffmpeg/ffmpeg@0.12.15` (MIT), `@ffmpeg/util@0.12.2` (MIT), and `@ffmpeg/core@0.12.10` (`GPL-2.0-or-later`) under `public/wasm/ffmpeg/` (`31 MB` WASM binary), stripped of external `unpkg.com` CDN URLs and verified to contain zero `eval(` / `new Function(` calls. Notice requirements are tracked in `public/wasm/THIRD-PARTY-LICENSES.txt`.
 
 ---
 
@@ -69,7 +70,7 @@ During Step 6 verification, three real hardening issues were uncovered and remed
 | --- | --- | --- |
 | TypeScript | `npm run typecheck` (`tsc --noEmit`) | Passed (0 errors) |
 | ESLint | `npm run lint` (`eslint .`) | Passed (0 errors, 0 warnings) |
-| Test Suite | `npm test` (`vitest run`) | Passed (15 test files, 60 tests) |
+| Test Suite | `npm test` (`vitest run`) | Passed (17 test files, 69 tests) |
 | Turbopack Build | `npm run build` | Passed (all routes compiled) |
 | Prod Dependencies | `npm audit --omit=dev` | Passed (`found 0 vulnerabilities`) |
 | Full Dependency Tree | `npm audit` | 7 moderate findings in `minimatch` (`7.0.0 - 11.0.0`) solely under dev-only `@typescript-eslint/*` linting dependencies |

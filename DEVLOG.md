@@ -306,6 +306,55 @@
 
 - Merge verified feature branch PRs into `main` on GitHub once user reviews and approves, configure Neon + GitHub OAuth environment variables on Vercel, and push Prisma schema.
 
+## Milestone 7: Phase 2 Video & GIF ASCII Conversion Studio (`ffmpeg.wasm`)
+
+- **Branch**: `feat/step-7-phase2-video`
+- **Status**: Complete and verified in Node/Vitest, Turbopack production build, security audit script, and headless Chrome CDP 10s 720p MP4 / GIF benchmarks
+- **Date**: 2026-11-15
+
+### Completed Scope
+
+1. **Self-Hosted `ffmpeg.wasm` Assets & Strict CSP Compliance**
+   - Installed `@ffmpeg/ffmpeg@^0.12.15`, `@ffmpeg/util@^0.12.2`, and `@ffmpeg/core@^0.12.10`. Audited packages (`MIT` wrapper/util, `GPL-2.0-or-later` core) and documented third-party notices in `public/wasm/THIRD-PARTY-LICENSES.txt`.
+   - Vendored `public/wasm/ffmpeg/{ffmpeg-core.js,ffmpeg-core.wasm,worker.js,errors.js,const.js}` pointing `CORE_URL` to `/wasm/ffmpeg/ffmpeg-core.js` (zero external CDN URLs, zero `eval` or `new Function`).
+   - Added `media-src 'self' blob:` to `src/lib/security-headers.ts` so encoded MP4 `<video>` playback stays strict under CSP.
+2. **Container Validation, GIF Metadata Parser, and Frame Constraints (`src/lib/video/`)**
+   - Implemented magic-byte sniffing and strict validation (`src/lib/video/validation.ts`, `src/lib/video/types.ts`) for `.mp4`, `.gif`, `.mov`, and `.webm` up to `100 MB`, `30s`, `1080p` (`1920x1080`), and `30 FPS`, clamping MP4 exports to `720p / 12 FPS` even dimensions and GIF exports to max `15s`.
+   - Built pure-TypeScript animated GIF metadata parser (`src/lib/video/gif-metadata.ts`) and procedural animated sample GIF generator (`src/lib/video/sample-clip.ts`).
+3. **Temporal ASCII Consistency & High-Speed Atlas Renderer (`src/lib/video/temporal-ascii.ts`, `src/lib/video/video-processor.ts`, `src/lib/video/ffmpeg-client.ts`)**
+   - Built stateful temporal luminance smoothing, Schmitt-trigger glyph hysteresis deadband (`0.5 / rampMaxIndex + hysteresis`), locked-first-frame vs per-frame luminance normalization, locked-palette vs per-frame GIF palette encoding, and a pre-baked glyph alpha atlas blitter (`GlyphAlphaAtlas` + `blitAsciiGridToRgbaFrame`) driving self-hosted `ffmpeg.wasm` in `LocalVideoProcessor`.
+4. **Video & GIF Studio UI & Runtime AppConfig Wiring (`src/components/studio/VideoAsciiWorkspace.tsx`, `src/components/LandingStudioShell.tsx`, `src/app/page.tsx`)**
+   - Added `IMAGE / RAW` and `VIDEO & GIF` studio tabs in `LandingStudioShell`, wired `enableVideoConverter`, `maxVideoSizeMb`, and `maxVideoDurationSec` from `getPublicAppConfig()`, built clip trimming, frame consistency controls, real-time scrubbable ASCII playback preview, H.264 MP4 and animated GIF export + playback preview, and anonymous telemetry reporting.
+5. **Unit Tests & Benchmark Activation**
+   - Added `tests/video-validation.test.ts` and `tests/temporal-ascii.test.ts`, verifying validation guards, GIF parser round-trip, temporal hysteresis stability, locked-frame luminance preservation, glyph atlas blitting, and FFmpeg argument construction.
+   - Enabled `enableVideoConverter = true` defaults (`src/lib/app-config.ts`, `src/lib/ascii/video-hook.ts`, `prisma/schema.prisma`) after verifying Chrome CDP 10s 720p MP4 conversion completes well under the 30s PRD KPI.
+
+### Commit History (Step 7)
+
+- `efba737` - `chore(video): vendor self-hosted ffmpeg.wasm assets, license notices, and media-src CSP`
+- `8184a92` - `feat(video): add video/GIF validation, magic-byte sniffing, and constraint types`
+- `ec4d2ca` - `feat(video): implement ffmpeg.wasm worker client, glyph atlas renderer, and temporal consistency`
+- `3b7b544` - `feat(studio): build Phase 2 Video & GIF ASCII studio UI and wire AppConfig flag`
+- `f9d0a4f` - `test(video): add unit tests for video validation, GIF parser, and temporal ASCII`
+
+### Verification Results
+
+- `npm run typecheck` (`tsc --noEmit`): Passed (0 errors)
+- `npm run lint` (`eslint .`): Passed (0 errors, 0 warnings)
+- `npm test` (`vitest run`): 17 test files, 69 tests passed
+- `npm run build` (`prisma generate && next build` Turbopack): Passed
+- `npm audit --omit=dev`: `found 0 vulnerabilities`
+- Security Audit Script (`next start -p 3197`): `0` leaked server env identifiers in `.next/static/*.js`, `0` tracked sensitive files, `0` console/CSP regressions.
+- Headless Chrome CDP Benchmark (`next start -p 3196`, `crossOriginIsolated: true`, `media-src 'self' blob:`):
+  - Sample 20-frame GIF (`160x90`): cold `ffmpeg.wasm` boot + frame extract in `15,633 ms`, locked-palette GIF encode (`1280x714`, 24 frames) in `915 ms`, `<img src="blob:...">` verified (`0` console errors, `0` exceptions).
+  - Synthetic 10s 720p (`1280x720`, 24 FPS, `325,136 bytes`) H.264 MP4: frame extraction (`120` frames @ `12 FPS`) in `337 ms`, ASCII atlas raster + H.264 encode (`1280x714`, `706 KB`) in `3,646 ms`, end-to-end pipeline wait `4,155 ms` (within `30,000 ms` PRD KPI; `<video>` element natively decoded `1280x714`, `10s`).
+
+### Unresolved Issues & Open Questions
+
+1. **Deployment & Branch Merge**: `feat/step-7-phase2-video` pushes are complete; deploy Phase 2 build to Vercel production and await explicit user approval before fast-forwarding `main`.
+2. **Production Database Sync**: When Neon `DATABASE_URL` is configured, run `npx prisma db push` so the updated `@default(true)` on `AppConfig.enableVideoConverter` matches the schema (existing rows remain admin-configurable via `/admin`).
+
+
 
 
 

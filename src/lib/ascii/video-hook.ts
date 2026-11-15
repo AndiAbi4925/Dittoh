@@ -28,7 +28,7 @@ export interface VideoTranscodeAdapter {
 }
 
 export const PHASE2_VIDEO_CONSTRAINTS: VideoConversionConstraints = {
-  enabled: false,
+  enabled: true,
   supportedInputExtensions: SUPPORTED_VIDEO_EXTENSIONS,
   maxInputSizeBytes: DEFAULT_MAX_VIDEO_SIZE_MB * 1024 * 1024,
   maxInputDurationSec: DEFAULT_MAX_VIDEO_DURATION_SEC,
