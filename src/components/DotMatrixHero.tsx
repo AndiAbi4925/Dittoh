@@ -162,32 +162,17 @@ export function DotMatrixHero({ isProcessing = false }: DotMatrixHeroProps) {
   }, [preset, density, inverted, isPaused]);
 
   return (
-    <div className="border border-[#b1b3b3] bg-[#000000]">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#262626] bg-[#000000] px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-[#ffffff]">
-        <div className="flex items-center gap-2">
-          <span
-            className={`inline-block h-2 w-2 ${
-              isPaused ? "bg-[#b1b3b3]" : "bg-[#d71921]"
-            }`}
-            aria-hidden="true"
-          />
-          <span>DOT-MATRIX VIEWPORT</span>
-        </div>
-        <span className="text-[#b1b3b3]">
-          {isPaused ? "STATIC FRAME" : "LIVE CANVAS"}
-        </span>
-      </div>
-
+    <div className="border border-[#d4d4d4] bg-[#000000]">
       <div ref={containerRef} className="relative h-72 w-full sm:h-80">
         <canvas
           ref={canvasRef}
-          aria-label="Interactive ASCII dot-matrix waveform visualization"
+          aria-label="Interactive ASCII dot-matrix pattern"
           className="block h-full w-full"
         />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#262626] bg-[#000000] px-3 py-2.5">
-        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Character ramp preset">
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Character style">
           {(["standard", "blocks", "binary"] as const).map((item) => (
             <button
               key={item}
@@ -219,7 +204,7 @@ export function DotMatrixHero({ isProcessing = false }: DotMatrixHeroProps) {
             }
             className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
           >
-            GRID: {density}
+            Size: {density}
           </button>
 
           <button
@@ -228,25 +213,25 @@ export function DotMatrixHero({ isProcessing = false }: DotMatrixHeroProps) {
             aria-pressed={inverted}
             className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
           >
-            {inverted ? "DARK" : "LIGHT"}
+            {inverted ? "Dark" : "Light"}
           </button>
 
           <button
             type="button"
             onClick={() => setUserPaused((prev) => !prev)}
             disabled={prefersReducedMotion || isProcessing}
-            aria-label={isPaused ? "Resume matrix animation" : "Pause matrix animation"}
+            aria-label={isPaused ? "Play animation" : "Pause animation"}
             className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff] disabled:opacity-50"
           >
             {isPaused ? (
               <>
                 <IconPlay className="h-3 w-3" />
-                <span>PLAY</span>
+                <span>Play</span>
               </>
             ) : (
               <>
                 <IconPause className="h-3 w-3" />
-                <span>PAUSE</span>
+                <span>Pause</span>
               </>
             )}
           </button>
