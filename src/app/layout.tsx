@@ -14,11 +14,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Dottoh | Browser-First Media to ASCII Studio",
+    default: "Dottoh | Photo to ASCII Art",
     template: "%s | Dottoh",
   },
   description:
-    "Convert standard images and supported camera RAW files into customizable ASCII artwork directly in your browser. Zero file uploads.",
+    "Turn photos and short clips into ASCII art right in your browser, step by step.",
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
   },
