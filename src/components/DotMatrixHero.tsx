@@ -18,11 +18,7 @@ const CELL_SIZES: Record<MatrixDensity, number> = {
   fine: 11,
 };
 
-export interface DotMatrixHeroProps {
-  isProcessing?: boolean;
-}
-
-export function DotMatrixHero({ isProcessing = false }: DotMatrixHeroProps) {
+export function DotMatrixHero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -40,7 +36,7 @@ export function DotMatrixHero({ isProcessing = false }: DotMatrixHeroProps) {
     return () => media.removeEventListener("change", updatePreference);
   }, []);
 
-  const isPaused = userPaused || isProcessing || prefersReducedMotion;
+  const isPaused = userPaused || prefersReducedMotion;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -219,7 +215,7 @@ export function DotMatrixHero({ isProcessing = false }: DotMatrixHeroProps) {
           <button
             type="button"
             onClick={() => setUserPaused((prev) => !prev)}
-            disabled={prefersReducedMotion || isProcessing}
+            disabled={prefersReducedMotion}
             aria-label={isPaused ? "Play animation" : "Pause animation"}
             className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff] disabled:opacity-50"
           >

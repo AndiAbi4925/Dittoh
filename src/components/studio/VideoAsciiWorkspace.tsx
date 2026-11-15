@@ -48,11 +48,10 @@ import {
   probeVideoMetadata,
 } from "@/lib/video/video-processor";
 
-export interface VideoAsciiWorkspaceProps {
+interface VideoAsciiWorkspaceProps {
   enableVideoConverter?: boolean;
   maxVideoSizeMb?: number;
   maxVideoDurationSec?: number;
-  onProcessingChange?: (processing: boolean) => void;
 }
 
 const IDLE_VIDEO_PROGRESS: VideoProgressUpdate = {
@@ -90,7 +89,6 @@ export function VideoAsciiWorkspace({
   enableVideoConverter = false,
   maxVideoSizeMb = DEFAULT_MAX_VIDEO_SIZE_MB,
   maxVideoDurationSec = DEFAULT_MAX_VIDEO_DURATION_SEC,
-  onProcessingChange,
 }: VideoAsciiWorkspaceProps) {
   const shouldReduceMotion = useReducedMotion();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -145,16 +143,11 @@ export function VideoAsciiWorkspace({
     progress.stage === "ENCODING_OUTPUT";
 
   useEffect(() => {
-    onProcessingChange?.(isBusy);
-  }, [isBusy, onProcessingChange]);
-
-  useEffect(() => {
     return () => {
-      onProcessingChange?.(false);
       abortRef.current?.abort();
       processorRef.current?.dispose();
     };
-  }, [onProcessingChange]);
+  }, []);
 
   useEffect(() => {
     return () => {
