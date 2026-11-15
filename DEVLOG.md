@@ -194,7 +194,7 @@
 - `3bf73d8` - `feat(studio): build Basic/Advanced ASCII controls, presets, history, and export panels`
 - `8179ab8` - `feat(studio): integrate interactive ASCII studio into ConverterWorkspace`
 - `91b6d41` - `test(ascii): add unit tests for ASCII engine, XSS-safe exporters, and Zod storage`
-- `HEAD` - `docs(devlog): update DEVLOG.md for Step 4 interactive ASCII studio`
+- `7bceb29` - `docs(devlog): update DEVLOG.md for Step 4 interactive ASCII studio`
 
 ### Verification Results
 
@@ -243,7 +243,7 @@
 - `a7204ce` - `feat(api): add /api/config, rate-limited /api/telemetry, and protected /api/admin routes`
 - `c6e3cdd` - `feat(admin): build /admin protected console and wire live AppConfig + telemetry`
 - `3e1adbb` - `test(admin): add unit and integration tests for rate limiter, schemas, and admin APIs`
-- `HEAD` - `docs(devlog): update DEVLOG.md for Step 5 admin dashboard and API wiring`
+- `fa4e271` - `docs(devlog): update DEVLOG.md for Step 5 admin dashboard and API wiring`
 
 ### Verification Results
 
@@ -261,6 +261,51 @@
 ### Next Steps
 
 - Proceed to Step 6 (`feat/step-6-security-audit`): execute the full application security audit (headers, CORS, XSS payloads across SVG/HTML/JSON, client bundle secret scan, exposed config/prisma/env check, `npm audit`, full Git history secret scan), fix any discovered issues, write `SECURITY_AUDIT.md`, push, and verify live Vercel production deployment (`https://dittoh.vercel.app`).
+
+## Milestone 6: Security Hardening, Audit Verification, and Production Readiness
+
+- **Branch**: `feat/step-6-security-audit`
+- **Status**: Complete and verified across static scans, unit/regression suites, production build, local HTTP probes, and Vercel production deployment
+- **Date**: 2026-11-15
+
+### Completed Scope
+
+1. **Client Bundle Isolation (`src/lib/site-constants.ts`, `src/lib/admin-types.ts`)**
+   - Split client-safe navigation constants into `src/lib/site-constants.ts` and shared TS interfaces into `src/lib/admin-types.ts`, breaking client imports of server `env.ts`, `app-config.ts`, `telemetry-stats.ts`, and `site-config.ts`. Verified compiled `.next/static/**/*.js` contains `0` references to server environment variable identifiers.
+2. **Auth Fallback Hardening (`src/app/api/auth/[...nextauth]/route.ts`, `src/proxy.ts`)**
+   - Guarded Auth.js `GET`/`POST` handlers when GitHub OAuth environment variables are absent so `/api/auth/*` returns `HTTP 503` with `Cache-Control: no-store` instead of throwing `500`, and enforced `Cache-Control: no-store` on `/api/auth/*` via proxy middleware.
+3. **Mutation Content-Type and Fetch Metadata Guards (`src/lib/admin-api.ts`, `src/lib/cors.ts`, `src/proxy.ts`)**
+   - Required `application/json` `Content-Type` on JSON body parsing (`HTTP 415 Unsupported Media Type`, `no-store`) and blocked `Sec-Fetch-Site: cross-site` mutating API calls (`HTTP 403`) while keeping top-level `GET` OAuth callback flows functional.
+4. **Security Regression Suite and Audit Report (`tests/security-audit.test.ts`, `SECURITY_AUDIT.md`)**
+   - Added automated tests covering client-server module isolation, absence of `dangerouslySetInnerHTML`/`eval(`/ `new Function(`, cross-site mutation blocking, `415` `text/plain` rejection, `503` `/api/auth/*` fallback, and adversarial `.SVG`/`.HTML` export escaping.
+   - Published full findings and verification matrix in `SECURITY_AUDIT.md`.
+
+### Commit History (Step 6)
+
+- `9b0849a` - `fix(security): isolate server env schema from client bundle via public constants split`
+- `4897d18` - `fix(auth): fail gracefully with 503 no-store on /api/auth when OAuth env is unset`
+- `43d7990` - `fix(security): enforce JSON Content-Type (415) and Sec-Fetch-Site mutation guards`
+- `bac2c01` - `test(security): enforce client-server type separation and add security regression suite`
+- Current commit - `docs(security): add SECURITY_AUDIT.md report and Step 6 DEVLOG entry`
+
+### Verification Results
+
+- `npm run typecheck` (`tsc --noEmit`): Passed (0 errors)
+- `npm run lint` (`eslint .`): Passed (0 errors, 0 warnings)
+- `npm test` (`vitest run`): 15 test files, 60 tests passed
+- `npm run build` (`prisma generate && next build` Turbopack): Passed
+- `npm audit --omit=dev`: `found 0 vulnerabilities` (7 moderate in dev-only `@typescript-eslint` `minimatch`)
+- Security Audit Script (`next start -p 3197`, git history scan, client bundle scan): `0` leaked server env identifiers in `.next/static/*.js`, `0` tracked sensitive files, `0` real secrets in Git history, `404` on `/.env`/`/.env.local`/`/.git/HEAD`/`/prisma/schema.prisma`, `401` on `/api/admin/*`, `403` on evil `Origin`, `415` on `text/plain` POST, `503` `no-store` on `/api/auth/session`.
+
+### Unresolved Issues & Open Questions
+
+1. **Neon Database & GitHub OAuth Provisioning**: User must configure `DATABASE_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, and numeric `GITHUB_ADMIN_IDS` in Vercel Project Settings and run `npx prisma db push` to enable live `/admin` sign-in and persistent telemetry storage.
+2. **Phase 2 Video / GIF Studio**: Scaffolded behind `enableVideoConverter` flag (`src/lib/ascii/video-hook.ts`); enable after Phase 1 production benchmarks.
+
+### Next Steps
+
+- Merge verified feature branch PRs into `main` on GitHub once user reviews and approves, configure Neon + GitHub OAuth environment variables on Vercel, and push Prisma schema.
+
 
 
 
