@@ -8,7 +8,10 @@ export default async function HomePage() {
   return (
     <LandingStudioShell
       maxImageSizeMb={appConfig.maxImageSizeMb}
+      maxVideoSizeMb={appConfig.maxVideoSizeMb}
+      maxVideoDurationSec={appConfig.maxVideoDurationSec}
       enabledRawFormats={appConfig.enabledRawFormats}
+      enableVideoConverter={appConfig.enableVideoConverter}
     />
   );
 }

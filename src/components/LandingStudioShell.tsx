@@ -12,9 +12,12 @@ import {
 } from "@/components/BrandMark";
 import { DotMatrixHero } from "@/components/DotMatrixHero";
 import { ConverterWorkspace } from "@/components/studio/ConverterWorkspace";
+import { VideoAsciiWorkspace } from "@/components/studio/VideoAsciiWorkspace";
 import {
   DEFAULT_ENABLED_RAW_FORMATS,
   DEFAULT_MAX_IMAGE_SIZE_MB,
+  DEFAULT_MAX_VIDEO_DURATION_SEC,
+  DEFAULT_MAX_VIDEO_SIZE_MB,
   SUPPORTED_EXPORT_FORMATS,
   SUPPORTED_RASTER_EXTENSIONS,
 } from "@/lib/constants";
@@ -98,15 +101,22 @@ function StageIcon({ kind }: { kind: PipelineStage["icon"] }) {
 
 export interface LandingStudioShellProps {
   maxImageSizeMb?: number;
+  maxVideoSizeMb?: number;
+  maxVideoDurationSec?: number;
   enabledRawFormats?: readonly string[];
+  enableVideoConverter?: boolean;
 }
 
 export function LandingStudioShell({
   maxImageSizeMb = DEFAULT_MAX_IMAGE_SIZE_MB,
+  maxVideoSizeMb = DEFAULT_MAX_VIDEO_SIZE_MB,
+  maxVideoDurationSec = DEFAULT_MAX_VIDEO_DURATION_SEC,
   enabledRawFormats = DEFAULT_ENABLED_RAW_FORMATS,
+  enableVideoConverter = false,
 }: LandingStudioShellProps = {}) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [selectedStageId, setSelectedStageId] = useState<string>("input");
+  const [studioMode, setStudioMode] = useState<"image" | "video">("image");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   useEffect(() => {
@@ -239,7 +249,7 @@ export function LandingStudioShell({
         className="border-b border-[#b1b3b3] bg-[#f4f4f4]"
       >
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-14">
-          <div className="mb-6 flex flex-col justify-between gap-3 border-b border-[#b1b3b3] pb-5 sm:flex-row sm:items-end">
+          <div className="mb-6 flex flex-col justify-between gap-4 border-b border-[#b1b3b3] pb-5 lg:flex-row lg:items-end">
             <div>
               <p className="font-mono text-xs uppercase tracking-widest text-[#d71921]">
                 STUDIO WORKSPACE / STAGE 01 TO 05
@@ -248,16 +258,73 @@ export function LandingStudioShell({
                 MEDIA DECODE, CUTOUT & ASCII MATRIX
               </h2>
             </div>
-            <span className="border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 font-mono text-xs uppercase text-[#525252]">
-              ZERO UPLOAD / WEB WORKERS ACTIVE
-            </span>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <div
+                role="tablist"
+                aria-label="Studio conversion mode"
+                className="inline-flex border border-[#b1b3b3] bg-[#f4f4f4] p-0.5"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={studioMode === "image"}
+                  onClick={() => {
+                    setStudioMode("image");
+                    setIsProcessing(false);
+                  }}
+                  className={`px-3 py-1.5 font-mono text-xs uppercase tracking-wider rounded-[2px] ${
+                    studioMode === "image"
+                      ? "bg-[#000000] text-[#ffffff]"
+                      : "text-[#000000] hover:bg-[#ffffff]"
+                  }`}
+                >
+                  IMAGE / RAW
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={studioMode === "video"}
+                  onClick={() => {
+                    setStudioMode("video");
+                    setIsProcessing(false);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-xs uppercase tracking-wider rounded-[2px] ${
+                    studioMode === "video"
+                      ? "bg-[#000000] text-[#ffffff]"
+                      : "text-[#000000] hover:bg-[#ffffff]"
+                  }`}
+                >
+                  <span>VIDEO & GIF</span>
+                  <span
+                    className={`inline-block h-1.5 w-1.5 ${
+                      enableVideoConverter ? "bg-[#d71921]" : "bg-[#b1b3b3]"
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              </div>
+
+              <span className="border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 font-mono text-xs uppercase text-[#525252]">
+                ZERO UPLOAD / WEB WORKERS ACTIVE
+              </span>
+            </div>
           </div>
 
-          <ConverterWorkspace
-            maxImageSizeMb={maxImageSizeMb}
-            enabledRawFormats={enabledRawFormats}
-            onProcessingChange={setIsProcessing}
-          />
+          {studioMode === "image" ? (
+            <ConverterWorkspace
+              maxImageSizeMb={maxImageSizeMb}
+              enabledRawFormats={enabledRawFormats}
+              onProcessingChange={setIsProcessing}
+            />
+          ) : (
+            <VideoAsciiWorkspace
+              enableVideoConverter={enableVideoConverter}
+              maxVideoSizeMb={maxVideoSizeMb}
+              maxVideoDurationSec={maxVideoDurationSec}
+              onProcessingChange={setIsProcessing}
+            />
+          )}
         </div>
       </section>
 
