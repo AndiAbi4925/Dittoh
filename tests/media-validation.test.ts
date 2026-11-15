@@ -120,5 +120,11 @@ describe("media signature inspection and file validation", () => {
     expect(
       fs.existsSync(path.join(root, "public/wasm/THIRD-PARTY-LICENSES.txt"))
     ).toBe(true);
+
+    for (const wasmJs of ["public/wasm/libraw/worker.js", "public/wasm/libraw/libraw.js"]) {
+      const content = fs.readFileSync(path.join(root, wasmJs), "utf8");
+      expect(content).not.toMatch(/\bnew\s+Function\b/);
+      expect(content).not.toMatch(/\beval\s*\(/);
+    }
   });
 });

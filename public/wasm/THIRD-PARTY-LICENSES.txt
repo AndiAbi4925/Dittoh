@@ -6,6 +6,9 @@ Dottoh Client-Side Media Runtime Third-Party License Notices
    Source: https://github.com/ybouane/LibRaw-Wasm
    Files: public/wasm/libraw/worker.js, public/wasm/libraw/libraw.js, public/wasm/libraw/libraw.wasm
    Underlying LibRaw C++ library: LGPL-2.1 / CDDL-1.0 dual license (unmodified shared build).
+   Modification Note: Emscripten Embind wrapper factories in worker.js and libraw.js
+   were adapted from dynamic new Function codegen to static closures so strict
+   Content-Security-Policy (without 'unsafe-eval') remains enforced.
 
 2. onnxruntime-web (v1.21.0)
    License: MIT
