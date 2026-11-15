@@ -35,7 +35,10 @@ export function proxy(request: NextRequest): NextResponse {
 
     const response = NextResponse.next();
     applyCorsHeaders(response.headers, cors.allowOrigin);
-    if (pathname.startsWith("/api/admin/")) {
+    if (
+      pathname.startsWith("/api/admin/") ||
+      pathname.startsWith("/api/auth/")
+    ) {
       response.headers.set("Cache-Control", "no-store");
     }
     return applySecurityHeadersToResponse(response);
