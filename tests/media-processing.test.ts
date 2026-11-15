@@ -1,4 +1,3 @@
-import * as UTIF from "utif";
 import { describe, expect, it } from "vitest";
 import {
   compositeRgbaBackground,
@@ -11,7 +10,6 @@ import {
   convertRawSamplesToRgba,
   downsampleRgbaBilinear,
 } from "@/lib/media/pixel-utils";
-import { decodeTiffBuffer } from "@/lib/media/tiff-decoder";
 import {
   postprocessU2NetMask,
   prepareU2NetInputTensor,
@@ -102,21 +100,5 @@ describe("media color compositing and pixel utilities", () => {
     expect(post.alphaMask.length).toBe(srcW * srcH);
     expect(post.alphaMask[25 * srcW + 10]).toBeGreaterThan(240);
     expect(post.alphaMask[25 * srcW + 90]).toBeLessThan(15);
-  });
-
-  it("decodes TIFF buffers deterministically via pure-JS UTIF", () => {
-    const sourceRgba = new Uint8Array([
-      215, 25, 33, 255,
-      255, 255, 255, 255,
-      0, 0, 0, 255,
-      128, 128, 128, 255,
-    ]);
-    const tiffBuffer = UTIF.encodeImage(sourceRgba, 2, 2);
-    const decoded = decodeTiffBuffer(tiffBuffer);
-    expect(decoded.width).toBe(2);
-    expect(decoded.height).toBe(2);
-    expect(decoded.rgba[0]).toBe(215);
-    expect(decoded.rgba[1]).toBe(25);
-    expect(decoded.rgba[2]).toBe(33);
   });
 });

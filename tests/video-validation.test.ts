@@ -21,28 +21,27 @@ function asciiBytes(text: string): Uint8Array {
 }
 
 describe("Phase 2 video validation & magic bytes", () => {
-  it("sniffs MP4, MOV, GIF, WebM, and rejects disguised binaries", () => {
+  it("sniffs MP4 and GIF signatures and rejects unsupported containers", () => {
     const mp4 = new Uint8Array(16);
     mp4.set(asciiBytes("ftypisom"), 4);
     expect(detectVideoSignature(mp4)).toBe("mp4");
-
-    const mov = new Uint8Array(16);
-    mov.set(asciiBytes("ftypqt  "), 4);
-    expect(detectVideoSignature(mov)).toBe("mov");
 
     const gif = asciiBytes("GIF89a......");
     expect(detectVideoSignature(gif)).toBe("gif");
 
     const webm = new Uint8Array([0x1a, 0x45, 0xdf, 0xa3, 0x9f, 0x42, 0x86, 0x81]);
-    expect(detectVideoSignature(webm)).toBe("webm");
+    expect(detectVideoSignature(webm)).toBe("unknown");
 
     const exe = asciiBytes("MZ\x90\x00\x03\x00\x00\x00");
     expect(detectVideoSignature(exe)).toBe("unknown");
   });
 
   it("enforces file size, supported extensions, and signature matching", () => {
-    expect(buildVideoAcceptAttribute()).toContain(".mp4");
-    expect(buildVideoAcceptAttribute()).toContain(".webm");
+    const accept = buildVideoAcceptAttribute();
+    expect(accept).toContain(".mp4");
+    expect(accept).toContain(".gif");
+    expect(accept).not.toContain(".mov");
+    expect(accept).not.toContain(".webm");
 
     expect(() =>
       validateVideoCandidate({ name: "empty.mp4", size: 0 }, 100)
@@ -53,10 +52,14 @@ describe("Phase 2 video validation & magic bytes", () => {
         { name: "huge.mp4", size: 101 * 1024 * 1024 },
         100
       )
-    ).toThrow(/exceeds/i);
+    ).toThrow(/over the 100 MB/i);
 
     expect(() =>
-      validateVideoCandidate({ name: "legacy.avi", size: 1024 }, 100)
+      validateVideoCandidate({ name: "clip.mov", size: 1024 }, 100)
+    ).toThrow(/unsupported/i);
+
+    expect(() =>
+      validateVideoCandidate({ name: "clip.webm", size: 1024 }, 100)
     ).toThrow(/unsupported/i);
 
     expect(() =>
@@ -88,7 +91,7 @@ describe("Phase 2 video validation & magic bytes", () => {
         height: 1920,
         durationSec: 25,
         estimatedFps: 30,
-        format: "mov",
+        format: "gif",
       })
     ).not.toThrow();
 
@@ -118,7 +121,7 @@ describe("Phase 2 video validation & magic bytes", () => {
         height: 720,
         durationSec: 5,
         estimatedFps: 60,
-        format: "webm",
+        format: "gif",
       })
     ).toThrow(/30 FPS/i);
   });

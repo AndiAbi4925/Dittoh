@@ -11,21 +11,26 @@ import {
 const PNG_MAGIC = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
 const JPEG_MAGIC = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0]);
 const TIFF_LE_MAGIC = new Uint8Array([0x49, 0x49, 0x2a, 0x00, 0x08, 0, 0, 0, 0, 0, 0, 0]);
-const EXE_MAGIC = new Uint8Array([0x4d, 0x5a, 0x90, 0x00, 0, 0, 0, 0, 0, 0, 0, 0]);
-const AVIF_MAGIC = new Uint8Array([
-  0x00, 0x00, 0x00, 0x1c, 0x66, 0x74, 0x79, 0x70, 0x61, 0x76, 0x69, 0x66,
+const RAF_MAGIC = new Uint8Array([
+  0x46, 0x55, 0x4a, 0x49, 0x46, 0x49, 0x4c, 0x4d,
+  0x43, 0x43, 0x44, 0x2d, 0x52, 0x41, 0x57, 0x20,
 ]);
+const CR3_MAGIC = new Uint8Array([
+  0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x63, 0x72, 0x78, 0x20,
+]);
+const EXE_MAGIC = new Uint8Array([0x4d, 0x5a, 0x90, 0x00, 0, 0, 0, 0, 0, 0, 0, 0]);
 
 describe("media signature inspection and file validation", () => {
-  it("identifies common raster, TIFF/RAW, and ISOBMFF signatures", () => {
+  it("identifies common raster, camera RAW, and HEIC signatures", () => {
     expect(inspectMagicBytes(PNG_MAGIC)).toBe("png");
     expect(inspectMagicBytes(JPEG_MAGIC)).toBe("jpeg");
     expect(inspectMagicBytes(TIFF_LE_MAGIC)).toBe("tiff");
-    expect(inspectMagicBytes(AVIF_MAGIC)).toBe("isobmff-avif");
+    expect(inspectMagicBytes(RAF_MAGIC)).toBe("raf");
+    expect(inspectMagicBytes(CR3_MAGIC)).toBe("isobmff-cr3");
     expect(inspectMagicBytes(EXE_MAGIC)).toBe("unknown");
   });
 
-  it("rejects empty, oversized, spoofed, and disabled RAW files", () => {
+  it("rejects empty, oversized, deprecated, spoofed, and admin-disabled RAW files", () => {
     const config = getDefaultValidationConfig();
 
     const emptyRes = validateMediaFile(
@@ -47,6 +52,15 @@ describe("media signature inspection and file validation", () => {
     expect(hugeRes.ok).toBe(false);
     if (!hugeRes.ok) expect(hugeRes.code).toBe("FILE_TOO_LARGE");
 
+    for (const removedExt of ["tiff", "bmp", "avif"]) {
+      const removedRes = validateMediaFile(
+        { name: `sample.${removedExt}`, size: 1024 },
+        config
+      );
+      expect(removedRes.ok).toBe(false);
+      if (!removedRes.ok) expect(removedRes.code).toBe("UNSUPPORTED_FORMAT");
+    }
+
     const spoofedRes = validateMediaFile(
       {
         name: "payload.png",
@@ -65,13 +79,13 @@ describe("media signature inspection and file validation", () => {
         size: 2048,
         headerBytes: TIFF_LE_MAGIC,
       },
-      config
+      { maxImageSizeMb: 50, enabledRawFormats: ["arw", "dng"] }
     );
     expect(disabledRaw.ok).toBe(false);
     if (!disabledRaw.ok) expect(disabledRaw.code).toBe("RAW_FORMAT_DISABLED");
   });
 
-  it("accepts verified raster and enabled RAW formats", () => {
+  it("accepts verified raster and camera RAW formats", () => {
     const config = getDefaultValidationConfig();
 
     const pngRes = validateMediaFile(
@@ -94,10 +108,32 @@ describe("media signature inspection and file validation", () => {
       expect(arwRes.extension).toBe("arw");
     }
 
-    const accept = buildAcceptAttribute(["arw", "dng"]);
-    expect(accept).toContain(".arw");
-    expect(accept).toContain(".dng");
-    expect(accept).not.toContain(".cr3");
+    const cr3Res = validateMediaFile(
+      { name: "canon-r6.cr3", size: 5_000_000, headerBytes: CR3_MAGIC },
+      config
+    );
+    expect(cr3Res.ok).toBe(true);
+    if (cr3Res.ok) {
+      expect(cr3Res.kind).toBe("raw");
+      expect(cr3Res.extension).toBe("cr3");
+    }
+
+    const rafRes = validateMediaFile(
+      { name: "fuji.RAF", size: 6_500_000, headerBytes: RAF_MAGIC },
+      config
+    );
+    expect(rafRes.ok).toBe(true);
+    if (rafRes.ok) {
+      expect(rafRes.kind).toBe("raw");
+      expect(rafRes.extension).toBe("raf");
+    }
+
+    const accept = buildAcceptAttribute(["arw", "dng", "cr2", "cr3", "nef", "raf"]);
+    expect(accept).toContain(".cr3");
+    expect(accept).toContain(".raf");
+    expect(accept).not.toContain(".bmp");
+    expect(accept).not.toContain(".tiff");
+    expect(accept).not.toContain(".avif");
   });
 
   it("confirms AGPL @imgly/background-removal is excluded and permissive WASM assets exist", () => {
@@ -109,7 +145,6 @@ describe("media signature inspection and file validation", () => {
     expect(pkg.dependencies?.["@imgly/background-removal"]).toBeUndefined();
     expect(pkg.dependencies?.["onnxruntime-web"]).toBeDefined();
     expect(pkg.dependencies?.["libraw-wasm"]).toBeDefined();
-    expect(pkg.dependencies?.["utif"]).toBeDefined();
 
     expect(
       fs.existsSync(path.join(root, "public/wasm/models/u2netp.onnx"))
