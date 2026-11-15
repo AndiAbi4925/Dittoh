@@ -58,7 +58,7 @@ export interface VideoAsciiWorkspaceProps {
 const IDLE_VIDEO_PROGRESS: VideoProgressUpdate = {
   stage: "IDLE",
   progress: 0,
-  message: "Ready for MP4, GIF, MOV, or WebM input (up to 1080p, 30 FPS).",
+  message: "Choose an MP4 video or animated GIF.",
 };
 
 const WIDTH_CAP_OPTIONS = [480, 640, 960, 1280] as const;
@@ -271,7 +271,7 @@ export function VideoAsciiWorkspace({
       setProgress({
         stage: "VALIDATING",
         progress: 6,
-        message: "Validating container limits and codec metadata...",
+        message: "Checking video frames...",
       });
 
       try {
@@ -296,9 +296,7 @@ export function VideoAsciiWorkspace({
         setProgress({
           stage: "READY",
           progress: 100,
-          message: `Extracted ${extracted.frames.length} motion frames in ${(
-            extracted.decodeMs / 1000
-          ).toFixed(2)}s. Ready to preview or encode.`,
+          message: `Ready with ${extracted.frames.length} frames.`,
         });
 
         reportStudioTelemetry({
@@ -342,7 +340,7 @@ export function VideoAsciiWorkspace({
     setProgress({
       stage: "VALIDATING",
       progress: 4,
-      message: "Reading file header and container dimensions...",
+      message: "Opening video file...",
     });
 
     try {
@@ -516,47 +514,40 @@ export function VideoAsciiWorkspace({
 
   if (!enableVideoConverter) {
     return (
-      <div className="border border-[#b1b3b3] bg-[#f4f4f4] p-6 sm:p-8">
-        <div className="flex flex-col justify-between gap-4 border-b border-[#b1b3b3] pb-5 sm:flex-row sm:items-start">
+      <div className="border border-[#d4d4d4] bg-[#f4f4f4] p-6 sm:p-8">
+        <div className="flex flex-col justify-between gap-4 border-b border-[#d4d4d4] pb-5 sm:flex-row sm:items-center">
           <div>
-            <p className="font-mono text-xs uppercase tracking-widest text-[#d71921]">
-              PHASE 2 VIDEO & GIF ENGINE / FLAG GATED
+            <h2 className="font-display text-xl text-[#000000]">
+              Video &amp; GIF tool is currently paused
+            </h2>
+            <p className="mt-1.5 text-sm text-[#525252]">
+              You can still convert photos step by step right now.
             </p>
-            <h3 className="mt-1.5 font-display text-xl text-[#000000]">
-              VIDEO CONVERTER CURRENTLY DISABLED BY APPCONFIG
-            </h3>
           </div>
           <Link
-            href="/admin"
-            className="inline-flex shrink-0 items-center border border-[#000000] bg-[#000000] px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#d71921] hover:border-[#d71921] rounded-[2px]"
+            href="/convert"
+            className="dottoh-btn shrink-0 border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
-            CONFIGURE IN /ADMIN
+            Convert a Photo
           </Link>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="border border-[#b1b3b3] bg-[#ffffff] p-4">
-            <p className="font-mono text-[11px] uppercase text-[#525252]">
-              SUPPORTED INPUTS
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="border border-[#e5e5e5] bg-[#ffffff] p-4">
+            <p className="text-xs font-medium text-[#000000]">
+              Supported files
             </p>
-            <p className="mt-1 font-mono text-xs text-[#000000]">
-              MP4, GIF, MOV, WEBM (UP TO {maxVideoSizeMb} MB / {maxVideoDurationSec}S / 1080P)
-            </p>
-          </div>
-          <div className="border border-[#b1b3b3] bg-[#ffffff] p-4">
-            <p className="font-mono text-[11px] uppercase text-[#525252]">
-              OUTPUT CEILINGS
-            </p>
-            <p className="mt-1 font-mono text-xs text-[#000000]">
-              MP4 (720P / 12 FPS) & ANIMATED GIF (MAX 15S)
+            <p className="mt-1 text-xs text-[#525252]">
+              MP4 videos and animated GIFs up to {maxVideoSizeMb} MB and{" "}
+              {maxVideoDurationSec} seconds.
             </p>
           </div>
-          <div className="border border-[#b1b3b3] bg-[#ffffff] p-4">
-            <p className="font-mono text-[11px] uppercase text-[#525252]">
-              FRAME CONSISTENCY
+          <div className="border border-[#e5e5e5] bg-[#ffffff] p-4">
+            <p className="text-xs font-medium text-[#000000]">
+              Output formats
             </p>
-            <p className="mt-1 font-mono text-xs text-[#000000]">
-              TEMPORAL SMOOTHING + GLYPH HYSTERESIS + LOCKED PALETTE
+            <p className="mt-1 text-xs text-[#525252]">
+              Saves as an MP4 video or animated GIF right in your browser.
             </p>
           </div>
         </div>
@@ -566,60 +557,55 @@ export function VideoAsciiWorkspace({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 border border-[#b1b3b3] bg-[#ffffff] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-3">
-          <span
-            className={`inline-block h-2.5 w-2.5 ${
-              isBusy
-                ? "bg-[#d71921]"
-                : progress.stage === "ERROR"
+      {(sourceFile || isBusy || progress.stage === "READY") && (
+        <div className="flex flex-col gap-3 border border-[#d4d4d4] bg-[#ffffff] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-3">
+            <span
+              className={`inline-block h-2.5 w-2.5 ${
+                isBusy || progress.stage === "ERROR"
                   ? "bg-[#d71921]"
                   : "bg-[#000000]"
-            }`}
-            aria-hidden="true"
-          />
-          <div>
-            <p className="font-mono text-xs uppercase tracking-wider text-[#000000]">
-              VIDEO STATUS: {progress.stage}
-            </p>
-            <p className="font-mono text-[11px] text-[#525252]">
-              {progress.message}
-            </p>
+              }`}
+              aria-hidden="true"
+            />
+            <p className="text-sm text-[#000000]">{progress.message}</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {sourceFile && !isBusy ? (
+              <button
+                type="button"
+                onClick={handleResetVideo}
+                className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-xs text-[#000000] hover:border-[#d71921] hover:text-[#d71921]"
+              >
+                <IconCloseCross className="h-3.5 w-3.5" />
+                <span>Remove</span>
+              </button>
+            ) : null}
+
+            {isBusy ? (
+              <button
+                type="button"
+                onClick={handleCancelActive}
+                className="dottoh-btn border border-[#d71921] bg-[#d71921] px-3 py-1.5 text-xs text-[#ffffff] hover:border-[#000000] hover:bg-[#000000]"
+              >
+                <IconCloseCross className="h-3.5 w-3.5" />
+                <span>Cancel</span>
+              </button>
+            ) : null}
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {sourceFile && !isBusy ? (
-            <button
-              type="button"
-              onClick={handleResetVideo}
-              className="inline-flex items-center gap-1.5 border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#000000] hover:border-[#000000] rounded-[2px]"
-            >
-              <IconCloseCross className="h-3.5 w-3.5" />
-              <span>CLEAR VIDEO</span>
-            </button>
-          ) : null}
-
-          {isBusy ? (
-            <button
-              type="button"
-              onClick={handleCancelActive}
-              className="inline-flex items-center gap-1.5 border border-[#d71921] bg-[#d71921] px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#000000] hover:border-[#000000] rounded-[2px]"
-            >
-              <IconCloseCross className="h-3.5 w-3.5" />
-              <span>CANCEL TASK</span>
-            </button>
-          ) : null}
-        </div>
-      </div>
+      )}
 
       {isBusy ? (
-        <div className="border border-[#b1b3b3] bg-[#f4f4f4] p-4">
-          <div className="flex items-center justify-between font-mono text-xs text-[#000000]">
-            <span>{progress.stage}</span>
-            <span>{Math.min(100, Math.max(0, Math.round(progress.progress)))}%</span>
+        <div className="border border-[#000000] bg-[#ffffff] p-4">
+          <div className="flex items-center justify-between text-xs text-[#000000]">
+            <span>Working on video...</span>
+            <span className="font-mono">
+              {Math.min(100, Math.max(0, Math.round(progress.progress)))}%
+            </span>
           </div>
-          <div className="mt-2 h-2 w-full bg-[#ffffff] border border-[#b1b3b3]">
+          <div className="mt-2 h-1.5 w-full bg-[#f4f4f4]">
             <motion.div
               className="h-full bg-[#d71921]"
               animate={{
@@ -634,9 +620,9 @@ export function VideoAsciiWorkspace({
       {errorMessage ? (
         <div
           role="alert"
-          className="border border-[#d71921] bg-[#ffffff] p-4 font-mono text-xs text-[#d71921]"
+          className="border border-[#d71921] bg-[#ffffff] p-4 text-sm text-[#d71921]"
         >
-          VIDEO ERROR: {errorMessage}
+          {errorMessage}
         </div>
       ) : null}
 
@@ -659,7 +645,7 @@ export function VideoAsciiWorkspace({
           role="button"
           tabIndex={0}
           aria-disabled={isBusy}
-          aria-label="Drop a video or animated GIF, or click to select from disk"
+          aria-label="Drop a video or animated GIF, or click to choose a file"
           onClick={() => {
             if (!isBusy) {
               inputRef.current?.click();
@@ -687,40 +673,40 @@ export function VideoAsciiWorkspace({
               void handleVideoFileSelected(dropped);
             }
           }}
-          className={`flex min-h-[260px] flex-col items-center justify-center border border-dashed p-8 text-center transition-colors ${
+          className={`flex min-h-[280px] flex-col items-center justify-center border border-dashed px-6 py-12 text-center transition-colors ${
             isDragging
               ? "border-[#d71921] bg-[#f4f4f4]"
-              : "border-[#b1b3b3] bg-[#ffffff] hover:border-[#000000]"
+              : "border-[#000000] bg-[#ffffff] hover:bg-[#fafafa]"
           } ${isBusy ? "cursor-wait opacity-70" : "cursor-pointer"}`}
         >
           <IconUploadGrid className="h-9 w-9 text-[#000000]" />
-          <p className="mt-4 font-display text-lg tracking-wide text-[#000000]">
-            DROP VIDEO OR GIF / CLICK TO PICK
-          </p>
-          <p className="mt-2 max-w-xl font-mono text-xs text-[#525252]">
-            Processed locally inside self-hosted ffmpeg.wasm (no server upload). Supports MP4,
-            GIF, MOV, WebM up to {maxVideoSizeMb} MB, {maxVideoDurationSec}s, 1080p, 30 FPS.
+          <h2 className="mt-5 font-display text-2xl text-[#000000]">
+            Drop your video or GIF here
+          </h2>
+          <p className="mt-2.5 max-w-md text-sm leading-relaxed text-[#525252]">
+            Works with MP4 videos and animated GIFs up to {maxVideoSizeMb} MB and{" "}
+            {maxVideoDurationSec} seconds. Everything stays in your browser.
           </p>
 
           <div
-            className="mt-6 flex flex-wrap justify-center gap-3"
+            className="mt-7 flex flex-col items-center gap-3 sm:flex-row"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               disabled={isBusy}
               onClick={() => inputRef.current?.click()}
-              className="border border-[#000000] bg-[#000000] px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#d71921] hover:border-[#d71921] disabled:opacity-40 rounded-[2px]"
+              className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40 sm:w-auto"
             >
-              SELECT VIDEO / GIF
+              Choose Video or GIF
             </button>
             <button
               type="button"
               disabled={isBusy}
               onClick={() => void handleLoadSampleGif()}
-              className="border border-[#b1b3b3] bg-[#ffffff] px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#000000] hover:border-[#000000] disabled:opacity-40 rounded-[2px]"
+              className="dottoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-5 py-3.5 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-40 sm:w-auto"
             >
-              LOAD SAMPLE MOTION CLIP (GIF)
+              Try Sample GIF
             </button>
           </div>
         </div>
@@ -728,12 +714,12 @@ export function VideoAsciiWorkspace({
         <div className="space-y-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             <div className="space-y-4 lg:col-span-5">
-              <div className="border border-[#b1b3b3] bg-[#ffffff] p-4">
-                <div className="flex items-center justify-between border-b border-[#b1b3b3] pb-3">
-                  <p className="font-mono text-xs uppercase tracking-wider text-[#000000]">
-                    SOURCE CLIP & CONSTRAINTS
+              <div className="border border-[#d4d4d4] bg-[#ffffff] p-4">
+                <div className="flex items-center justify-between border-b border-[#e5e5e5] pb-3">
+                  <p className="text-sm font-medium text-[#000000]">
+                    Clip settings
                   </p>
-                  <span className="font-mono text-[11px] uppercase text-[#d71921]">
+                  <span className="font-mono text-xs text-[#d71921]">
                     {sourceMeta.format.toUpperCase()}
                   </span>
                 </div>
@@ -764,35 +750,35 @@ export function VideoAsciiWorkspace({
 
                 <dl className="mt-3 grid grid-cols-2 gap-2 font-mono text-[11px] text-[#525252]">
                   <div>
-                    <dt>FILE</dt>
+                    <dt>File</dt>
                     <dd className="truncate text-[#000000]">
                       {sourceFile?.name ?? "clip"}
                     </dd>
                   </div>
                   <div>
-                    <dt>INPUT SIZE</dt>
+                    <dt>Size</dt>
                     <dd className="text-[#000000]">
                       {sourceFile ? formatByteSize(sourceFile.size) : "-"}
                     </dd>
                   </div>
                   <div>
-                    <dt>RESOLUTION</dt>
+                    <dt>Resolution</dt>
                     <dd className="text-[#000000]">
-                      {sourceMeta.width}x{sourceMeta.height}
+                      {sourceMeta.width} x {sourceMeta.height}
                     </dd>
                   </div>
                   <div>
-                    <dt>DURATION</dt>
+                    <dt>Length</dt>
                     <dd className="text-[#000000]">
-                      {sourceMeta.durationSec.toFixed(1)}s (~{Math.round(sourceMeta.estimatedFps)} FPS)
+                      {sourceMeta.durationSec.toFixed(1)}s
                     </dd>
                   </div>
                 </dl>
 
-                <div className="mt-4 space-y-4 border-t border-[#b1b3b3] pt-4">
+                <div className="mt-4 space-y-4 border-t border-[#e5e5e5] pt-4">
                   <div>
-                    <span className="block font-mono text-[11px] uppercase text-[#525252]">
-                      EXPORT FORMAT
+                    <span className="block text-xs font-medium text-[#000000]">
+                      Save format
                     </span>
                     <div className="mt-2 grid grid-cols-2 gap-2">
                       {(["mp4", "gif"] as const).map((fmt) => {
@@ -817,13 +803,13 @@ export function VideoAsciiWorkspace({
                                 );
                               }
                             }}
-                            className={`border px-3 py-2 font-mono text-xs uppercase rounded-[2px] ${
+                            className={`border px-3 py-2 font-mono text-xs rounded-[2px] ${
                               active
                                 ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                                : "border-[#b1b3b3] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
+                                : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
                             }`}
                           >
-                            {fmt === "mp4" ? "MP4 (720P / 12 FPS)" : "GIF (MAX 15S)"}
+                            {fmt === "mp4" ? "MP4 Video" : "GIF (max 15s)"}
                           </button>
                         );
                       })}
@@ -834,9 +820,9 @@ export function VideoAsciiWorkspace({
                     <div>
                       <label
                         htmlFor="trim-start-sec"
-                        className="block font-mono text-[11px] uppercase text-[#525252]"
+                        className="block text-xs text-[#525252]"
                       >
-                        TRIM START (S)
+                        Start (seconds)
                       </label>
                       <input
                         id="trim-start-sec"
@@ -851,15 +837,15 @@ export function VideoAsciiWorkspace({
                             setTrimStartSec(Math.max(0, parsed));
                           }
                         }}
-                        className="mt-1 w-full border border-[#b1b3b3] bg-[#ffffff] px-2.5 py-1.5 font-mono text-xs text-[#000000]"
+                        className="mt-1 w-full border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 font-mono text-xs text-[#000000]"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="trim-end-sec"
-                        className="block font-mono text-[11px] uppercase text-[#525252]"
+                        className="block text-xs text-[#525252]"
                       >
-                        TRIM END (S)
+                        End (seconds)
                       </label>
                       <input
                         id="trim-end-sec"
@@ -874,15 +860,15 @@ export function VideoAsciiWorkspace({
                             setTrimEndSec(Math.min(sourceMeta.durationSec, parsed));
                           }
                         }}
-                        className="mt-1 w-full border border-[#b1b3b3] bg-[#ffffff] px-2.5 py-1.5 font-mono text-xs text-[#000000]"
+                        className="mt-1 w-full border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 font-mono text-xs text-[#000000]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <span className="block font-mono text-[11px] uppercase text-[#525252]">
-                        TARGET FPS (MAX 12)
+                      <span className="block text-xs text-[#525252]">
+                        Frames per second
                       </span>
                       <div className="mt-1.5 grid grid-cols-4 gap-1">
                         {FPS_OPTIONS.map((fpsVal) => (
@@ -893,7 +879,7 @@ export function VideoAsciiWorkspace({
                             className={`border py-1.5 font-mono text-[11px] rounded-[2px] ${
                               targetFps === fpsVal
                                 ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                                : "border-[#b1b3b3] bg-[#ffffff] text-[#000000]"
+                                : "border-[#d4d4d4] bg-[#ffffff] text-[#000000]"
                             }`}
                           >
                             {fpsVal}
@@ -903,8 +889,8 @@ export function VideoAsciiWorkspace({
                     </div>
 
                     <div>
-                      <span className="block font-mono text-[11px] uppercase text-[#525252]">
-                        MAX WIDTH (PX)
+                      <span className="block text-xs text-[#525252]">
+                        Max width (px)
                       </span>
                       <div className="mt-1.5 grid grid-cols-4 gap-1">
                         {WIDTH_CAP_OPTIONS.map((wVal) => (
@@ -915,7 +901,7 @@ export function VideoAsciiWorkspace({
                             className={`border py-1.5 font-mono text-[11px] rounded-[2px] ${
                               targetMaxWidthPx === wVal
                                 ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                                : "border-[#b1b3b3] bg-[#ffffff] text-[#000000]"
+                                : "border-[#d4d4d4] bg-[#ffffff] text-[#000000]"
                             }`}
                           >
                             {wVal}
@@ -939,30 +925,29 @@ export function VideoAsciiWorkspace({
                           );
                         }
                       }}
-                      className="w-full border border-[#000000] bg-[#f4f4f4] px-3 py-2 font-mono text-xs uppercase tracking-wider text-[#000000] hover:bg-[#000000] hover:text-[#ffffff] rounded-[2px]"
+                      className="dottoh-btn w-full border border-[#000000] bg-[#f4f4f4] px-3 py-2 text-xs text-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
                     >
-                      RE-EXTRACT CLIP FRAMES ({currentOptions.targetFps} FPS /{" "}
-                      {(currentOptions.trimEndSec - currentOptions.trimStartSec).toFixed(1)}S)
+                      Update Preview ({currentOptions.targetFps} fps)
                     </button>
                   ) : null}
                 </div>
               </div>
 
-              <div className="border border-[#b1b3b3] bg-[#ffffff] p-4 space-y-4">
-                <p className="border-b border-[#b1b3b3] pb-2 font-mono text-xs uppercase tracking-wider text-[#000000]">
-                  FRAME CONSISTENCY & FLICKER CONTROL
+              <div className="border border-[#d4d4d4] bg-[#ffffff] p-4 space-y-4">
+                <p className="border-b border-[#e5e5e5] pb-2 text-sm font-medium text-[#000000]">
+                  Motion smoothing
                 </p>
 
                 <div>
-                  <div className="flex justify-between font-mono text-[11px] text-[#525252]">
-                    <span>TEMPORAL SMOOTHING</span>
-                    <span className="text-[#000000]">
+                  <div className="flex justify-between text-xs text-[#525252]">
+                    <span>Blend frames</span>
+                    <span className="font-mono text-[#000000]">
                       {consistency.temporalSmoothing.toFixed(2)}
                     </span>
                   </div>
                   <input
                     type="range"
-                    aria-label="Temporal luminance smoothing"
+                    aria-label="Blend frames"
                     min={0}
                     max={0.75}
                     step={0.05}
@@ -978,15 +963,15 @@ export function VideoAsciiWorkspace({
                 </div>
 
                 <div>
-                  <div className="flex justify-between font-mono text-[11px] text-[#525252]">
-                    <span>GLYPH HYSTERESIS DEADBAND</span>
-                    <span className="text-[#000000]">
+                  <div className="flex justify-between text-xs text-[#525252]">
+                    <span>Reduce flicker</span>
+                    <span className="font-mono text-[#000000]">
                       {consistency.hysteresisThreshold.toFixed(3)}
                     </span>
                   </div>
                   <input
                     type="range"
-                    aria-label="Glyph hysteresis deadband"
+                    aria-label="Reduce flicker"
                     min={0}
                     max={0.1}
                     step={0.005}
@@ -1002,14 +987,14 @@ export function VideoAsciiWorkspace({
                 </div>
 
                 <div>
-                  <span className="block font-mono text-[11px] uppercase text-[#525252]">
-                    LUMINANCE NORMALIZATION
+                  <span className="block text-xs text-[#525252]">
+                    Brightness lock
                   </span>
                   <div className="mt-1.5 grid grid-cols-2 gap-2">
                     {(
                       [
-                        { id: "locked-first-frame", label: "LOCKED FIRST FRAME" },
-                        { id: "per-frame", label: "PER-FRAME" },
+                        { id: "locked-first-frame", label: "First frame" },
+                        { id: "per-frame", label: "Each frame" },
                       ] as const
                     ).map((mode) => (
                       <button
@@ -1021,10 +1006,10 @@ export function VideoAsciiWorkspace({
                             luminanceMode: mode.id,
                           }))
                         }
-                        className={`border px-2.5 py-1.5 font-mono text-[11px] uppercase rounded-[2px] ${
+                        className={`border px-2.5 py-1.5 font-mono text-[11px] rounded-[2px] ${
                           consistency.luminanceMode === mode.id
                             ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                            : "border-[#b1b3b3] bg-[#ffffff] text-[#000000]"
+                            : "border-[#d4d4d4] bg-[#ffffff] text-[#000000]"
                         }`}
                       >
                         {mode.label}
@@ -1034,14 +1019,14 @@ export function VideoAsciiWorkspace({
                 </div>
 
                 <div>
-                  <span className="block font-mono text-[11px] uppercase text-[#525252]">
-                    GIF PALETTE STRATEGY
+                  <span className="block text-xs text-[#525252]">
+                    GIF color matching
                   </span>
                   <div className="mt-1.5 grid grid-cols-2 gap-2">
                     {(
                       [
-                        { id: "locked-palette", label: "LOCKED PALETTE" },
-                        { id: "per-frame", label: "PER-FRAME PALETTE" },
+                        { id: "locked-palette", label: "Shared colors" },
+                        { id: "per-frame", label: "Per frame" },
                       ] as const
                     ).map((mode) => (
                       <button
@@ -1053,10 +1038,10 @@ export function VideoAsciiWorkspace({
                             paletteMode: mode.id,
                           }))
                         }
-                        className={`border px-2.5 py-1.5 font-mono text-[11px] uppercase rounded-[2px] ${
+                        className={`border px-2.5 py-1.5 font-mono text-[11px] rounded-[2px] ${
                           consistency.paletteMode === mode.id
                             ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                            : "border-[#b1b3b3] bg-[#ffffff] text-[#000000]"
+                            : "border-[#d4d4d4] bg-[#ffffff] text-[#000000]"
                         }`}
                       >
                         {mode.label}
@@ -1078,25 +1063,24 @@ export function VideoAsciiWorkspace({
             </div>
 
             <div className="space-y-6 lg:col-span-7">
-              <div className="border border-[#b1b3b3] bg-[#ffffff] p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#b1b3b3] pb-3">
+              <div className="border border-[#d4d4d4] bg-[#ffffff] p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e5e5] pb-3">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={() => setIsPlaying((prev) => !prev)}
-                      className="inline-flex items-center gap-1.5 border border-[#000000] bg-[#000000] px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#d71921] hover:border-[#d71921] rounded-[2px]"
+                      className="dottoh-btn border border-[#000000] bg-[#000000] px-3.5 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                     >
                       {isPlaying ? (
                         <IconPause className="h-3.5 w-3.5" />
                       ) : (
                         <IconPlay className="h-3.5 w-3.5" />
                       )}
-                      <span>{isPlaying ? "PAUSE PREVIEW" : "PLAY PREVIEW"}</span>
+                      <span>{isPlaying ? "Pause" : "Play"}</span>
                     </button>
 
                     <span className="font-mono text-xs text-[#525252]">
-                      FRAME {previewIndex + 1} / {frames.length} (
-                      {(frames[previewIndex]?.timestampSec ?? 0).toFixed(2)}S)
+                      Frame {previewIndex + 1} / {frames.length}
                     </span>
                   </div>
 
@@ -1104,21 +1088,18 @@ export function VideoAsciiWorkspace({
                     type="button"
                     disabled={isBusy}
                     onClick={() => void handleEncodeOutput()}
-                    className="inline-flex items-center gap-2 border border-[#d71921] bg-[#d71921] px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#000000] hover:border-[#000000] disabled:opacity-40 rounded-[2px]"
+                    className="dottoh-btn border border-[#d71921] bg-[#d71921] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#000000] hover:bg-[#000000] disabled:opacity-40"
                   >
                     <IconDownloadBox className="h-3.5 w-3.5" />
-                    <span>
-                      ENCODE ASCII {outputFormat.toUpperCase()} ({currentOptions.targetMaxWidthPx}PX /{" "}
-                      {currentOptions.targetFps} FPS)
-                    </span>
+                    <span>Save as {outputFormat.toUpperCase()}</span>
                   </button>
                 </div>
 
                 <div className="mt-3 flex items-center gap-3">
-                  <span className="font-mono text-[11px] text-[#525252]">SCRUB</span>
+                  <span className="text-xs text-[#525252]">Frame</span>
                   <input
                     type="range"
-                    aria-label="Scrub ASCII video preview frame"
+                    aria-label="Scrub video preview frame"
                     min={0}
                     max={Math.max(0, frames.length - 1)}
                     value={previewIndex}
@@ -1140,15 +1121,16 @@ export function VideoAsciiWorkspace({
               />
 
               {encodedResult && encodedUrl ? (
-                <div className="border border-[#000000] bg-[#ffffff] p-4 space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#b1b3b3] pb-3">
+                <div className="border border-[#000000] bg-[#ffffff] p-5 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e5e5] pb-3">
                     <div>
-                      <p className="font-mono text-xs uppercase tracking-wider text-[#d71921]">
-                        ENCODED OUTPUT READY
+                      <p className="text-xs font-medium text-[#d71921]">
+                        Ready to download
                       </p>
-                      <p className="font-mono text-xs text-[#000000]">
-                        {encodedResult.fileName} / {encodedResult.width}x{encodedResult.height} /{" "}
-                        {encodedResult.fps} FPS / {formatByteSize(encodedResult.bytes.length)}
+                      <p className="mt-0.5 font-mono text-xs text-[#000000]">
+                        {encodedResult.fileName} ({encodedResult.width} x{" "}
+                        {encodedResult.height},{" "}
+                        {formatByteSize(encodedResult.bytes.length)})
                       </p>
                     </div>
 
@@ -1161,14 +1143,14 @@ export function VideoAsciiWorkspace({
                           encodedResult.fileName
                         )
                       }
-                      className="inline-flex items-center gap-2 border border-[#000000] bg-[#000000] px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#ffffff] hover:bg-[#d71921] hover:border-[#d71921] rounded-[2px]"
+                      className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                     >
                       <IconDownloadBox className="h-3.5 w-3.5" />
-                      <span>DOWNLOAD .{encodedResult.format.toUpperCase()}</span>
+                      <span>Download {encodedResult.format.toUpperCase()}</span>
                     </button>
                   </div>
 
-                  <div className="overflow-hidden border border-[#b1b3b3] bg-[#000000]">
+                  <div className="overflow-hidden border border-[#e5e5e5] bg-[#000000]">
                     {encodedResult.format === "gif" ? (
                       <>
                         {/* eslint-disable-next-line @next/next/no-img-element -- client-only blob URL for animated GIF export preview */}
@@ -1189,27 +1171,6 @@ export function VideoAsciiWorkspace({
                       />
                     )}
                   </div>
-
-                  <dl className="grid grid-cols-2 gap-3 border-t border-[#b1b3b3] pt-3 font-mono text-[11px] text-[#525252] sm:grid-cols-4">
-                    <div>
-                      <dt>DECODE</dt>
-                      <dd className="text-[#000000]">{encodedResult.decodeMs} ms</dd>
-                    </div>
-                    <div>
-                      <dt>ASCII RENDER</dt>
-                      <dd className="text-[#000000]">{encodedResult.renderMs} ms</dd>
-                    </div>
-                    <div>
-                      <dt>FFMPEG ENCODE</dt>
-                      <dd className="text-[#000000]">{encodedResult.encodeMs} ms</dd>
-                    </div>
-                    <div>
-                      <dt>TOTAL PIPELINE</dt>
-                      <dd className="text-[#000000]">
-                        {(encodedResult.totalMs / 1000).toFixed(2)}s ({encodedResult.frameCount} frames)
-                      </dd>
-                    </div>
-                  </dl>
                 </div>
               ) : null}
             </div>
