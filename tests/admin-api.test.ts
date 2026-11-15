@@ -140,6 +140,7 @@ describe("Public and Admin API route authorization and rate limiting", () => {
   it("serves public config safely without leaking admin metadata", async () => {
     const res = await getConfig();
     expect(res.status).toBe(200);
+    expect(res.headers.get("cache-control")).toBe("no-store");
     const json = (await res.json()) as Record<string, unknown>;
     expect(json.maxImageSizeMb).toBe(50);
     expect(json.updatedBy).toBeUndefined();

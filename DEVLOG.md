@@ -398,3 +398,10 @@
 
 
 
+
+## Full-Stack Audit & Cleanup Pass
+
+- Audited dependencies, exported helpers, route boundaries, HTTP cache headers, and client state handlers across the full repository.
+- Removed unused `gsap` package dependency, unused legacy icon exports (`BrandMark.tsx`), dead media/telemetry helpers (`formatKindBadge`, `writeAuditLog`), unexported internal-only helpers (`DEFAULT_PUBLIC_APP_CONFIG`, `asciiSettingsSchema`, `escapeXmlText`, `escapeHtmlText`), and unused `DotMatrixHero` / `VideoAsciiWorkspace` processing callback props.
+- Added minimalist branded `src/app/not-found.tsx`, `src/app/error.tsx`, `src/app/robots.ts`, `metadataBase` in `src/app/layout.tsx`, and `Cache-Control: no-store` on `/api/config`.
+- Fixed `BackgroundRemovalPanel` custom hex draft reset/blur synchronization when resetting cutouts or switching photos, and aligned `/admin` button targets/labels (`OPEN CONVERTER`, `BACK TO HOME`).
