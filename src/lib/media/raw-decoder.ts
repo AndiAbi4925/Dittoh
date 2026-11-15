@@ -113,6 +113,88 @@ export class LibRawWorkerClient {
     });
   }
 
+  private async runAttempt(
+    buffer: ArrayBuffer,
+    extension: string,
+    useHalfSize: boolean,
+    options: {
+      maxWorkingDimension?: number;
+      signal?: AbortSignal;
+    }
+  ): Promise<DecodedRawResult> {
+    const copy = new Uint8Array(buffer.slice(0));
+
+    await this.call(
+      "open",
+      [
+        copy,
+        {
+          useCameraWb: true,
+          outputBps: 8,
+          outputColor: 1,
+          userFlip: -1,
+          halfSize: useHalfSize,
+        },
+      ],
+      [copy.buffer]
+    );
+
+    if (options.signal?.aborted) {
+      throw new MediaProcessingError("CANCELLED", "RAW photo opening was cancelled.");
+    }
+
+    const meta = (await this.call("metadata", [false])) as
+      | LibRawMetadata
+      | undefined;
+    const imageData = (await this.call("imageData", [])) as
+      | LibRawImageData
+      | undefined;
+
+    if (
+      !imageData ||
+      !imageData.data ||
+      imageData.width <= 0 ||
+      imageData.height <= 0
+    ) {
+      throw new MediaProcessingError(
+        "DECODE_FAILED",
+        `Could not read this .${extension.toUpperCase()} camera file. Newer compressed RAW formats may not work here yet, so try saving as DNG, JPG, or PNG.`
+      );
+    }
+
+    const rgbaFull = convertRawSamplesToRgba(
+      imageData.data,
+      imageData.width,
+      imageData.height,
+      imageData.colors ?? 3
+    );
+
+    const originalWidth = useHalfSize ? imageData.width * 2 : imageData.width;
+    const originalHeight = useHalfSize ? imageData.height * 2 : imageData.height;
+
+    const scaled = downscaleRgbaIfNeeded(
+      rgbaFull,
+      imageData.width,
+      imageData.height,
+      options.maxWorkingDimension ?? DEFAULT_MAX_WORKING_DIMENSION
+    );
+
+    const cameraModel = [meta?.make, meta?.camera_model]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+
+    return {
+      width: scaled.width,
+      height: scaled.height,
+      originalWidth,
+      originalHeight,
+      wasDownsampled: scaled.wasDownsampled || useHalfSize,
+      rgba: scaled.rgba,
+      ...(cameraModel ? { cameraModel } : {}),
+    };
+  }
+
   async decodeRawBuffer(
     buffer: ArrayBuffer,
     extension: string,
@@ -122,7 +204,7 @@ export class LibRawWorkerClient {
     } = {}
   ): Promise<DecodedRawResult> {
     if (options.signal?.aborted) {
-      throw new MediaProcessingError("CANCELLED", "RAW decoding was cancelled.");
+      throw new MediaProcessingError("CANCELLED", "RAW photo opening was cancelled.");
     }
 
     const onAbort = () => {
@@ -130,99 +212,53 @@ export class LibRawWorkerClient {
     };
     options.signal?.addEventListener("abort", onAbort, { once: true });
 
+    const preferHalfSize =
+      buffer.byteLength > 14 * 1024 * 1024 ||
+      (options.maxWorkingDimension ?? DEFAULT_MAX_WORKING_DIMENSION) <= 1400;
+
     try {
-      const copy = new Uint8Array(buffer.slice(0));
-      const useHalfSize =
-        copy.byteLength > 24 * 1024 * 1024 ||
-        (options.maxWorkingDimension ?? DEFAULT_MAX_WORKING_DIMENSION) <= 1400;
-
-      await this.call(
-        "open",
-        [
-          copy,
-          {
-            useCameraWb: true,
-            outputBps: 8,
-            outputColor: 1,
-            userFlip: -1,
-            halfSize: useHalfSize,
-          },
-        ],
-        [copy.buffer]
-      );
-
-      if (options.signal?.aborted) {
-        throw new MediaProcessingError("CANCELLED", "RAW decoding was cancelled.");
+      try {
+        return await this.runAttempt(buffer, extension, preferHalfSize, options);
+      } catch (firstError) {
+        if (options.signal?.aborted || preferHalfSize) {
+          throw firstError;
+        }
+        const firstMessage =
+          firstError instanceof Error ? firstError.message : String(firstError);
+        // Large RAW files can exceed full-resolution WASM heap; retry once at half size.
+        if (/memory|allocation|oom|abort/i.test(firstMessage)) {
+          this.dispose();
+          return await this.runAttempt(buffer, extension, true, options);
+        }
+        throw firstError;
       }
-
-      const meta = (await this.call("metadata", [false])) as
-        | LibRawMetadata
-        | undefined;
-      const imageData = (await this.call("imageData", [])) as
-        | LibRawImageData
-        | undefined;
-
-      if (
-        !imageData ||
-        !imageData.data ||
-        imageData.width <= 0 ||
-        imageData.height <= 0
-      ) {
-        throw new MediaProcessingError(
-          "DECODE_FAILED",
-          `Could not decode .${extension.toUpperCase()} camera sensor data. Try exporting as uncompressed DNG or PNG.`
-        );
-      }
-
-      const rgbaFull = convertRawSamplesToRgba(
-        imageData.data,
-        imageData.width,
-        imageData.height,
-        imageData.colors ?? 3
-      );
-
-      const originalWidth = useHalfSize ? imageData.width * 2 : imageData.width;
-      const originalHeight = useHalfSize ? imageData.height * 2 : imageData.height;
-
-      const scaled = downscaleRgbaIfNeeded(
-        rgbaFull,
-        imageData.width,
-        imageData.height,
-        options.maxWorkingDimension ?? DEFAULT_MAX_WORKING_DIMENSION
-      );
-
-      const cameraModel = [meta?.make, meta?.camera_model]
-        .filter(Boolean)
-        .join(" ")
-        .trim();
-
-      return {
-        width: scaled.width,
-        height: scaled.height,
-        originalWidth,
-        originalHeight,
-        wasDownsampled: scaled.wasDownsampled || useHalfSize,
-        rgba: scaled.rgba,
-        ...(cameraModel ? { cameraModel } : {}),
-      };
     } catch (error) {
       if (options.signal?.aborted) {
-        throw new MediaProcessingError("CANCELLED", "RAW decoding was cancelled.");
+        throw new MediaProcessingError("CANCELLED", "RAW photo opening was cancelled.");
       }
       if (error instanceof MediaProcessingError) {
+        if (
+          error.code === "DECODE_FAILED" &&
+          /cannot read properties of undefined/i.test(error.message)
+        ) {
+          throw new MediaProcessingError(
+            "DECODE_FAILED",
+            `Could not read this .${extension.toUpperCase()} camera file. Newer compressed RAW formats may not work here yet, so try saving as DNG, JPG, or PNG.`
+          );
+        }
         throw error;
       }
       const message =
-        error instanceof Error ? error.message : "Unknown RAW decoding failure.";
+        error instanceof Error ? error.message : "Unknown RAW error.";
       if (/memory|allocation|oom/i.test(message)) {
         throw new MediaProcessingError(
           "OUT_OF_MEMORY",
-          `Browser ran out of memory decoding .${extension.toUpperCase()}. Close other tabs or convert to DNG/PNG first.`
+          `Your browser ran out of memory opening this .${extension.toUpperCase()} photo. Try closing extra tabs or converting it to DNG, JPG, or PNG first.`
         );
       }
       throw new MediaProcessingError(
         "DECODE_FAILED",
-        `Failed to decode .${extension.toUpperCase()} RAW file (${message}). Proprietary camera compression variants may need Adobe DNG or PNG conversion.`
+        `Could not read this .${extension.toUpperCase()} camera file. Try saving it as DNG, JPG, or PNG first.`
       );
     } finally {
       options.signal?.removeEventListener("abort", onAbort);
