@@ -2,8 +2,6 @@
 
 import { useRef, useState } from "react";
 import { IconCloseCross, IconUploadGrid } from "@/components/BrandMark";
-import { SUPPORTED_RASTER_EXTENSIONS } from "@/lib/constants";
-import { formatKindBadge } from "@/lib/media/local-processor";
 import type { ProceduralSampleVariant } from "@/lib/media/sample-assets";
 import type { DecodedImagePayload } from "@/lib/media/types";
 import { buildAcceptAttribute } from "@/lib/media/validation";
@@ -22,7 +20,7 @@ interface MediaDropzoneProps {
 
 function formatFileSize(bytes: number): string {
   if (bytes >= 1024 * 1024) {
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
@@ -53,55 +51,41 @@ export function MediaDropzone({
 
   if (decoded && fileName) {
     return (
-      <div className="border border-[#000000] bg-[#ffffff] p-4 sm:p-5">
+      <div className="border border-[#d4d4d4] bg-[#ffffff] p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-[#525252]">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#525252]">
               <span className="inline-block h-2 w-2 bg-[#d71921]" aria-hidden="true" />
-              <span>{formatKindBadge(decoded.kind)}</span>
-              <span>/</span>
-              <span>.{decoded.format.toUpperCase()}</span>
-              {fileSizeBytes !== null && (
-                <>
-                  <span>/</span>
-                  <span>{formatFileSize(fileSizeBytes)}</span>
-                </>
-              )}
+              <span>{decoded.format.toUpperCase()}</span>
+              {fileSizeBytes !== null && <span>{formatFileSize(fileSizeBytes)}</span>}
+              <span>
+                {decoded.width} x {decoded.height} px
+              </span>
+              {decoded.cameraModel && <span>{decoded.cameraModel}</span>}
             </div>
-            <p className="mt-1.5 truncate font-mono text-sm font-medium text-[#000000]">
+            <p className="mt-1.5 truncate font-sans text-base font-medium text-[#000000]">
               {fileName}
             </p>
-            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-[#525252]">
-              <span>
-                WORKING GRID SOURCE: {decoded.width} x {decoded.height} PX
-              </span>
-              {decoded.wasDownsampled && (
-                <span className="text-[#d71921]">
-                  DOWNSAMPLED FROM {decoded.originalWidth} x {decoded.originalHeight} PX FOR BROWSER MEMORY SAFETY
-                </span>
-              )}
-              {decoded.cameraModel && <span>SENSOR: {decoded.cameraModel}</span>}
-            </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2.5">
             <button
               type="button"
               disabled={disabled}
               onClick={() => inputRef.current?.click()}
-              className="dottoh-btn border border-[#000000] bg-[#ffffff] px-3.5 py-2 text-[#000000] hover:bg-[#000000] hover:text-[#ffffff] disabled:opacity-50"
+              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] disabled:opacity-50"
             >
-              REPLACE FILE
+              Change Photo
             </button>
             <button
               type="button"
               disabled={disabled}
               onClick={onClear}
-              aria-label="Clear active file"
-              className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-50"
+              aria-label="Remove selected photo"
+              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-50"
             >
               <IconCloseCross className="h-4 w-4" />
-              <span>CLEAR</span>
+              <span>Remove</span>
             </button>
           </div>
         </div>
@@ -116,7 +100,7 @@ export function MediaDropzone({
             e.target.value = "";
           }}
           className="sr-only"
-          aria-label="Replace image or RAW file"
+          aria-label="Choose a different photo"
         />
       </div>
     );
@@ -124,6 +108,21 @@ export function MediaDropzone({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-disabled={disabled}
+      aria-label="Choose or drop a photo"
+      onClick={() => {
+        if (!disabled) {
+          inputRef.current?.click();
+        }
+      }}
+      onKeyDown={(e) => {
+        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          inputRef.current?.click();
+        }
+      }}
       onDragOver={(e) => {
         e.preventDefault();
         if (!disabled) setIsDragging(true);
@@ -134,74 +133,53 @@ export function MediaDropzone({
         setIsDragging(false);
         handleFiles(e.dataTransfer.files);
       }}
-      className={`border border-dashed p-6 transition-colors sm:p-8 ${
+      className={`border border-dashed px-6 py-12 text-center transition-colors sm:px-10 sm:py-16 ${
         isDragging
           ? "border-[#d71921] bg-[#f4f4f4]"
-          : "border-[#000000] bg-[#ffffff]"
-      }`}
+          : "border-[#000000] bg-[#ffffff] hover:bg-[#fafafa]"
+      } ${disabled ? "cursor-wait opacity-70" : "cursor-pointer"}`}
     >
-      <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
-        <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 border border-[#b1b3b3] bg-[#f4f4f4] px-2.5 py-1 font-mono text-[11px] uppercase text-[#000000]">
-            <IconUploadGrid className="h-4 w-4" />
-            <span>LOCAL WORKER INPUT STAGE / MAX {maxImageSizeMb} MB</span>
-          </div>
+      <div className="mx-auto flex max-w-md flex-col items-center">
+        <IconUploadGrid className="h-9 w-9 text-[#000000]" />
 
-          <h3 className="mt-4 font-display text-2xl text-[#000000]">
-            DROP AN IMAGE OR CAMERA RAW FILE.
-          </h3>
-          <p className="mt-2 text-sm leading-relaxed text-[#525252]">
-            Decoding runs entirely on your device using browser APIs and
-            self-hosted WebAssembly. Files never leave your browser.
-          </p>
+        <h2 className="mt-5 font-display text-2xl text-[#000000] sm:text-3xl">
+          Drop your photo here
+        </h2>
+        <p className="mt-2.5 text-sm leading-relaxed text-[#525252]">
+          Supports PNG, JPG, JPEG, WebP, HEIC, HEIF, and camera RAW files up to{" "}
+          {maxImageSizeMb} MB. Your photo stays on your device.
+        </p>
 
-          <div className="mt-4 flex flex-wrap gap-1.5 font-mono text-[11px] uppercase">
-            {SUPPORTED_RASTER_EXTENSIONS.map((ext) => (
-              <span
-                key={ext}
-                className="border border-[#b1b3b3] bg-[#f4f4f4] px-2 py-0.5 text-[#000000]"
-              >
-                .{ext}
-              </span>
-            ))}
-            {enabledRawFormats.map((ext) => (
-              <span
-                key={ext}
-                className="border border-[#000000] bg-[#000000] px-2 py-0.5 text-[#ffffff]"
-              >
-                .{ext} RAW
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex w-full flex-col gap-2.5 lg:w-64">
+        <div
+          className="mt-7 flex w-full flex-col items-center gap-4"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
             type="button"
             disabled={disabled}
             onClick={() => inputRef.current?.click()}
-            className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-4 py-3 text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-50"
+            className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-50 sm:w-auto"
           >
-            <IconUploadGrid className="h-4 w-4" />
-            <span>SELECT IMAGE FILE</span>
+            Choose Photo
           </button>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-[#525252]">
+            <span>Or try a sample:</span>
             <button
               type="button"
               disabled={disabled}
               onClick={() => onSampleSelected("sphere")}
-              className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
+              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
             >
-              SAMPLE: SPHERE
+              Sphere
             </button>
             <button
               type="button"
               disabled={disabled}
               onClick={() => onSampleSelected("monolith")}
-              className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
+              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
             >
-              SAMPLE: MONOLITH
+              Monolith
             </button>
           </div>
         </div>
@@ -217,7 +195,7 @@ export function MediaDropzone({
           e.target.value = "";
         }}
         className="sr-only"
-        aria-label="Upload image or RAW file for ASCII conversion"
+        aria-label="Upload photo file"
       />
     </div>
   );
