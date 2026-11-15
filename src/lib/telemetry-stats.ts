@@ -1,4 +1,4 @@
-import { type Prisma, type PrismaClient } from "@/generated/prisma/client";
+import { type PrismaClient } from "@/generated/prisma/client";
 import type {
   AdminAuditLogPage,
   AdminTelemetryStats,
@@ -36,36 +36,6 @@ export async function recordTelemetryEvent(
     return { recorded: true };
   } catch {
     return { recorded: false, reason: "database_error" };
-  }
-}
-
-export async function writeAuditLog(
-  entry: {
-    actorId: string;
-    action: string;
-    target?: string;
-    metadata?: Record<string, unknown>;
-    ipHash?: string;
-  },
-  dbOverride?: PrismaClient | null
-): Promise<void> {
-  const db = dbOverride === undefined ? getDb() : dbOverride;
-  if (!db) {
-    return;
-  }
-
-  try {
-    await db.auditLog.create({
-      data: {
-        actorId: entry.actorId,
-        action: entry.action,
-        target: entry.target ?? null,
-        metadata: (entry.metadata ?? {}) as unknown as Prisma.InputJsonValue,
-        ipHash: entry.ipHash ?? null,
-      },
-    });
-  } catch {
-    // Do not crash caller if auxiliary audit log write fails unexpectedly.
   }
 }
 

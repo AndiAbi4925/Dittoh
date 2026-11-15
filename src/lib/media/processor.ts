@@ -11,8 +11,8 @@ export interface ProcessorExecutionOptions {
 }
 
 /**
- * Clean abstraction for client or remote media decoding and background segmentation.
- * MVP uses LocalWorkerProcessor in browser Web Workers; Phase 2 can swap in RemoteWorkerProcessor.
+ * Clean abstraction for media decoding and background segmentation.
+ * LocalWorkerProcessor executes decoding and segmentation inside browser Web Workers.
  */
 export interface MediaProcessor {
   readonly id: string;

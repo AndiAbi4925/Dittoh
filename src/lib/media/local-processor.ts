@@ -11,7 +11,6 @@ import { LibRawWorkerClient } from "@/lib/media/raw-decoder";
 import {
   type BackgroundRemovalResult,
   type DecodedImagePayload,
-  type MediaFormatKind,
   MediaProcessingError,
   type MediaValidationConfig,
 } from "@/lib/media/types";
@@ -132,7 +131,7 @@ async function decodeViaHtmlImageFallback(
 
 /**
  * Browser-only MediaProcessor running validation, LibRaw RAW decoding,
- * TIFF/raster decoding, and optional U-2-Netp background segmentation inside Web Workers.
+ * raster decoding, and optional U-2-Netp background segmentation inside Web Workers.
  */
 export class LocalWorkerProcessor implements MediaProcessor {
   readonly id = "local-worker-v1";
@@ -468,16 +467,5 @@ export class LocalWorkerProcessor implements MediaProcessor {
   dispose(): void {
     this.terminateDecodeWorker();
     this.terminateBgWorker();
-  }
-}
-
-export function formatKindBadge(kind: MediaFormatKind): string {
-  switch (kind) {
-    case "raw":
-      return "Camera RAW";
-    case "heic":
-      return "Apple HEIC";
-    case "raster":
-      return "Photo";
   }
 }
