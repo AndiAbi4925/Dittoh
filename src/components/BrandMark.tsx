@@ -46,14 +46,6 @@ export function IconCloseCross({ className = "h-4 w-4", ...props }: IconProps) {
   );
 }
 
-export function IconArrowRight({ className = "h-4 w-4", ...props }: IconProps) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className={className} {...props}>
-      <path d="M2 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
 export function IconUploadGrid({ className = "h-5 w-5", ...props }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className} {...props}>
@@ -63,44 +55,11 @@ export function IconUploadGrid({ className = "h-5 w-5", ...props }: IconProps) {
   );
 }
 
-export function IconLayersCut({ className = "h-5 w-5", ...props }: IconProps) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className} {...props}>
-      <rect x="3" y="3" width="9" height="9" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="8" y="8" width="9" height="9" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-export function IconSlidersGrid({ className = "h-5 w-5", ...props }: IconProps) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className} {...props}>
-      <path d="M3 5.5H17M3 10H17M3 14.5H17" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="6" y="3.5" width="3" height="4" fill="#ffffff" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="12" y="8" width="3" height="4" fill="#d71921" />
-      <rect x="7" y="12.5" width="3" height="4" fill="#ffffff" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
 export function IconDownloadBox({ className = "h-5 w-5", ...props }: IconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className} {...props}>
       <path d="M10 3V12.5M10 12.5L6.5 9M10 12.5L13.5 9" stroke="currentColor" strokeWidth="1.5" />
       <path d="M3 14V17H17V14" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-export function IconShieldLock({ className = "h-4 w-4", ...props }: IconProps) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className={className} {...props}>
-      <path
-        d="M8 1.5L13.5 3.5V7.5C13.5 11 11.1 13.7 8 14.7C4.9 13.7 2.5 11 2.5 7.5V3.5L8 1.5Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <rect x="7" y="6.5" width="2" height="3" fill="#d71921" />
     </svg>
   );
 }
