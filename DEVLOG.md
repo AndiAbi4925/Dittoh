@@ -111,3 +111,57 @@
 - Push `feat/step-2-ui-shell` and deploy Step 2 to Vercel production (`dittoh.vercel.app`).
 - Proceed to Step 3 (`feat/step-3-media-pipeline`): inspect `@imgly/background-removal` license before bundling, build Web Worker media pipeline, RAW decoder (`libraw-wasm`), and checkerboard background-removal preview controls.
 
+## Milestone 3: Client Web Worker Media Pipeline, RAW Decoder, and Background Removal
+
+- **Branch**: `feat/step-3-media-pipeline`
+- **Status**: Complete
+- **Date**: 2026-11-15
+
+### Completed Scope
+
+1. **License Audit and Permissive WASM/ONNX Asset Bundling**
+   - Inspected `@imgly/background-removal@1.7.0` (`LICENSE.md`) before installing and confirmed it uses **GNU Affero General Public License v3 (AGPL-3.0)** and fetches CDN weights by default. Excluded it from the project.
+   - Selected permissive alternatives: `onnxruntime-web@1.21.0` (**MIT**), `BritishWerewolf/U-2-Netp` (`4.4 MB` ONNX weights, **Apache-2.0**), `libraw-wasm@1.6.0` (**ISC**), and `utif@3.1.0` (**MIT**), self-hosted under `public/wasm/` with `THIRD-PARTY-LICENSES.txt` and 1-year immutable cache headers.
+   - Configured scoped `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` on `/`, `/wasm/*`, and `/_next/static/*` (leaving `/admin` and `/api/auth/*` un-isolated so GitHub OAuth remains unaffected).
+   - Replaced Emscripten Embind `new Function` factories in `public/wasm/libraw/worker.js` and `libraw.js` with static closures so `libraw-wasm` runs under strict CSP (`script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'`, zero `'unsafe-eval'`).
+2. **Media Validation, Hex Compositing, and `MediaProcessor` Interface**
+   - Defined clean `MediaProcessor` interface (`src/lib/media/processor.ts`) and error taxonomy (`src/lib/media/types.ts`) for local/remote swappability.
+   - Implemented magic-byte signature verification, 50 MB size checks, extension/MIME checks, and feature-flagged RAW gating (`.ARW`, `.DNG` enabled; unverified `.CR2`/`.CR3`/`.NEF`/`.RAF` gated cleanly) in `src/lib/media/validation.ts`.
+   - Implemented strict hex color parsing and alpha matte background compositing in `src/lib/media/colors.ts`.
+3. **Web Worker Media Decoders and High-Megapixel Safeguards**
+   - Built `src/lib/media/pixel-utils.ts` (proportional working-dimension downsampling cap at 2048 px desktop / 1280 px mobile/low-memory and 8/16-bit RAW RGB-to-RGBA conversion).
+   - Built `src/lib/media/tiff-decoder.ts` (`utif`), `src/lib/media/raw-decoder.ts` (`LibRawWorkerClient` via `/wasm/libraw/worker.js`), and `src/workers/media-decode.worker.ts` (with main-thread `HTMLImageElement` fallback for native HEIC/AVIF codecs and deterministic `URL.revokeObjectURL` cleanup).
+4. **Lazy Web Worker ONNX Background Removal and Studio Preview UI**
+   - Implemented `src/lib/media/u2net-preprocess.ts` (aspect-preserved `320x320` ImageNet NCHW preprocessing and un-cropped bilinear matte reconstruction) and `src/workers/bg-removal.worker.ts` (lazy-loaded on demand with cached `InferenceSession`).
+   - Built `LocalWorkerProcessor` (`src/lib/media/local-processor.ts`), `MediaDropzone`, `BackgroundRemovalPanel` (Original vs. Cutout toggle, checkerboard transparency view, Transparent / `#000000` / `#ffffff` / custom hex fill), and `ConverterWorkspace` (deterministic stage progress bar, Cancel button, inline `#d71921` error alerts, and `DotMatrixHero` `isProcessing` pause hook) wired into `src/components/LandingStudioShell.tsx`.
+
+### Commit History (Step 3)
+
+- `d04d479` - `chore(media): bundle MIT/Apache-2.0 WASM runtime and configure COOP/COEP`
+- `d707d82` - `feat(media): define MediaProcessor interface, file signature validation, and RAW gating`
+- `f537a20` - `feat(worker): implement Web Worker decoder for raster, TIFF, and LibRaw RAW`
+- `7be3c41` - `feat(bg-removal): implement lazy Web Worker ONNX U-2-Netp background removal`
+- `2bc782f` - `feat(studio): build interactive upload dropzone and background removal preview UI`
+- `b737211` - `test(media): add unit and license verification tests for validation, preprocessing, and compositing`
+- `1d3f01c` - `fix(wasm): replace Embind dynamic codegen with CSP-strict closures in libraw`
+- `HEAD` - `docs(devlog): update DEVLOG.md for Step 3 media pipeline milestone`
+
+### Verification Results
+
+- `npm run typecheck` (`tsc --noEmit`): Passed
+- `npm run lint` (`eslint .`): Passed
+- `npm test` (`vitest run`): 10 test files, 34 tests passed
+- `npm run build` (`prisma generate && next build` Turbopack): Passed
+- `npm audit --omit=dev`: 0 production vulnerabilities
+- Headless Chrome CDP Verification (`next start` under strict CSP): Confirmed `crossOriginIsolated === true`, sample raster decode, real U-2-Netp ONNX background removal, and real `lossy.dng` (`256 x 168`) LibRaw WASM decoding with zero console or CSP errors.
+
+### Unresolved Issues & Open Questions
+
+1. **Non-`.ARW`/`.DNG` RAW Formats**: `.CR2`, `.CR3`, `.NEF`, and `.RAF` remain gated behind `enabledRawFormats` until verified with real hardware sample files. Sony `.ARW` verification via `ILME-FX30` and Adobe `lossy.dng` share the LibRaw-Wasm 1.6.0 engine (`lossy.dng` tested end-to-end in headless Chrome).
+2. **HEIC Codec Browser Variance**: Safari/macOS decodes HEIC/HEIF natively; Chromium builds without HEVC/HEIF codecs display a clear actionable error suggesting PNG, JPG, or DNG conversion.
+
+### Next Steps
+
+- Proceed to Step 4 (`feat/step-4-ascii-studio`): implement the Web Worker / Canvas ASCII engine, Basic and Advanced studio controls, `localStorage` custom presets and clearable history, and 5 export generators (`.PNG`, `.TXT`, `.MD`, `.SVG`, `.HTML`).
+
+
