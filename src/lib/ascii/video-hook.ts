@@ -1,6 +1,17 @@
+import {
+  DEFAULT_GIF_EXPORT_MAX_DURATION_SEC,
+  DEFAULT_MAX_VIDEO_DURATION_SEC,
+  DEFAULT_MAX_VIDEO_INPUT_FPS,
+  DEFAULT_MAX_VIDEO_INPUT_HEIGHT_PX,
+  DEFAULT_MAX_VIDEO_SIZE_MB,
+  DEFAULT_MP4_EXPORT_MAX_FPS,
+  DEFAULT_MP4_EXPORT_MAX_HEIGHT_PX,
+  SUPPORTED_VIDEO_EXTENSIONS,
+} from "@/lib/constants";
+
 export interface VideoConversionConstraints {
   enabled: boolean;
-  supportedInputExtensions: readonly ["mp4", "gif", "mov", "webm"];
+  supportedInputExtensions: typeof SUPPORTED_VIDEO_EXTENSIONS;
   maxInputSizeBytes: number;
   maxInputDurationSec: number;
   maxInputHeightPx: number;
@@ -18,14 +29,14 @@ export interface VideoTranscodeAdapter {
 
 export const PHASE2_VIDEO_CONSTRAINTS: VideoConversionConstraints = {
   enabled: false,
-  supportedInputExtensions: ["mp4", "gif", "mov", "webm"],
-  maxInputSizeBytes: 100 * 1024 * 1024,
-  maxInputDurationSec: 30,
-  maxInputHeightPx: 1080,
-  maxInputFps: 30,
-  maxMp4ExportHeightPx: 720,
-  maxMp4ExportFps: 12,
-  maxGifExportDurationSec: 15,
+  supportedInputExtensions: SUPPORTED_VIDEO_EXTENSIONS,
+  maxInputSizeBytes: DEFAULT_MAX_VIDEO_SIZE_MB * 1024 * 1024,
+  maxInputDurationSec: DEFAULT_MAX_VIDEO_DURATION_SEC,
+  maxInputHeightPx: DEFAULT_MAX_VIDEO_INPUT_HEIGHT_PX,
+  maxInputFps: DEFAULT_MAX_VIDEO_INPUT_FPS,
+  maxMp4ExportHeightPx: DEFAULT_MP4_EXPORT_MAX_HEIGHT_PX,
+  maxMp4ExportFps: DEFAULT_MP4_EXPORT_MAX_FPS,
+  maxGifExportDurationSec: DEFAULT_GIF_EXPORT_MAX_DURATION_SEC,
   frameConsistencyMode: "locked-palette",
 };
 
