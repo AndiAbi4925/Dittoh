@@ -27,9 +27,7 @@ export interface VideoFileCandidate {
 
 export type VideoSignatureKind =
   | "mp4"
-  | "mov"
   | "gif"
-  | "webm"
   | "isobmff-other"
   | "unknown";
 
@@ -38,15 +36,11 @@ const VIDEO_EXT_SET = new Set<string>(SUPPORTED_VIDEO_EXTENSIONS);
 const MIME_BY_VIDEO_EXT: Record<SupportedVideoExtension, string> = {
   mp4: "video/mp4",
   gif: "image/gif",
-  mov: "video/quicktime",
-  webm: "video/webm",
 };
 
 const EXT_BY_VIDEO_MIME: Record<string, SupportedVideoExtension> = {
   "video/mp4": "mp4",
   "image/gif": "gif",
-  "video/quicktime": "mov",
-  "video/webm": "webm",
 };
 
 export const DEFAULT_FRAME_CONSISTENCY: FrameConsistencyConfig = {
@@ -83,15 +77,6 @@ export function detectVideoSignature(bytes: Uint8Array): VideoSignatureKind {
     return "gif";
   }
 
-  if (
-    bytes[0] === 0x1a &&
-    bytes[1] === 0x45 &&
-    bytes[2] === 0xdf &&
-    bytes[3] === 0xa3
-  ) {
-    return "webm";
-  }
-
   if (matchesAscii(bytes, 4, "ftyp") && bytes.length >= 12) {
     const brand = String.fromCharCode(
       bytes[8] ?? 0,
@@ -99,9 +84,6 @@ export function detectVideoSignature(bytes: Uint8Array): VideoSignatureKind {
       bytes[10] ?? 0,
       bytes[11] ?? 0
     );
-    if (brand === "qt  ") {
-      return "mov";
-    }
     if (
       brand === "isom" ||
       brand === "iso2" ||
@@ -117,14 +99,6 @@ export function detectVideoSignature(bytes: Uint8Array): VideoSignatureKind {
     return "isobmff-other";
   }
 
-  if (
-    matchesAscii(bytes, 4, "moov") ||
-    matchesAscii(bytes, 4, "mdat") ||
-    matchesAscii(bytes, 4, "wide")
-  ) {
-    return "mov";
-  }
-
   return "unknown";
 }
 
@@ -136,9 +110,7 @@ function isSignatureCompatible(
     return false;
   }
   if (ext === "gif") return sig === "gif";
-  if (ext === "webm") return sig === "webm";
-  if (ext === "mp4") return sig === "mp4" || sig === "mov";
-  if (ext === "mov") return sig === "mov" || sig === "mp4";
+  if (ext === "mp4") return sig === "mp4";
   return false;
 }
 
@@ -159,7 +131,7 @@ export function extractVideoExtension(
 }
 
 export function buildVideoAcceptAttribute(): string {
-  return ".mp4,.gif,.mov,.webm,video/mp4,image/gif,video/quicktime,video/webm";
+  return ".mp4,.gif,video/mp4,image/gif";
 }
 
 export function validateVideoCandidate(
@@ -169,7 +141,7 @@ export function validateVideoCandidate(
   if (candidate.size <= 0) {
     throw new VideoProcessingError(
       "EMPTY_FILE",
-      "Selected video or GIF file is empty (0 bytes).",
+      "This file is empty. Please pick another MP4 video or GIF.",
       false
     );
   }
@@ -179,7 +151,7 @@ export function validateVideoCandidate(
     const actualMb = (candidate.size / (1024 * 1024)).toFixed(1);
     throw new VideoProcessingError(
       "FILE_TOO_LARGE",
-      `File size ${actualMb} MB exceeds the configured ${maxVideoSizeMb} MB limit for browser video processing.`,
+      `This file is ${actualMb} MB, which is over the ${maxVideoSizeMb} MB limit.`,
       false
     );
   }
@@ -188,7 +160,7 @@ export function validateVideoCandidate(
   if (!extension) {
     throw new VideoProcessingError(
       "UNSUPPORTED_FORMAT",
-      "Unsupported media extension. Phase 2 supports .mp4, .gif, .mov, and .webm.",
+      "Unsupported file type. Video mode supports MP4 and GIF only.",
       false
     );
   }
