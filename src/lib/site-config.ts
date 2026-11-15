@@ -3,6 +3,7 @@ import {
   DEFAULT_CONTACT_EMAIL,
   GITHUB_REPO_URL,
   type NavItem,
+  SITE_MENU_ITEMS,
   SITE_NAV_ITEMS,
 } from "@/lib/site-constants";
 
@@ -10,6 +11,7 @@ export {
   DEFAULT_CONTACT_EMAIL,
   GITHUB_REPO_URL,
   type NavItem,
+  SITE_MENU_ITEMS,
   SITE_NAV_ITEMS,
 };
 
