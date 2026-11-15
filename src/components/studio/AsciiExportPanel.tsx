@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { IconDownloadBox } from "@/components/BrandMark";
 import {
   computeGridMetrics,
   exportAsciiAsTxt,
@@ -12,7 +11,6 @@ import type {
   AsciiExportFormat,
   AsciiGridResult,
 } from "@/lib/ascii/types";
-import { PHASE2_VIDEO_CONSTRAINTS } from "@/lib/ascii/video-hook";
 
 interface AsciiExportPanelProps {
   grid: AsciiGridResult | null;
@@ -29,11 +27,11 @@ const EXPORT_FORMATS: ReadonlyArray<{
   label: string;
   spec: string;
 }> = [
-  { format: "png", label: ".PNG", spec: "RASTER ALPHA" },
-  { format: "txt", label: ".TXT", spec: "SPACE PADDED" },
-  { format: "md", label: ".MD", spec: "FENCED CODE" },
-  { format: "svg", label: ".SVG", spec: "VECTOR TEXT" },
-  { format: "html", label: ".HTML", spec: "STANDALONE" },
+  { format: "png", label: "PNG", spec: "Image" },
+  { format: "txt", label: "TXT", spec: "Plain text" },
+  { format: "md", label: "MD", spec: "Markdown" },
+  { format: "svg", label: "SVG", spec: "Vector" },
+  { format: "html", label: "HTML", spec: "Webpage" },
 ];
 
 const WIDTH_PRESETS = [800, 1400, 2400, 3200] as const;
@@ -76,18 +74,15 @@ export function AsciiExportPanel({
   };
 
   return (
-    <div className="border border-[#b1b3b3] bg-[#ffffff] p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#b1b3b3] pb-3">
-        <div className="flex items-center gap-2.5">
-          <IconDownloadBox className="h-4 w-4 text-[#000000]" />
-          <div>
-            <p className="font-mono text-[11px] tracking-widest text-[#d71921] uppercase">
-              STAGE 05 / DETERMINISTIC EXPORTS
-            </p>
-            <h3 className="font-display text-lg text-[#000000]">
-              EXPORT DIMENSIONS & FORMATS
-            </h3>
-          </div>
+    <div className="border border-[#d4d4d4] bg-[#ffffff] p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e5e5] pb-4">
+        <div>
+          <h2 className="font-sans text-lg font-medium text-[#000000]">
+            Download or Copy
+          </h2>
+          <p className="mt-1 text-xs text-[#525252]">
+            Copy plain text or pick a file format below.
+          </p>
         </div>
 
         <button
@@ -96,22 +91,22 @@ export function AsciiExportPanel({
           onClick={() => {
             void handleCopyText();
           }}
-          className="dottoh-btn border border-[#000000] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:bg-[#000000] hover:text-[#ffffff] disabled:opacity-40"
+          className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
         >
-          {copied ? "COPIED ASCII" : "COPY RAW TXT"}
+          {copied ? "Copied!" : "Copy Text"}
         </button>
       </div>
 
-      <div className="mt-4 space-y-4">
-        <div className="space-y-2 border border-[#b1b3b3] bg-[#f4f4f4] p-3.5">
-          <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
-            <label htmlFor="export-width-px" className="uppercase text-[#000000]">
-              OUTPUT WIDTH (PNG / SVG / HTML)
+      <div className="mt-5 space-y-5">
+        <div className="space-y-2.5 border border-[#e5e5e5] bg-[#f4f4f4] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <label htmlFor="export-width-px" className="font-medium text-[#000000]">
+              Image width (PNG, SVG, HTML)
             </label>
-            <span className="text-[#525252]">
+            <span className="font-mono text-[#525252]">
               {outputDimensions
-                ? `${outputDimensions.width} x ${outputDimensions.height} PX`
-                : `${exportWidthPx} PX`}
+                ? `${outputDimensions.width} x ${outputDimensions.height} px`
+                : `${exportWidthPx} px`}
             </span>
           </div>
 
@@ -121,13 +116,13 @@ export function AsciiExportPanel({
                 key={preset}
                 type="button"
                 onClick={() => onChangeExportWidthPx(preset)}
-                className={`dottoh-btn border px-2.5 py-1.5 text-[11px] ${
+                className={`dottoh-btn border px-3 py-1.5 text-[11px] ${
                   exportWidthPx === preset
                     ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                    : "border-[#b1b3b3] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
+                    : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
                 }`}
               >
-                {preset}PX
+                {preset}px
               </button>
             ))}
             <input
@@ -143,12 +138,12 @@ export function AsciiExportPanel({
                   onChangeExportWidthPx(Math.max(240, Math.min(4096, parsed)));
                 }
               }}
-              className="w-28 border border-[#b1b3b3] bg-[#ffffff] px-2.5 py-1.5 font-mono text-xs text-[#000000]"
+              className="w-24 border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 font-mono text-xs text-[#000000]"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {EXPORT_FORMATS.map((item) => {
             const busy = isExporting === item.format;
             return (
@@ -159,12 +154,12 @@ export function AsciiExportPanel({
                 onClick={() => {
                   void onExport(item.format);
                 }}
-                className="dottoh-btn flex flex-col items-start border border-[#000000] bg-[#ffffff] px-3 py-2.5 text-left text-[#000000] hover:border-[#d71921] hover:bg-[#000000] hover:text-[#ffffff] disabled:opacity-40"
+                className="dottoh-btn flex flex-col items-start border border-[#d4d4d4] bg-[#ffffff] px-4 py-3.5 text-left text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff] disabled:opacity-40"
               >
                 <span className="font-mono text-sm font-medium">
-                  {busy ? "BUSY..." : item.label}
+                  {busy ? "Saving..." : item.label}
                 </span>
-                <span className="mt-0.5 font-mono text-[10px] opacity-70">
+                <span className="mt-0.5 text-[11px] opacity-70">
                   {item.spec}
                 </span>
               </button>
@@ -176,18 +171,11 @@ export function AsciiExportPanel({
           <div
             role="status"
             aria-live="polite"
-            className="border border-[#000000] bg-[#f4f4f4] px-3 py-2 font-mono text-xs text-[#000000]"
+            className="border border-[#000000] bg-[#f4f4f4] px-4 py-2.5 text-xs text-[#000000]"
           >
             {exportNotice}
           </div>
         )}
-
-        <div className="border-t border-[#b1b3b3] pt-3 font-mono text-[10px] uppercase text-[#525252]">
-          MODULAR HOOK [PHASE 02]: VIDEO & GIF (
-          {PHASE2_VIDEO_CONSTRAINTS.supportedInputExtensions.join("/")},{" "}
-          {PHASE2_VIDEO_CONSTRAINTS.maxInputSizeBytes / (1024 * 1024)} MB CAP){" "}
-          {PHASE2_VIDEO_CONSTRAINTS.enabled ? "ACTIVE" : "STANDBY PENDING BENCHMARKS"}
-        </div>
       </div>
     </div>
   );
