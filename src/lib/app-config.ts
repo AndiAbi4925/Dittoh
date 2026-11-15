@@ -7,23 +7,13 @@ import {
   DEFAULT_RATE_LIMIT_PER_MIN,
 } from "@/lib/constants";
 import { getDb, requireDb } from "@/lib/db";
+import type {
+  AdminAppConfig,
+  PublicAppConfig,
+} from "@/lib/admin-types";
 import type { AppConfigPatchInput } from "@/lib/validation/admin";
 
-export interface PublicAppConfig {
-  maxImageSizeMb: number;
-  maxVideoSizeMb: number;
-  maxVideoDurationSec: number;
-  enabledRawFormats: string[];
-  enableVideoConverter: boolean;
-  rateLimitPerMin: number;
-  source: "default" | "database";
-  updatedAt: string | null;
-}
-
-export interface AdminAppConfig extends PublicAppConfig {
-  updatedBy: string | null;
-  databaseConfigured: boolean;
-}
+export type { AdminAppConfig, PublicAppConfig } from "@/lib/admin-types";
 
 export const DEFAULT_PUBLIC_APP_CONFIG: PublicAppConfig = {
   maxImageSizeMb: DEFAULT_MAX_IMAGE_SIZE_MB,

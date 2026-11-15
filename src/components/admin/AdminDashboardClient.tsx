@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { AdminAppConfig } from "@/lib/app-config";
-import { SUPPORTED_RAW_EXTENSIONS } from "@/lib/constants";
-import type { HealthPayload } from "@/lib/health";
 import type {
+  AdminAppConfig,
   AdminAuditLogPage,
+  AdminHealthPayload,
   AdminTelemetryStats,
-} from "@/lib/telemetry-stats";
+} from "@/lib/admin-types";
+import { SUPPORTED_RAW_EXTENSIONS } from "@/lib/constants";
 
 interface AdminDashboardClientProps {
   actorGithubId: string;
@@ -16,7 +16,7 @@ interface AdminDashboardClientProps {
   initialConfig: AdminAppConfig;
   initialStats: AdminTelemetryStats;
   initialAuditLogs: AdminAuditLogPage;
-  initialHealth: HealthPayload;
+  initialHealth: AdminHealthPayload;
   signOutAction: () => Promise<void>;
 }
 
@@ -31,7 +31,7 @@ export function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const [config, setConfig] = useState<AdminAppConfig>(initialConfig);
   const [stats, setStats] = useState<AdminTelemetryStats>(initialStats);
-  const [health, setHealth] = useState<HealthPayload>(initialHealth);
+  const [health, setHealth] = useState<AdminHealthPayload>(initialHealth);
   const [auditPage, setAuditPage] = useState<AdminAuditLogPage>(initialAuditLogs);
 
   const [days, setDays] = useState<number>(initialStats.windowDays);
@@ -69,7 +69,7 @@ export function AdminDashboardClient({
       if (statsRes.ok) {
         const statsJson = (await statsRes.json()) as {
           stats: AdminTelemetryStats;
-          health: HealthPayload;
+          health: AdminHealthPayload;
         };
         setStats(statsJson.stats);
         setHealth(statsJson.health);
