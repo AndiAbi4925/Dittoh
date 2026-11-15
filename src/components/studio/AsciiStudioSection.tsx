@@ -33,6 +33,7 @@ import type {
   SavedAsciiPreset,
 } from "@/lib/ascii/types";
 import { AsciiWorkerClient } from "@/lib/ascii/worker-client";
+import { reportStudioTelemetry } from "@/lib/ascii/telemetry-client";
 import type { DecodedImagePayload } from "@/lib/media/types";
 
 interface AsciiStudioSectionProps {
@@ -255,6 +256,12 @@ export function AsciiStudioSection({
         setExportNotice(
           `DOWNLOADED ${outName} (${formatByteSize(blob.size)})`
         );
+        reportStudioTelemetry({
+          eventType: "export",
+          inputFormat: payload.format.toLowerCase(),
+          outputFormat: format,
+          durationMs: activeGrid.renderMs,
+        });
       } catch (err) {
         setExportNotice(
           err instanceof Error ? err.message : "Export generation failed."
@@ -268,6 +275,7 @@ export function AsciiStudioSection({
       exportWidthPx,
       fileName,
       historyEnabled,
+      payload.format,
       settings,
     ]
   );

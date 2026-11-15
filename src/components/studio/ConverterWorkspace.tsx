@@ -6,6 +6,7 @@ import { IconCloseCross } from "@/components/BrandMark";
 import { AsciiStudioSection } from "@/components/studio/AsciiStudioSection";
 import { BackgroundRemovalPanel } from "@/components/studio/BackgroundRemovalPanel";
 import { MediaDropzone } from "@/components/studio/MediaDropzone";
+import { reportStudioTelemetry } from "@/lib/ascii/telemetry-client";
 import {
   DEFAULT_ENABLED_RAW_FORMATS,
   DEFAULT_MAX_IMAGE_SIZE_MB,
@@ -130,6 +131,10 @@ export function ConverterWorkspace({
       if (!controller.signal.aborted) {
         setDecoded(result);
         setDecodeEpoch((prev) => prev + 1);
+        reportStudioTelemetry({
+          eventType: "conversion",
+          inputFormat: result.format.toLowerCase(),
+        });
       }
     } catch (error) {
       if (
@@ -191,6 +196,11 @@ export function ConverterWorkspace({
       if (!controller.signal.aborted) {
         setCutout(result);
         setUseCutout(true);
+        reportStudioTelemetry({
+          eventType: "bg_removal",
+          inputFormat: decoded.format.toLowerCase(),
+          durationMs: result.inferenceMs,
+        });
       }
     } catch (error) {
       if (

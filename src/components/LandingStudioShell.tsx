@@ -96,7 +96,15 @@ function StageIcon({ kind }: { kind: PipelineStage["icon"] }) {
   }
 }
 
-export function LandingStudioShell() {
+export interface LandingStudioShellProps {
+  maxImageSizeMb?: number;
+  enabledRawFormats?: readonly string[];
+}
+
+export function LandingStudioShell({
+  maxImageSizeMb = DEFAULT_MAX_IMAGE_SIZE_MB,
+  enabledRawFormats = DEFAULT_ENABLED_RAW_FORMATS,
+}: LandingStudioShellProps = {}) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [selectedStageId, setSelectedStageId] = useState<string>("input");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -207,7 +215,7 @@ export function LandingStudioShell() {
               <div className="border-r border-[#b1b3b3] p-3.5">
                 <dt className="text-[11px] uppercase text-[#525252]">IMAGE CAP</dt>
                 <dd className="mt-1 font-medium text-[#000000]">
-                  {DEFAULT_MAX_IMAGE_SIZE_MB} MB
+                  {maxImageSizeMb} MB
                 </dd>
               </div>
               <div className="p-3.5">
@@ -245,7 +253,11 @@ export function LandingStudioShell() {
             </span>
           </div>
 
-          <ConverterWorkspace onProcessingChange={setIsProcessing} />
+          <ConverterWorkspace
+            maxImageSizeMb={maxImageSizeMb}
+            enabledRawFormats={enabledRawFormats}
+            onProcessingChange={setIsProcessing}
+          />
         </div>
       </section>
 
@@ -383,7 +395,7 @@ export function LandingStudioShell() {
                     .{ext}
                   </span>
                 ))}
-                {DEFAULT_ENABLED_RAW_FORMATS.map((ext) => (
+                {enabledRawFormats.map((ext) => (
                   <span
                     key={ext}
                     className="border border-[#000000] bg-[#000000] px-2.5 py-1 font-mono text-xs uppercase text-[#ffffff]"
