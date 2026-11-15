@@ -1,9 +1,7 @@
 import {
   computeWorkingDimensions,
   DEFAULT_MAX_WORKING_DIMENSION,
-  downscaleRgbaIfNeeded,
 } from "@/lib/media/pixel-utils";
-import { decodeTiffBuffer } from "@/lib/media/tiff-decoder";
 import type { MediaFormatKind } from "@/lib/media/types";
 
 export interface DecodeWorkerRequest {
@@ -53,36 +51,10 @@ function toOwnedBuffer(rgba: Uint8ClampedArray): ArrayBuffer {
 }
 
 workerScope.onmessage = async (event: MessageEvent<DecodeWorkerRequest>) => {
-  const { id, buffer, mimeType, extension, kind, maxWorkingDimension } =
-    event.data;
+  const { id, buffer, mimeType, kind, maxWorkingDimension } = event.data;
   const maxDim = maxWorkingDimension ?? DEFAULT_MAX_WORKING_DIMENSION;
 
   try {
-    if (kind === "tiff") {
-      const tiff = decodeTiffBuffer(buffer);
-      const scaled = downscaleRgbaIfNeeded(
-        tiff.rgba,
-        tiff.width,
-        tiff.height,
-        maxDim
-      );
-      const rgbaBuffer = toOwnedBuffer(scaled.rgba);
-      workerScope.postMessage(
-        {
-          id,
-          ok: true,
-          width: scaled.width,
-          height: scaled.height,
-          originalWidth: tiff.width,
-          originalHeight: tiff.height,
-          wasDownsampled: scaled.wasDownsampled,
-          rgbaBuffer,
-        },
-        [rgbaBuffer]
-      );
-      return;
-    }
-
     if (
       typeof createImageBitmap !== "function" ||
       typeof OffscreenCanvas === "undefined"
@@ -136,7 +108,7 @@ workerScope.onmessage = async (event: MessageEvent<DecodeWorkerRequest>) => {
     workerScope.postMessage({
       id,
       ok: false,
-      fallbackToMainThread: kind === "heic" || extension === "avif",
+      fallbackToMainThread: kind === "heic",
       error: message,
     });
   }

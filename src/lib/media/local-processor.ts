@@ -474,12 +474,10 @@ export class LocalWorkerProcessor implements MediaProcessor {
 export function formatKindBadge(kind: MediaFormatKind): string {
   switch (kind) {
     case "raw":
-      return "CAMERA RAW";
-    case "tiff":
-      return "TIFF BITMAP";
+      return "Camera RAW";
     case "heic":
-      return "HEIF CONTAINER";
+      return "Apple HEIC";
     case "raster":
-      return "RASTER IMAGE";
+      return "Photo";
   }
 }

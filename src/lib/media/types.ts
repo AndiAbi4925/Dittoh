@@ -13,7 +13,7 @@ export type SupportedMediaExtension =
   | SupportedRasterExtension
   | SupportedRawExtension;
 
-export type MediaFormatKind = "raster" | "tiff" | "heic" | "raw";
+export type MediaFormatKind = "raster" | "heic" | "raw";
 
 export type BackgroundFillMode = "transparent" | "black" | "white" | "custom";
 
