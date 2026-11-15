@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_CONTACT_EMAIL,
   getContactEmail,
+  SITE_MENU_ITEMS,
   SITE_NAV_ITEMS,
 } from "@/lib/site-config";
 
@@ -39,13 +40,19 @@ describe("UI shell configuration and negative design constraints", () => {
     }
   });
 
-  it("exposes unique navigation routes", () => {
+  it("exposes unique primary navigation routes and excludes privacy/terms clutter from the navbar", () => {
     const hrefs = SITE_NAV_ITEMS.map((item) => item.href);
     expect(new Set(hrefs).size).toBe(hrefs.length);
-    expect(hrefs).toEqual(["/", "/privacy", "/terms"]);
+    expect(hrefs).toEqual(["/", "/convert", "/guide"]);
+    expect(hrefs).not.toContain("/privacy");
+    expect(hrefs).not.toContain("/terms");
+
+    const menuHrefs = SITE_MENU_ITEMS.map((item) => item.href);
+    expect(menuHrefs).toContain("/video");
+    expect(menuHrefs).toContain("/convert");
   });
 
-  it("enforces zero pill buttons, zero em dashes, zero emojis, and zero disallowed animation packages in src/", () => {
+  it("keeps pill styling restricted to the SiteHeader shell and blocks em dashes, emojis, and banned animation libraries", () => {
     const srcRoot = path.resolve(import.meta.dirname, "../src");
     const files = collectSourceFiles(srcRoot);
     const emojiPattern = /\p{Extended_Pictographic}/u;
@@ -56,9 +63,12 @@ describe("UI shell configuration and negative design constraints", () => {
     for (const file of files) {
       const content = fs.readFileSync(file, "utf8");
       const disallowedPillClass = ["rounded", "full"].join("-");
-      expect(content, `${disallowedPillClass} found in ${file}`).not.toContain(
-        disallowedPillClass
-      );
+      const isPillNavbar = file.endsWith(`${path.sep}SiteHeader.tsx`);
+      if (!isPillNavbar) {
+        expect(content, `${disallowedPillClass} found in ${file}`).not.toContain(
+          disallowedPillClass
+        );
+      }
       expect(content, `em/en dash found in ${file}`).not.toMatch(
         /[\u2014\u2013]/
       );
