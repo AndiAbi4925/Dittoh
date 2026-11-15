@@ -1,9 +1,9 @@
 # Dottoh Security Audit and Verification Report
 
 - **Project**: Dottoh (Next.js 16 App Router, TypeScript, Tailwind CSS v4, Prisma 7, Auth.js v5)
-- **Branch**: `feat/step-7-phase2-video` (extending verified `main` Phase 1 audit)
-- **Audit Scope**: HTTP security headers, COOP/COEP isolation, CORS and Fetch Metadata enforcement, Content-Type and body size validation, authentication/allowlist fail-closed behavior, XSS/export sanitization, client bundle secret isolation, dependency audit (`npm audit`), exposed config/sensitive file probes, full Git history secret scan, and Phase 2 `ffmpeg.wasm` self-hosted asset/CSP review.
-- **Last Verified Date**: 2026-11-15
+- **Branch**: `feat/step-8-raw-and-ui-polish` (extending verified `main` baseline)
+- **Audit Scope**: HTTP security headers, COOP/COEP isolation across `/`, `/convert`, `/convert/:path*`, and `/video`, CORS and Fetch Metadata enforcement, Content-Type and body size validation, authentication/allowlist fail-closed behavior, XSS/export sanitization, client bundle secret isolation, dependency audit (`npm audit`), exposed config/sensitive file probes, full Git history secret scan, and self-hosted LibRaw/ONNX/FFmpeg WASM review.
+- **Last Verified Date**: 2026-11-16
 
 ---
 
@@ -34,7 +34,7 @@ During Step 6 verification, three real hardening issues were uncovered and remed
   - `X-Frame-Options: DENY`
   - `X-Content-Type-Options: nosniff`
   - `Referrer-Policy: strict-origin-when-cross-origin`
-- Scoped Cross-Origin Isolation headers (`Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`) applied to `/`, `/wasm/*`, and `/_next/static/*` so `onnxruntime-web` SharedArrayBuffer multithreading operates securely while `/admin` and `/api/auth/*` remain compatible with GitHub OAuth redirects.
+- Scoped Cross-Origin Isolation headers (`Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`) applied to `/`, `/convert`, `/convert/:path*`, `/video`, `/wasm/*`, and `/_next/static/*` so `onnxruntime-web`, LibRaw, and FFmpeg SharedArrayBuffer multithreading operate securely while `/admin` and `/api/auth/*` remain compatible with GitHub OAuth redirects.
 - Admin and auth routes return `Cache-Control: no-store`, and `/admin` sets `X-Robots-Tag: noindex, nofollow`.
 
 ### 2.3 Authentication, Allowlist Authorization, and Fail-Closed Admin APIs
@@ -58,7 +58,7 @@ During Step 6 verification, three real hardening issues were uncovered and remed
   - Download filenames strip path traversal characters and control bytes.
 - **Self-Hosted WASM Runtime (`public/wasm/`)**:
   - `@imgly/background-removal` (`AGPL-3.0`) was audited and rejected prior to bundling.
-  - Replaced with permissive self-hosted dependencies (`onnxruntime-web@1.21.0` MIT, `U-2-Netp` Apache-2.0 weights, `libraw-wasm@1.6.0` ISC, `utif@3.1.0` MIT), tracked in `public/wasm/THIRD-PARTY-LICENSES.txt`.
+  - Replaced with permissive self-hosted dependencies (`onnxruntime-web@1.21.0` MIT, `U-2-Netp` Apache-2.0 weights, `libraw-wasm@1.6.0` ISC), tracked in `public/wasm/THIRD-PARTY-LICENSES.txt`.
   - Embind dynamic `new Function` factories in `public/wasm/libraw/worker.js` and `libraw.js` were replaced with static closures (`1d3f01c`) so strict CSP without `'unsafe-eval'` succeeds.
   - Phase 2 video processing self-hosts `@ffmpeg/ffmpeg@0.12.15` (MIT), `@ffmpeg/util@0.12.2` (MIT), and `@ffmpeg/core@0.12.10` (`GPL-2.0-or-later`) under `public/wasm/ffmpeg/` (`31 MB` WASM binary), stripped of external `unpkg.com` CDN URLs and verified to contain zero `eval(` / `new Function(` calls. Notice requirements are tracked in `public/wasm/THIRD-PARTY-LICENSES.txt`.
 
@@ -70,11 +70,11 @@ During Step 6 verification, three real hardening issues were uncovered and remed
 | --- | --- | --- |
 | TypeScript | `npm run typecheck` (`tsc --noEmit`) | Passed (0 errors) |
 | ESLint | `npm run lint` (`eslint .`) | Passed (0 errors, 0 warnings) |
-| Test Suite | `npm test` (`vitest run`) | Passed (17 test files, 69 tests) |
+| Test Suite | `npm test` (`vitest run`) | Passed (18 test files, 70 tests) |
 | Turbopack Build | `npm run build` | Passed (all routes compiled) |
 | Prod Dependencies | `npm audit --omit=dev` | Passed (`found 0 vulnerabilities`) |
 | Full Dependency Tree | `npm audit` | 7 moderate findings in `minimatch` (`7.0.0 - 11.0.0`) solely under dev-only `@typescript-eslint/*` linting dependencies |
-| Negative Style Rules | Scan `src/`, `tests/`, docs | 0 pill-radius classes, 0 emojis, 0 em/en dashes |
+| Negative Style Rules | Scan `src/`, `tests/`, docs | Pill header radius scoped strictly to `SiteHeader.tsx`, 0 emojis, 0 em/en dashes |
 | Client Bundle Scan | Scan `.next/static/**/*.js` | 0 env var names, 0 `eval(` calls |
 | Git Tracked Files | `git ls-files` | 0 `.env*`, keys, certs, or `.db`/`.sqlite` files |
 | Git History Scan | `git log -p --all --no-color` | 0 real keys, tokens, or credentials (only 3 placeholder Postgres URL strings in `env.example`, dev template, and `tests/env.test.ts`) |

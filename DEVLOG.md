@@ -354,6 +354,45 @@
 1. **Deployment & Branch Merge**: `feat/step-7-phase2-video` pushes are complete; deploy Phase 2 build to Vercel production and await explicit user approval before fast-forwarding `main`.
 2. **Production Database Sync**: When Neon `DATABASE_URL` is configured, run `npx prisma db push` so the updated `@default(true)` on `AppConfig.enableVideoConverter` matches the schema (existing rows remain admin-configurable via `/admin`).
 
+## Milestone 8: Empirical Camera RAW Verification, Step-by-Step UX, and Minimalist 2D Redesign
+
+- **Branch**: `feat/step-8-raw-and-ui-polish`
+- **Status**: Complete and verified across `tsc`, `eslint`, Vitest (`18` files / `70` tests), Turbopack production build, `npm audit --omit=dev` (`0` vulnerabilities), and headless Chrome CDP E2E (`1280x800` and `390x844`)
+- **Date**: 2026-11-16
+
+### Completed Scope
+
+1. **Empirical Headless Chrome `libraw-wasm` Decoder Audit & Hardening**
+   - Downloaded and tested 10 real CC0 camera RAW files in headless Chrome against self-hosted `public/wasm/libraw/worker.js`:
+     - `.CR3`: Canon EOS R6 (`3407x2271`, `585 ms`) & Canon EOS R6 Mark III C-RAW (`4319x2879`, `783 ms`): both decoded cleanly.
+     - `.CR2`: Canon Rebel (`2314x3474`, `607 ms`): decoded cleanly.
+     - `.DNG`: Sigma fp (`1936x1090`, `149 ms`): decoded cleanly.
+     - `.ARW`: Sony ILCE-7S (`2784x1872`, `295 ms`): decoded cleanly.
+     - `.RAF`: Fujifilm FinePix S5000 (`2012x1521`, `250 ms`) & Fujifilm X-S10 14-bit X-Trans (`6246x4170`, `12,442 ms` full / `1,173 ms` halfSize `3123x2085`): decoded cleanly.
+     - `.NEF`: Nikon D1H uncompressed (`2012x1324`, `236 ms`) & Nikon D70s 12-bit compressed (`3039x2014`, `390 ms`): decoded cleanly; newer Nikon Z6 III 8-bit HE compression threw `Cannot read properties of undefined (reading 'data')` in LibRaw WASM.
+   - Enabled all 6 verified RAW extensions (`dng`, `cr2`, `cr3`, `nef`, `arw`, `raf`) in `DEFAULT_ENABLED_RAW_FORMATS` (`src/lib/constants.ts`, `prisma/schema.prisma`).
+   - Added `halfSize` decoding threshold (`> 14 MB`), automatic half-size OOM retry, and plain-language unsupported-codec guidance (`src/lib/media/raw-decoder.ts`).
+2. **Streamlined Format Surface & Dependency Cleanup**
+   - Limited photo uploads strictly to `PNG`, `JPG`, `JPEG`, `WebP`, `HEIC`, `HEIF`, and verified `RAW` (`TIFF`/`TIF`, `BMP`, `AVIF` removed from UI/validation; `utif` and `@types/utif` uninstalled cleanly).
+   - Limited video & GIF uploads strictly to `MP4` and animated `GIF` (`MOV` and `WebM` removed).
+3. **Minimalist 2D UI, Working Pill Navbar, and Step-by-Step Converter Routes**
+   - Redesigned `SiteHeader.tsx` into a floating frosted-glass pill navbar (`Home`, `Convert`, `Guide`) with a working interactive `Menu` popover (`Photo to ASCII`, `Video & GIF`, `Format Guide`, `Try a Sample Photo`) and Escape / outside-click / route-change close behavior. Moved `Privacy` and `Terms` strictly to the dark minimal footer (`SiteFooter.tsx`).
+   - Rebuilt `/` with `MinimalHomeHero` and removed technical badges/clutter (`EXECUTION: WEB WORKER`, `IMAGE CAP`, `ZERO UPLOAD`, `OPEN CONVERTER`, `LOCAL BROWSER ENGINE`, `STAGE XX`).
+   - Replaced the monolithic page converter with dedicated step-by-step App Router pages backed by `ConverterSessionProvider`: `/convert` (Photo), `/convert/background` (Optional Background Cutout), `/convert/style` (Live Preview & Style), `/convert/export` (Copy & Save `.PNG`, `.TXT`, `.MD`, `.SVG`, `.HTML`), plus `/video` (`MP4` & `GIF` tool) and `/guide`.
+   - Updated `next.config.ts` so `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` cover `/`, `/convert`, `/convert/:path*`, and `/video` without interfering with `/admin` or `/api/auth/*`.
+   - Rewrote all visible UI copy, legal pages (`/privacy`, `/terms`), and admin/docs copy into clear, everyday English free of AI buzzwords and filler.
+
+### Verification Results
+
+- `npx tsc --noEmit`: Passed (0 errors)
+- `npm run lint`: Passed (0 errors, 0 warnings)
+- `npx vitest run`: Passed (`18` test files, `70` tests passed, including new `tests/step-routes.test.ts`)
+- `npm audit --omit=dev`: Passed (`found 0 vulnerabilities`)
+- `npm run build` (`prisma generate && next build` Turbopack): Passed cleanly across all static/dynamic routes
+- Headless Chrome CDP E2E (`1280x800` desktop & `390x844` mobile on `next start`):
+  - Verified `crossOriginIsolated: true` on `/`, `/convert`, `/video`, zero horizontal overflow across all routes, working pill `Menu` popover, full 4-step `sphere` conversion + `.TXT` export notice, and live LibRaw WASM decoding of real CC0 `sigma-fp.dng` and `canon-r6.cr3` uploads with zero console/page errors.
+
+
 
 
 
