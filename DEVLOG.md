@@ -164,4 +164,54 @@
 
 - Proceed to Step 4 (`feat/step-4-ascii-studio`): implement the Web Worker / Canvas ASCII engine, Basic and Advanced studio controls, `localStorage` custom presets and clearable history, and 5 export generators (`.PNG`, `.TXT`, `.MD`, `.SVG`, `.HTML`).
 
+## Milestone 4: Interactive ASCII Engine, Studio Controls, Presets, and Exporters
+
+- **Branch**: `feat/step-4-ascii-studio`
+- **Status**: Complete and verified in Node/Vitest, Turbopack production build, and headless Chrome CDP
+- **Date**: 2026-11-15
+
+### Completed Scope
+
+1. **ASCII Grid Engine, Tonal Calibration, and Presets**
+   - Defined core studio data models (`AsciiConversionSettings`, `AsciiGridResult`, `AsciiExportConfig`, `SavedAsciiPreset`, `AsciiHistoryEntry`) in `src/lib/ascii/types.ts`.
+   - Added 6 preset character ramps (`Standard ASCII`, `Detailed`, `Minimal`, `Blocks`, `Binary`, `Custom`) plus control-byte sanitization (`sanitizeCharacterRamp`) in `src/lib/ascii/presets.ts`.
+   - Built proportional cell-averaging, Rec. 709 luminance, Brightness/Contrast/Gamma curve adjustment, alpha cutout transparency space preservation, Monochrome / Original / Custom FG+BG color mapping, and dark-background ramp balancing in `src/lib/ascii/engine.ts`.
+2. **Five XSS-Safe Exporters, Zod Storage, and Phase 2 Hook**
+   - Implemented deterministic `.TXT` (space-padded), `.MD` (dynamic fence expansion preventing triple-backtick breakout), `.SVG` (XML-escaped text spans, transparent background option, sanitized hex attributes only), `.HTML` (standalone HTML5 with strict `default-src 'none'; style-src 'unsafe-inline'` CSP and escaped metadata), and `.PNG` (HiDPI offscreen Canvas renderer preserving alpha transparency and configurable `targetWidthPx`) in `src/lib/ascii/exporters.ts`.
+   - Implemented Zod-validated `localStorage` helpers (`dottoh:custom-presets:v1`, `dottoh:history:v1`, `dottoh:history-enabled:v1`) with strict bounds and corrupt-JSON recovery in `src/lib/ascii/storage.ts`.
+   - Added `PHASE2_VIDEO_CONSTRAINTS` and `createDisabledVideoAdapter` in `src/lib/ascii/video-hook.ts` matching Phase 2 limits (`100 MB`, `30s`, `1080p`, `30 FPS`; `720p/12 FPS` MP4 and `15s` GIF targets) without bundling `ffmpeg.wasm` in Phase 1.
+3. **Web Worker ASCII Pipeline and Studio UI Components**
+   - Built `src/workers/ascii-render.worker.ts` and `AsciiWorkerClient` (`src/lib/ascii/worker-client.ts`) with transferable `cellRgba` buffers and latest-request debouncing.
+   - Built `AsciiPreviewCanvas` (`CANVAS` vs. `TEXT`, `FIT` vs. `1:1`, checkerboard transparency preview toggle, live grid/canvas/render timing stats), `AsciiControlsPanel` (Basic controls plus animated `motion/react` Advanced panel respecting `prefers-reduced-motion`), `AsciiPresetsHistoryPanel` (local preset save/apply/delete, history logging toggle, clear history), `AsciiExportPanel`, and `AsciiStudioSection` integrated into `ConverterWorkspace` and `LandingStudioShell`.
+4. **Verification Tests**
+   - Added `tests/ascii-engine.test.ts` (tonal math, ramp sanitization, monochrome/invert/alpha-space behavior, original/custom color modes) and `tests/ascii-exporters.test.ts` (Markdown breakout guard, SVG/HTML `<script>`/`onerror` injection escaping, path traversal filename stripping, Zod `localStorage` persistence and corruption recovery).
+
+### Commit History (Step 4)
+
+- `6760290` - `feat(ascii): define ASCII studio types, presets, luminance math, and grid generator`
+- `4bb448b` - `feat(ascii): add 5 XSS-safe export generators, local storage, and Phase 2 hook`
+- `0a3a253` - `feat(worker): build dedicated Web Worker ASCII renderer and Canvas preview`
+- `3bf73d8` - `feat(studio): build Basic/Advanced ASCII controls, presets, history, and export panels`
+- `8179ab8` - `feat(studio): integrate interactive ASCII studio into ConverterWorkspace`
+- `91b6d41` - `test(ascii): add unit tests for ASCII engine, XSS-safe exporters, and Zod storage`
+- `HEAD` - `docs(devlog): update DEVLOG.md for Step 4 interactive ASCII studio`
+
+### Verification Results
+
+- `npm run typecheck` (`tsc --noEmit`): Passed
+- `npm run lint` (`eslint .`): Passed
+- `npm test` (`vitest run`): 12 test files, 44 tests passed
+- `npm run build` (`prisma generate && next build` Turbopack): Passed
+- `npm audit --omit=dev`: 0 production vulnerabilities
+- Headless Chrome CDP Verification (`next start` under strict CSP + COOP/COEP): Sample Sphere decoded into `100 x 52` ASCII grid in `4 ms` worker turn, switched presets, expanded advanced controls, saved custom preset & history in `localStorage`, and exported `.TXT`, `.MD`, `.SVG`, `.HTML`, and `.PNG` with `0` console or uncaught page errors.
+
+### Unresolved Issues & Open Questions
+
+1. **Admin Database & OAuth Wiring (Addressed in Step 5)**: `/admin` and live `AppConfig`/`TelemetryEvent`/`AuditLog` Prisma persistence remain unimplemented until Step 5 (`feat/step-5-admin-dashboard`); Vercel production environment variables (`DATABASE_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `GITHUB_ADMIN_IDS`) remain to be configured once Neon and GitHub OAuth credentials are ready.
+
+### Next Steps
+
+- Proceed to Step 5 (`feat/step-5-admin-dashboard`): implement rate limiter, Zod-validated public/admin APIs (`/api/config`, `/api/telemetry`, `/api/admin/settings`, `/api/admin/stats`, `/api/admin/audit-logs`), `/admin` dashboard with GitHub OAuth allowlisting, telemetry/config wiring, and integration tests.
+
+
 
