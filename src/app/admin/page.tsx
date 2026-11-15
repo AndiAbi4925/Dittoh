@@ -149,10 +149,10 @@ export default async function AdminPage() {
             )}
 
             <Link
-              href="/"
+              href="/convert"
               className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000]"
             >
-              OPEN CONVERTER
+              Go to Converter
             </Link>
           </div>
         </div>

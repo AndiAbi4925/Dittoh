@@ -407,7 +407,7 @@ export function AdminDashboardClient({
 
               <label className="block space-y-1 font-mono text-xs">
                 <span className="uppercase text-[#000000]">
-                  PHASE 2 MAX VIDEO (MB)
+                  MAX VIDEO SIZE (MB)
                 </span>
                 <input
                   type="number"
@@ -421,7 +421,7 @@ export function AdminDashboardClient({
 
               <label className="block space-y-1 font-mono text-xs">
                 <span className="uppercase text-[#000000]">
-                  PHASE 2 MAX DURATION (S)
+                  MAX VIDEO DURATION (S)
                 </span>
                 <input
                   type="number"
@@ -464,7 +464,7 @@ export function AdminDashboardClient({
             </div>
 
             <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#b1b3b3] bg-[#f4f4f4] p-3.5 font-mono text-xs uppercase text-[#000000]">
-              <span>ENABLE PHASE 2 VIDEO CONVERTER HOOK</span>
+              <span>ENABLE VIDEO &amp; GIF CONVERTER</span>
               <input
                 type="checkbox"
                 checked={draftEnableVideo}
