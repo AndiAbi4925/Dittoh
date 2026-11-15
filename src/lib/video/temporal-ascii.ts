@@ -248,7 +248,8 @@ export function convertVideoFrameToAsciiGrid(
         const prevIndex = state.prevRampIndices[cellFlatIdx] ?? -1;
         if (prevIndex >= 0 && prevIndex <= rampMaxIndex && prevIndex !== rampIndex) {
           const prevToneCenter = prevIndex / rampMaxIndex;
-          if (Math.abs(densityTone - prevToneCenter) < hysteresis) {
+          const deadband = 0.5 / rampMaxIndex + hysteresis;
+          if (Math.abs(densityTone - prevToneCenter) <= deadband) {
             rampIndex = prevIndex;
           }
         }
