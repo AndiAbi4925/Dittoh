@@ -20,7 +20,7 @@ model AppConfig {
   maxImageSizeMb       Int      @default(50)
   maxVideoSizeMb       Int      @default(100)
   maxVideoDurationSec  Int      @default(30)
-  enabledRawFormats    String[] @default(["arw", "dng"])
+  enabledRawFormats    String[] @default(["arw", "dng", "cr2", "cr3", "nef", "raf"])
   enableVideoConverter Boolean  @default(true)
   rateLimitPerMin      Int      @default(30)
   updatedAt            DateTime @updatedAt

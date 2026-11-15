@@ -20,10 +20,6 @@ export const SUPPORTED_RASTER_EXTENSIONS = [
   "webp",
   "heic",
   "heif",
-  "tiff",
-  "tif",
-  "bmp",
-  "avif",
 ] as const;
 
 export const SUPPORTED_RAW_EXTENSIONS = [
@@ -35,7 +31,14 @@ export const SUPPORTED_RAW_EXTENSIONS = [
   "raf",
 ] as const;
 
-export const DEFAULT_ENABLED_RAW_FORMATS = ["arw", "dng"] as const;
+export const DEFAULT_ENABLED_RAW_FORMATS = [
+  "arw",
+  "dng",
+  "cr2",
+  "cr3",
+  "nef",
+  "raf",
+] as const;
 
 export const SUPPORTED_EXPORT_FORMATS = [
   "png",
@@ -45,12 +48,7 @@ export const SUPPORTED_EXPORT_FORMATS = [
   "html",
 ] as const;
 
-export const SUPPORTED_VIDEO_EXTENSIONS = [
-  "mp4",
-  "gif",
-  "mov",
-  "webm",
-] as const;
+export const SUPPORTED_VIDEO_EXTENSIONS = ["mp4", "gif"] as const;
 
 export const SUPPORTED_VIDEO_EXPORT_FORMATS = ["mp4", "gif"] as const;
 

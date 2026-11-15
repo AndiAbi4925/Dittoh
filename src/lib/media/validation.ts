@@ -24,10 +24,8 @@ export type SignatureCategory =
   | "png"
   | "jpeg"
   | "webp"
-  | "bmp"
   | "tiff"
   | "isobmff-heic"
-  | "isobmff-avif"
   | "isobmff-cr3"
   | "isobmff-generic"
   | "raf"
@@ -43,10 +41,6 @@ const MIME_BY_EXTENSION: Record<SupportedMediaExtension, string> = {
   webp: "image/webp",
   heic: "image/heic",
   heif: "image/heif",
-  tiff: "image/tiff",
-  tif: "image/tiff",
-  bmp: "image/bmp",
-  avif: "image/avif",
   arw: "image/x-sony-arw",
   dng: "image/x-adobe-dng",
   cr2: "image/x-canon-cr2",
@@ -62,11 +56,6 @@ const EXTENSION_BY_MIME: Record<string, SupportedMediaExtension> = {
   "image/webp": "webp",
   "image/heic": "heic",
   "image/heif": "heif",
-  "image/tiff": "tiff",
-  "image/x-tiff": "tiff",
-  "image/bmp": "bmp",
-  "image/x-ms-bmp": "bmp",
-  "image/avif": "avif",
   "image/x-sony-arw": "arw",
   "image/x-adobe-dng": "dng",
 };
@@ -114,9 +103,6 @@ export function inspectMagicBytes(bytes: Uint8Array): SignatureCategory {
   if (matchesAscii(bytes, 0, "RIFF") && matchesAscii(bytes, 8, "WEBP")) {
     return "webp";
   }
-  if (startsWithBytes(bytes, [0x42, 0x4d])) {
-    return "bmp";
-  }
   if (
     startsWithBytes(bytes, [0x49, 0x49, 0x2a, 0x00]) ||
     startsWithBytes(bytes, [0x4d, 0x4d, 0x00, 0x2a]) ||
@@ -134,9 +120,6 @@ export function inspectMagicBytes(bytes: Uint8Array): SignatureCategory {
       bytes[10] ?? 0,
       bytes[11] ?? 0
     ).toLowerCase();
-    if (brand === "avif" || brand === "avis") {
-      return "isobmff-avif";
-    }
     if (brand === "crx ") {
       return "isobmff-cr3";
     }
@@ -167,10 +150,6 @@ function matchesExpectedSignature(
       return signature === "jpeg";
     case "webp":
       return signature === "webp";
-    case "bmp":
-      return signature === "bmp";
-    case "tiff":
-    case "tif":
     case "arw":
     case "dng":
     case "cr2":
@@ -181,12 +160,6 @@ function matchesExpectedSignature(
     case "heic":
     case "heif":
       return signature === "isobmff-heic" || signature === "isobmff-generic";
-    case "avif":
-      return (
-        signature === "isobmff-avif" ||
-        signature === "isobmff-heic" ||
-        signature === "isobmff-generic"
-      );
     case "cr3":
       return signature === "isobmff-cr3" || signature === "isobmff-generic";
   }
@@ -197,9 +170,6 @@ export function classifyFormatKind(
 ): MediaFormatKind {
   if (RAW_SET.has(extension)) {
     return "raw";
-  }
-  if (extension === "tiff" || extension === "tif") {
-    return "tiff";
   }
   if (extension === "heic" || extension === "heif") {
     return "heic";
@@ -223,18 +193,11 @@ export function buildAcceptAttribute(enabledRawFormats: readonly string[]): stri
     ".webp",
     ".heic",
     ".heif",
-    ".tiff",
-    ".tif",
-    ".bmp",
-    ".avif",
     "image/png",
     "image/jpeg",
     "image/webp",
     "image/heic",
     "image/heif",
-    "image/tiff",
-    "image/bmp",
-    "image/avif",
   ];
   for (const rawExt of SUPPORTED_RAW_EXTENSIONS) {
     if (normalizedRaw.has(rawExt)) {
@@ -252,7 +215,7 @@ export function validateMediaFile(
     return {
       ok: false,
       code: "EMPTY_FILE",
-      message: "Selected file is empty (0 bytes). Choose a valid image or RAW file.",
+      message: "This file is empty. Please pick another photo.",
     };
   }
 
@@ -262,7 +225,7 @@ export function validateMediaFile(
     return {
       ok: false,
       code: "FILE_TOO_LARGE",
-      message: `File size (${actualMb} MB) exceeds the configured ${config.maxImageSizeMb} MB limit.`,
+      message: `This file is ${actualMb} MB, which is over the ${config.maxImageSizeMb} MB limit.`,
     };
   }
 
@@ -276,7 +239,7 @@ export function validateMediaFile(
       ok: false,
       code: "UNSUPPORTED_FORMAT",
       message:
-        "Could not determine image format. Supported formats: PNG, JPG, WebP, HEIC/HEIF, TIFF, BMP, AVIF, ARW, and DNG.",
+        "We could not recognize that image type. Use PNG, JPG, JPEG, WebP, HEIC, HEIF, or a camera RAW file.",
     };
   }
 
@@ -284,10 +247,14 @@ export function validateMediaFile(
   const isRaw = RAW_SET.has(resolvedExt);
 
   if (!isRaster && !isRaw) {
+    const enabledRawLabel =
+      config.enabledRawFormats.length > 0
+        ? ` (${config.enabledRawFormats.map((f) => `.${f.toUpperCase()}`).join(", ")})`
+        : "";
     return {
       ok: false,
       code: "UNSUPPORTED_FORMAT",
-      message: `Format .${resolvedExt} is not supported. Supported images: PNG, JPG, WebP, HEIC/HEIF, TIFF, BMP, AVIF. Enabled RAW: ${config.enabledRawFormats.map((f) => `.${f.toUpperCase()}`).join(", ")}.`,
+      message: `.${resolvedExt.toUpperCase()} files are not supported. Use PNG, JPG, JPEG, WebP, HEIC, HEIF, or RAW${enabledRawLabel}.`,
     };
   }
 
@@ -305,7 +272,7 @@ export function validateMediaFile(
       return {
         ok: false,
         code: "RAW_FORMAT_DISABLED",
-        message: `Camera RAW format .${resolvedExt.toUpperCase()} is currently disabled until decoder verification completes. Currently enabled RAW formats: ${enabledLabel}. Convert to DNG or PNG to process immediately.`,
+        message: `.${resolvedExt.toUpperCase()} camera files are not turned on yet. Supported RAW formats right now: ${enabledLabel}. You can also convert the photo to DNG, PNG, or JPG.`,
       };
     }
   }
@@ -318,7 +285,7 @@ export function validateMediaFile(
       return {
         ok: false,
         code: "SIGNATURE_MISMATCH",
-        message: `File header does not match a valid .${typedExt.toUpperCase()} file. Verify the file is not corrupted or renamed from another type.`,
+        message: `This file does not look like a real .${typedExt.toUpperCase()} photo. Try opening and re-saving it first.`,
       };
     }
   }
