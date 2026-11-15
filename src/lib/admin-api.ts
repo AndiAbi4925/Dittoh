@@ -76,6 +76,17 @@ export async function parseBoundedJsonBody(
   request: NextRequest,
   maxBytes = 8192
 ): Promise<{ ok: true; data: unknown } | { ok: false; response: NextResponse }> {
+  const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!contentType.includes("application/json")) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: "Unsupported Media Type: Content-Type must be application/json." },
+        { status: 415, headers: { "Cache-Control": "no-store" } }
+      ),
+    };
+  }
+
   const lengthHeader = request.headers.get("content-length");
   if (lengthHeader) {
     const parsedLen = Number(lengthHeader);

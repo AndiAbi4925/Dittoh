@@ -71,11 +71,14 @@ export function getAllowedOrigins(
  * Evaluates strict same-origin CORS policy for API endpoints.
  * Wildcard origins are never permitted.
  */
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 export function evaluateApiCors(
   params: {
     method: string;
     originHeader: string | null;
     requestUrl: string;
+    secFetchSite?: string | null;
     configuredAppUrl?: string;
     vercelUrl?: string;
     vercelProductionUrl?: string;
@@ -83,6 +86,18 @@ export function evaluateApiCors(
 ): CorsDecision {
   const method = params.method.toUpperCase();
   const isPreflight = method === "OPTIONS";
+
+  if (
+    MUTATING_METHODS.has(method) &&
+    params.secFetchSite?.trim().toLowerCase() === "cross-site"
+  ) {
+    return {
+      allowed: false,
+      allowOrigin: null,
+      isPreflight,
+    };
+  }
+
   const requestOrigin = normalizeOrigin(params.originHeader);
 
   if (!params.originHeader) {

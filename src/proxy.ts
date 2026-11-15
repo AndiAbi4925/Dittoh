@@ -17,6 +17,7 @@ export function proxy(request: NextRequest): NextResponse {
       method: request.method,
       originHeader: request.headers.get("origin"),
       requestUrl: request.url,
+      secFetchSite: request.headers.get("sec-fetch-site"),
     });
 
     if (!cors.allowed) {
