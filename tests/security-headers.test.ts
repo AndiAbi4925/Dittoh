@@ -9,6 +9,7 @@ describe("security headers and CSP", () => {
     const csp = buildContentSecurityPolicy({ isProduction: true });
     expect(csp).toContain("'wasm-unsafe-eval'");
     expect(csp).not.toContain("'unsafe-eval'");
+    expect(csp).toContain("media-src 'self' blob:");
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("upgrade-insecure-requests");

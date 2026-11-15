@@ -35,6 +35,7 @@ export function buildContentSecurityPolicy(
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
     "img-src 'self' data: blob: https://avatars.githubusercontent.com",
+    "media-src 'self' blob:",
     "connect-src 'self' blob: data:",
     "worker-src 'self' blob:",
     ...(isProduction ? ["upgrade-insecure-requests"] : []),

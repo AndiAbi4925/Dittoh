@@ -21,6 +21,16 @@ Dottoh Client-Side Media Runtime Third-Party License Notices
    Original Architecture: https://github.com/xuebinqin/U-2-Net (Apache-2.0)
    Files: public/wasm/models/u2netp.onnx
 
+4. @ffmpeg/ffmpeg (v0.12.15) and @ffmpeg/util (v0.12.2)
+   License: MIT
+   Source: https://github.com/ffmpegwasm/ffmpeg.wasm
+   Files: public/wasm/ffmpeg/worker.js, public/wasm/ffmpeg/const.js, public/wasm/ffmpeg/errors.js
+
+5. @ffmpeg/core (v0.12.10, single-threaded ESM build)
+   License: GNU General Public License v2.0 or later (GPL-2.0-or-later)
+   Source: https://github.com/ffmpegwasm/ffmpeg.wasm
+   Files: public/wasm/ffmpeg/ffmpeg-core.js, public/wasm/ffmpeg/ffmpeg-core.wasm (unmodified upstream build)
+
 Note on @imgly/background-removal:
    @imgly/background-removal uses GNU Affero General Public License v3 (AGPL-3.0)
    and fetches remote CDN assets by default. It was intentionally excluded after
