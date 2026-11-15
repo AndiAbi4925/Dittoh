@@ -3,6 +3,17 @@ import { buildSecurityHeaders } from "./src/lib/security-headers";
 
 const projectRoot = process.cwd();
 
+const CROSS_ORIGIN_ISOLATION_HEADERS = [
+  {
+    key: "Cross-Origin-Opener-Policy",
+    value: "same-origin",
+  },
+  {
+    key: "Cross-Origin-Embedder-Policy",
+    value: "require-corp",
+  },
+];
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
@@ -16,19 +27,10 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: buildSecurityHeaders(),
       },
-      {
-        source: "/",
-        headers: [
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-        ],
-      },
+      ...["/", "/convert", "/convert/:path*", "/video"].map((source) => ({
+        source,
+        headers: CROSS_ORIGIN_ISOLATION_HEADERS,
+      })),
       {
         source: "/wasm/:path*",
         headers: [
