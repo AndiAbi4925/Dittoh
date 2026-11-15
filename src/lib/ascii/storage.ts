@@ -31,7 +31,7 @@ const hexStringSchema = z
   .string()
   .transform((val) => normalizeHexColor(val) ?? "#000000");
 
-export const asciiSettingsSchema = z.object({
+const asciiSettingsSchema = z.object({
   presetId: asciiPresetIdSchema,
   customCharacters: z
     .string()

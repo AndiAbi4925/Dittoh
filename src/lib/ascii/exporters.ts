@@ -12,7 +12,7 @@ function stripXmlControlChars(input: string): string {
   return input.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "");
 }
 
-export function escapeXmlText(input: string): string {
+function escapeXmlText(input: string): string {
   return stripXmlControlChars(input)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -21,7 +21,7 @@ export function escapeXmlText(input: string): string {
     .replaceAll("'", "&#39;");
 }
 
-export function escapeHtmlText(input: string): string {
+function escapeHtmlText(input: string): string {
   return escapeXmlText(input);
 }
 

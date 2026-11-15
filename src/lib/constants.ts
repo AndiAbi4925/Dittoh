@@ -50,5 +50,3 @@ export const SUPPORTED_EXPORT_FORMATS = [
 
 export const SUPPORTED_VIDEO_EXTENSIONS = ["mp4", "gif"] as const;
 
-export const SUPPORTED_VIDEO_EXPORT_FORMATS = ["mp4", "gif"] as const;
-

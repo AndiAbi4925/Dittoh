@@ -15,7 +15,7 @@ import type { AppConfigPatchInput } from "@/lib/validation/admin";
 
 export type { AdminAppConfig, PublicAppConfig } from "@/lib/admin-types";
 
-export const DEFAULT_PUBLIC_APP_CONFIG: PublicAppConfig = {
+const DEFAULT_PUBLIC_APP_CONFIG: PublicAppConfig = {
   maxImageSizeMb: DEFAULT_MAX_IMAGE_SIZE_MB,
   maxVideoSizeMb: DEFAULT_MAX_VIDEO_SIZE_MB,
   maxVideoDurationSec: DEFAULT_MAX_VIDEO_DURATION_SEC,
