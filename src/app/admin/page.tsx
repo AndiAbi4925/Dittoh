@@ -78,7 +78,7 @@ export default async function AdminPage() {
               href="/"
               className="dottoh-btn border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
-              RETURN TO CONVERTER
+              BACK TO HOME
             </Link>
           </div>
         </div>
