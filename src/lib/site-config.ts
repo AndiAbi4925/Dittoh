@@ -1,18 +1,17 @@
 import { getOptionalServerEnv } from "@/lib/env";
+import {
+  DEFAULT_CONTACT_EMAIL,
+  GITHUB_REPO_URL,
+  type NavItem,
+  SITE_NAV_ITEMS,
+} from "@/lib/site-constants";
 
-export const DEFAULT_CONTACT_EMAIL = "contact@dottoh.app";
-export const GITHUB_REPO_URL = "https://github.com/AndiAbi4925/Dittoh";
-
-export interface NavItem {
-  href: string;
-  label: string;
-}
-
-export const SITE_NAV_ITEMS: readonly NavItem[] = [
-  { href: "/", label: "STUDIO" },
-  { href: "/privacy", label: "PRIVACY" },
-  { href: "/terms", label: "TERMS" },
-] as const;
+export {
+  DEFAULT_CONTACT_EMAIL,
+  GITHUB_REPO_URL,
+  type NavItem,
+  SITE_NAV_ITEMS,
+};
 
 export function getContactEmail(): string {
   const { ADMIN_CONTACT_EMAIL } = getOptionalServerEnv();

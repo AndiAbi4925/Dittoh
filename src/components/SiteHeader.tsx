@@ -10,7 +10,7 @@ import {
   IconMenuGrid,
   IconShieldLock,
 } from "@/components/BrandMark";
-import { SITE_NAV_ITEMS } from "@/lib/site-config";
+import { SITE_NAV_ITEMS } from "@/lib/site-constants";
 
 export function SiteHeader() {
   const pathname = usePathname();

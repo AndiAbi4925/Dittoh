@@ -193,7 +193,7 @@ export function AdminDashboardClient({
           <p className="mt-1 font-mono text-[11px] text-[#525252]">
             {typeof health.latencyMs === "number"
               ? `QUERY LATENCY ${health.latencyMs} MS`
-              : "SET DATABASE_URL TO ENABLE PERSISTENCE"}
+              : "NEON POSTGRESQL UNCONFIGURED"}
           </p>
         </div>
 
@@ -476,7 +476,7 @@ export function AdminDashboardClient({
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               {!config.databaseConfigured && (
                 <span className="font-mono text-[11px] text-[#d71921]">
-                  Read-only fallback: configure DATABASE_URL to save changes.
+                  Read-only fallback: configure Neon PostgreSQL persistence to save changes.
                 </span>
               )}
               <button

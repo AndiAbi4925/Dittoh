@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { DottohMark } from "@/components/BrandMark";
 import { APP_NAME, APP_VERSION } from "@/lib/constants";
-import { GITHUB_REPO_URL } from "@/lib/site-config";
+import { GITHUB_REPO_URL } from "@/lib/site-constants";
 
 export function SiteFooter({ contactEmail }: { contactEmail: string }) {
   return (
