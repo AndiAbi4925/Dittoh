@@ -9,10 +9,12 @@ import "@fontsource/jetbrains-mono/700.css";
 import { MotionProvider } from "@/components/MotionProvider";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { getPublicEnv } from "@/lib/env";
 import { getContactEmail } from "@/lib/site-config";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getPublicEnv().NEXT_PUBLIC_APP_URL),
   title: {
     default: "Dottoh | Photo to ASCII Art",
     template: "%s | Dottoh",
