@@ -2,7 +2,6 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
-import { IconSlidersGrid } from "@/components/BrandMark";
 import { ASCII_PRESETS, resolvePresetRamp } from "@/lib/ascii/presets";
 import type { AsciiColorMode, AsciiConversionSettings } from "@/lib/ascii/types";
 import { isValidHexColor, normalizeHexColor } from "@/lib/media/colors";
@@ -40,9 +39,7 @@ function HexInputControl({
 
   return (
     <div className="space-y-1.5">
-      <span className="block font-mono text-[11px] uppercase text-[#525252]">
-        {label}
-      </span>
+      <span className="block text-xs text-[#525252]">{label}</span>
       <div className="flex items-center gap-2">
         <input
           type="color"
@@ -50,7 +47,7 @@ function HexInputControl({
           disabled={disabled}
           value={normalizeHexColor(value) ?? "#000000"}
           onChange={(e) => handleChange(e.target.value)}
-          className="h-9 w-10 shrink-0 cursor-pointer border border-[#b1b3b3] bg-[#ffffff] p-0.5 disabled:opacity-40"
+          className="h-9 w-10 shrink-0 cursor-pointer border border-[#d4d4d4] bg-[#ffffff] p-0.5 disabled:opacity-40"
         />
         <input
           type="text"
@@ -66,7 +63,7 @@ function HexInputControl({
           maxLength={7}
           placeholder="#000000"
           className={`w-full border px-2.5 py-2 font-mono text-xs text-[#000000] disabled:bg-[#f4f4f4] disabled:opacity-40 ${
-            valid ? "border-[#b1b3b3]" : "border-[#d71921]"
+            valid ? "border-[#d4d4d4]" : "border-[#d71921]"
           }`}
         />
       </div>
@@ -93,36 +90,28 @@ export function AsciiControlsPanel({
   ).join("");
 
   return (
-    <div className="border border-[#b1b3b3] bg-[#ffffff] p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#b1b3b3] pb-3.5">
-        <div className="flex items-center gap-2.5">
-          <IconSlidersGrid className="h-4 w-4 text-[#000000]" />
-          <div>
-            <p className="font-mono text-[11px] tracking-widest text-[#d71921] uppercase">
-              STAGE 04 / ENGINE PARAMETERS
-            </p>
-            <h3 className="font-display text-lg text-[#000000]">
-              ASCII MATRIX CONTROLS
-            </h3>
-          </div>
-        </div>
+    <div className="border border-[#d4d4d4] bg-[#ffffff] p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e5e5] pb-3.5">
+        <h2 className="font-sans text-lg font-medium text-[#000000]">
+          Look &amp; Style
+        </h2>
 
         <button
           type="button"
           onClick={onReset}
-          className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000]"
+          className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000]"
         >
-          RESET DEFAULT
+          Reset
         </button>
       </div>
 
       <div className="mt-5 space-y-5">
         <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-mono text-xs uppercase text-[#000000]">
-              CHARACTER PRESET
+            <span className="text-xs font-medium text-[#000000]">
+              Character style
             </span>
-            <span className="max-w-[190px] truncate font-mono text-[11px] text-[#525252]">
+            <span className="max-w-[160px] truncate font-mono text-[11px] text-[#525252]">
               {activeRampPreview}
             </span>
           </div>
@@ -139,7 +128,7 @@ export function AsciiControlsPanel({
                   className={`dottoh-btn border px-2.5 py-2 text-left text-[11px] ${
                     active
                       ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                      : "border-[#b1b3b3] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
+                      : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
                   }`}
                 >
                   {preset.label}
@@ -150,11 +139,11 @@ export function AsciiControlsPanel({
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between font-mono text-xs">
-            <label htmlFor="ascii-columns-range" className="uppercase text-[#000000]">
-              DENSITY / COLUMNS
+          <div className="flex items-center justify-between text-xs">
+            <label htmlFor="ascii-columns-range" className="font-medium text-[#000000]">
+              Detail
             </label>
-            <span className="text-[#000000]">{settings.columns} COLS</span>
+            <span className="font-mono text-[#525252]">{settings.columns} wide</span>
           </div>
           <input
             id="ascii-columns-range"
@@ -167,22 +156,20 @@ export function AsciiControlsPanel({
             className="w-full accent-[#d71921]"
           />
           <div className="flex justify-between font-mono text-[10px] text-[#525252]">
-            <span>16 (COARSE)</span>
-            <span>100 (BALANCED)</span>
-            <span>260 (ULTRA)</span>
+            <span>Simple</span>
+            <span>Balanced</span>
+            <span>Detailed</span>
           </div>
         </div>
 
         <div className="space-y-2.5">
-          <span className="block font-mono text-xs uppercase text-[#000000]">
-            COLOR OUTPUT MODE
-          </span>
+          <span className="block text-xs font-medium text-[#000000]">Colors</span>
           <div className="grid grid-cols-3 gap-2">
             {(
               [
-                { id: "monochrome", label: "MONO" },
-                { id: "original", label: "ORIGINAL" },
-                { id: "custom", label: "CUSTOM FG/BG" },
+                { id: "monochrome", label: "Black & White" },
+                { id: "original", label: "Photo Colors" },
+                { id: "custom", label: "Custom" },
               ] as const
             ).map((mode: { id: AsciiColorMode; label: string }) => {
               const active = settings.colorMode === mode.id;
@@ -195,7 +182,7 @@ export function AsciiControlsPanel({
                   className={`dottoh-btn border px-2 py-2 text-[11px] ${
                     active
                       ? "border-[#000000] bg-[#000000] text-[#ffffff]"
-                      : "border-[#b1b3b3] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
+                      : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
                   }`}
                 >
                   {mode.label}
@@ -205,16 +192,16 @@ export function AsciiControlsPanel({
           </div>
 
           {settings.colorMode === "custom" && (
-            <div className="grid grid-cols-1 gap-3 border border-[#b1b3b3] bg-[#f4f4f4] p-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 border border-[#e5e5e5] bg-[#f4f4f4] p-3 sm:grid-cols-2">
               <HexInputControl
                 key={`fg-${settingsEpoch}`}
-                label="FOREGROUND"
+                label="Text color"
                 value={settings.customForegroundHex}
                 onValidHex={(hex) => patch({ customForegroundHex: hex })}
               />
               <HexInputControl
                 key={`bg-${settingsEpoch}`}
-                label="BACKGROUND"
+                label="Background color"
                 value={settings.customBackgroundHex}
                 disabled={settings.transparentBackground}
                 onValidHex={(hex) => patch({ customBackgroundHex: hex })}
@@ -223,10 +210,10 @@ export function AsciiControlsPanel({
           )}
 
           {settings.colorMode === "original" && (
-            <div className="border border-[#b1b3b3] bg-[#f4f4f4] p-3">
+            <div className="border border-[#e5e5e5] bg-[#f4f4f4] p-3">
               <HexInputControl
                 key={`orig-bg-${settingsEpoch}`}
-                label="CANVAS BACKGROUND HEX"
+                label="Background color"
                 value={settings.customBackgroundHex}
                 disabled={settings.transparentBackground}
                 onValidHex={(hex) => patch({ customBackgroundHex: hex })}
@@ -236,10 +223,8 @@ export function AsciiControlsPanel({
         </div>
 
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#b1b3b3] bg-[#f4f4f4] px-3 py-2.5">
-            <span className="font-mono text-xs uppercase text-[#000000]">
-              INVERT TONES
-            </span>
+          <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#e5e5e5] bg-[#f4f4f4] px-3 py-2.5">
+            <span className="text-xs text-[#000000]">Flip light &amp; dark</span>
             <input
               type="checkbox"
               checked={settings.invert}
@@ -248,10 +233,8 @@ export function AsciiControlsPanel({
             />
           </label>
 
-          <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#b1b3b3] bg-[#f4f4f4] px-3 py-2.5">
-            <span className="font-mono text-xs uppercase text-[#000000]">
-              TRANSPARENT BG
-            </span>
+          <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#e5e5e5] bg-[#f4f4f4] px-3 py-2.5">
+            <span className="text-xs text-[#000000]">Transparent background</span>
             <input
               type="checkbox"
               checked={settings.transparentBackground}
@@ -261,16 +244,16 @@ export function AsciiControlsPanel({
           </label>
         </div>
 
-        <div className="border-t border-[#b1b3b3] pt-4">
+        <div className="border-t border-[#e5e5e5] pt-4">
           <button
             type="button"
             aria-expanded={showAdvanced}
             onClick={() => setShowAdvanced((prev) => !prev)}
-            className="dottoh-btn flex w-full items-center justify-between border border-[#000000] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:bg-[#f4f4f4]"
+            className="dottoh-btn flex w-full items-center justify-between border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
           >
-            <span>ADVANCED CALIBRATION</span>
+            <span>More options</span>
             <span className="font-mono text-[#d71921]">
-              {showAdvanced ? "HIDE [-]" : "EXPAND [+]"}
+              {showAdvanced ? "Hide" : "Show"}
             </span>
           </button>
 
@@ -283,22 +266,22 @@ export function AsciiControlsPanel({
                 transition={{ duration: shouldReduceMotion ? 0 : 0.18 }}
                 className="overflow-hidden"
               >
-                <div className="mt-4 space-y-4 border border-[#b1b3b3] bg-[#f4f4f4] p-4">
+                <div className="mt-4 space-y-4 border border-[#e5e5e5] bg-[#f4f4f4] p-4">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <label
                         htmlFor="ascii-custom-chars"
-                        className="font-mono text-[11px] uppercase text-[#000000]"
+                        className="text-xs text-[#000000]"
                       >
-                        CUSTOM CHARACTER RAMP (LIGHT TO DARK)
+                        Custom characters (light to dark)
                       </label>
                       {settings.presetId !== "custom" && (
                         <button
                           type="button"
                           onClick={() => patch({ presetId: "custom" })}
-                          className="font-mono text-[10px] uppercase text-[#d71921] underline"
+                          className="font-mono text-[10px] text-[#d71921] underline"
                         >
-                          ACTIVATE CUSTOM
+                          Use custom
                         </button>
                       )}
                     </div>
@@ -314,15 +297,15 @@ export function AsciiControlsPanel({
                         })
                       }
                       placeholder=" .:+*#%@"
-                      className="w-full border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 font-mono text-xs text-[#000000]"
+                      className="w-full border border-[#d4d4d4] bg-[#ffffff] px-3 py-2 font-mono text-xs text-[#000000]"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-1">
-                      <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ascii-font-size">FONT SIZE</label>
-                        <span>{settings.fontSizePx} PX</span>
+                      <div className="flex justify-between text-xs">
+                        <label htmlFor="ascii-font-size">Text size</label>
+                        <span className="font-mono">{settings.fontSizePx} px</span>
                       </div>
                       <input
                         id="ascii-font-size"
@@ -339,9 +322,11 @@ export function AsciiControlsPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ascii-char-spacing">CHAR SPACING</label>
-                        <span>{settings.characterSpacingPx.toFixed(1)} PX</span>
+                      <div className="flex justify-between text-xs">
+                        <label htmlFor="ascii-char-spacing">Letter spacing</label>
+                        <span className="font-mono">
+                          {settings.characterSpacingPx.toFixed(1)} px
+                        </span>
                       </div>
                       <input
                         id="ascii-char-spacing"
@@ -358,9 +343,11 @@ export function AsciiControlsPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ascii-aspect">ASPECT RATIO</label>
-                        <span>{settings.aspectRatioCorrection.toFixed(2)}</span>
+                      <div className="flex justify-between text-xs">
+                        <label htmlFor="ascii-aspect">Height balance</label>
+                        <span className="font-mono">
+                          {settings.aspectRatioCorrection.toFixed(2)}
+                        </span>
                       </div>
                       <input
                         id="ascii-aspect"
@@ -377,9 +364,9 @@ export function AsciiControlsPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ascii-brightness">BRIGHTNESS</label>
-                        <span>{settings.brightness}</span>
+                      <div className="flex justify-between text-xs">
+                        <label htmlFor="ascii-brightness">Brightness</label>
+                        <span className="font-mono">{settings.brightness}</span>
                       </div>
                       <input
                         id="ascii-brightness"
@@ -396,9 +383,9 @@ export function AsciiControlsPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ascii-contrast">CONTRAST</label>
-                        <span>{settings.contrast}</span>
+                      <div className="flex justify-between text-xs">
+                        <label htmlFor="ascii-contrast">Contrast</label>
+                        <span className="font-mono">{settings.contrast}</span>
                       </div>
                       <input
                         id="ascii-contrast"
@@ -415,9 +402,9 @@ export function AsciiControlsPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ascii-gamma">GAMMA</label>
-                        <span>{settings.gamma.toFixed(2)}</span>
+                      <div className="flex justify-between text-xs">
+                        <label htmlFor="ascii-gamma">Midtones</label>
+                        <span className="font-mono">{settings.gamma.toFixed(2)}</span>
                       </div>
                       <input
                         id="ascii-gamma"
@@ -432,10 +419,10 @@ export function AsciiControlsPanel({
                     </div>
                   </div>
 
-                  <div className="space-y-1 border-t border-[#b1b3b3] pt-3">
-                    <div className="flex justify-between font-mono text-[11px]">
-                      <label htmlFor="ascii-alpha">ALPHA CUTOUT THRESHOLD</label>
-                      <span>{settings.alphaThreshold} / 254</span>
+                  <div className="space-y-1 border-t border-[#e5e5e5] pt-3">
+                    <div className="flex justify-between text-xs">
+                      <label htmlFor="ascii-alpha">Transparency cutoff</label>
+                      <span className="font-mono">{settings.alphaThreshold}</span>
                     </div>
                     <input
                       id="ascii-alpha"
