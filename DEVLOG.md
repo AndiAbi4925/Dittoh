@@ -213,5 +213,55 @@
 
 - Proceed to Step 5 (`feat/step-5-admin-dashboard`): implement rate limiter, Zod-validated public/admin APIs (`/api/config`, `/api/telemetry`, `/api/admin/settings`, `/api/admin/stats`, `/api/admin/audit-logs`), `/admin` dashboard with GitHub OAuth allowlisting, telemetry/config wiring, and integration tests.
 
+## Milestone 5: Protected Admin Dashboard, Telemetry, AppConfig, Rate Limiting, and Audit Logging
+
+- **Branch**: `feat/step-5-admin-dashboard`
+- **Status**: Complete and verified across unit/integration suites, production build, and live HTTP route smoke checks
+- **Date**: 2026-11-15
+
+### Completed Scope
+
+1. **Sliding-Window Rate Limiter, IP Hashing, and Strict Zod Validation**
+   - Built `src/lib/rate-limit.ts` with `extractClientIp`, SHA-256 salted `hashClientIp` (never storing raw IP addresses), sliding-window in-memory bucket limiting with bounded eviction, and optional Upstash Redis REST pipeline integration.
+   - Defined strict Zod schemas (`telemetryEventSchema`, `appConfigPatchSchema`, `adminAuditQuerySchema`, `adminStatsQuerySchema`, `allowlistCreateSchema`) in `src/lib/validation/admin.ts` rejecting unexpected properties, invalid slugs, and out-of-range limits.
+2. **Database Services with Graceful Fallback**
+   - Implemented `src/lib/app-config.ts` (`getPublicAppConfig`, `getAdminAppConfig`, transactional `updateAppConfig` writing `AuditLog` entries automatically) with deterministic fallback to default limits when `DATABASE_URL` is unconfigured.
+   - Implemented `src/lib/telemetry-stats.ts` (`recordTelemetryEvent`, `writeAuditLog`, `getAdminTelemetryStats`, `getAdminAuditLogs`) computing real recorded usage metrics (`0` / empty when no database records exist, zero fabricated counters).
+3. **Public Config, Telemetry, and Fail-Closed Admin APIs**
+   - Built `src/lib/admin-api.ts` shared authorization/rate-limiting helper and `parseBoundedJsonBody`.
+   - Added `GET /api/config`, `POST /api/telemetry` (rate-limited, `413` body cap, `429` retry headers), `GET/PATCH /api/admin/settings`, `GET /api/admin/stats`, and `GET /api/admin/audit-logs`, all enforced with `requireAdminSession()` (`401`/`403`) and `Cache-Control: no-store`.
+4. **Admin Console UI and Studio Live Config Wiring**
+   - Built `/admin` (`src/app/admin/page.tsx`) and `AdminDashboardClient` (`src/components/admin/AdminDashboardClient.tsx`) supporting GitHub OAuth sign-in, explicit 403 non-allowlisted barrier, explicit missing-env status guide (booleans only, never secret values), live system health metrics, `7D`/`30D`/`90D` telemetry breakdown, `AppConfig` runtime editor, and paginated `AuditLog` table.
+   - Wired `src/app/page.tsx` -> `LandingStudioShell` -> `ConverterWorkspace` to honor dynamic `AppConfig` caps and emit anonymous best-effort events (`conversion`, `bg_removal`, `export`) via `src/lib/ascii/telemetry-client.ts`.
+5. **Unit and Integration Test Coverage**
+   - Added `tests/rate-limit.test.ts` (sliding-window blocking/recovery, IP hashing, Zod boundary/rejection tests) and `tests/admin-api.test.ts` (DB transaction mock tests, `/api/config` leak check, `/api/telemetry` rate limiting, `/api/admin/*` 401/403/503 enforcement).
+
+### Commit History (Step 5)
+
+- `687d8a7` - `feat(security): add sliding-window rate limiter, IP hashing, and Zod API schemas`
+- `c119a75` - `feat(server): add AppConfig, telemetry aggregation, and audit logging services`
+- `a7204ce` - `feat(api): add /api/config, rate-limited /api/telemetry, and protected /api/admin routes`
+- `c6e3cdd` - `feat(admin): build /admin protected console and wire live AppConfig + telemetry`
+- `3e1adbb` - `test(admin): add unit and integration tests for rate limiter, schemas, and admin APIs`
+- `HEAD` - `docs(devlog): update DEVLOG.md for Step 5 admin dashboard and API wiring`
+
+### Verification Results
+
+- `npm run typecheck` (`tsc --noEmit`): Passed
+- `npm run lint` (`eslint .`): Passed
+- `npm test` (`vitest run`): 14 test files, 54 tests passed
+- `npm run build` (`prisma generate && next build` Turbopack): Passed
+- `npm audit --omit=dev`: 0 production vulnerabilities
+- Production Server Smoke (`next start -p 3198`): `/admin` returned `HTTP 200` (`Cache-Control: no-store`, `X-Robots-Tag: noindex, nofollow`), `/api/config` returned `HTTP 200`, `/api/telemetry` returned `HTTP 202`, and unauthenticated `/api/admin/*` routes returned `HTTP 401`.
+
+### Unresolved Issues & Open Questions
+
+1. **Production Database & OAuth Secrets**: `/admin` displays an actionable setup checklist until `DATABASE_URL` (Neon PostgreSQL), `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, and numeric `GITHUB_ADMIN_IDS` are populated in Vercel Project Settings and `npx prisma db push` / migrations are applied to Neon.
+
+### Next Steps
+
+- Proceed to Step 6 (`feat/step-6-security-audit`): execute the full application security audit (headers, CORS, XSS payloads across SVG/HTML/JSON, client bundle secret scan, exposed config/prisma/env check, `npm audit`, full Git history secret scan), fix any discovered issues, write `SECURITY_AUDIT.md`, push, and verify live Vercel production deployment (`https://dittoh.vercel.app`).
+
+
 
 
