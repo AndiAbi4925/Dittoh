@@ -182,6 +182,7 @@ export function BackgroundRemovalPanel({
                 disabled={isBusy}
                 onClick={() => {
                   setViewMode("original");
+                  setHexDraft("#000000");
                   onResetCutout();
                 }}
                 className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-3 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-50"
@@ -256,6 +257,11 @@ export function BackgroundRemovalPanel({
                 disabled={!cutout}
                 value={hexDraft}
                 onChange={(e) => handleHexInputChange(e.target.value)}
+                onBlur={() => {
+                  if (!isValidHexColor(hexDraft)) {
+                    setHexDraft(fill.customHex || "#000000");
+                  }
+                }}
                 placeholder="#000000"
                 maxLength={7}
                 className={`w-full border px-3 py-2 font-mono text-xs text-[#000000] disabled:bg-[#f4f4f4] disabled:opacity-40 ${

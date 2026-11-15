@@ -96,6 +96,7 @@ export function StepPhotoView({ initialSample }: StepPhotoViewProps) {
 export function StepBackgroundView() {
   const {
     decoded,
+    fileName,
     cutout,
     useCutout,
     fill,
@@ -125,6 +126,7 @@ export function StepBackgroundView() {
       ) : (
         <>
           <BackgroundRemovalPanel
+            key={fileName ?? "photo"}
             decoded={decoded}
             cutout={cutout}
             useCutout={useCutout}
