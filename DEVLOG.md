@@ -419,3 +419,10 @@
 - Enabled `.mov` (`video/quicktime`, `video/x-quicktime`) video conversion input in `SUPPORTED_VIDEO_EXTENSIONS` (`src/lib/constants.ts`) and `src/lib/video/validation.ts` with QuickTime magic-byte sniffing (`ftypqt  `, `moov`/`wide`/`free`/`mdat` atoms, and compatible ISO-BMFF container headers).
 - Updated UI copy and file-picker `accept` attributes across `/`, `/convert`, `/video`, and `/guide`.
 - Updated `tests/video-validation.test.ts`, `tests/smoke.test.ts`, and `tests/step-routes.test.ts` to validate MOV signatures, MIME mapping, and UI acceptance.
+
+## Retro Pixel Spacewar Background & Interactive Arena
+
+- Created `src/lib/spacewar-engine.ts`: procedural retro pixel Spacewar dogfight simulation with quantized sprite ships (`fighter`, `dart`, `invader`, `cruiser`), parallax depth, autonomous target steering, `#d71921` pixel missiles, ASCII/pixel burst debris, click salvo launches, and bounded entity pools.
+- Added `src/components/RetroSpaceBackdrop.tsx` on `/` so low-contrast pixelated starfighters cruise subtly across the hero background and react to clicks without blocking UI interactions.
+- Upgraded `src/components/DotMatrixHero.tsx` with `Spacewar` mode (interactive click-to-fire reticle + enemy evade reactions) alongside the existing `Wave` ASCII dot-matrix mode, `Pixel` size switch, `Light/Dark` inversion, `Play/Pause`, `IntersectionObserver`, and `prefers-reduced-motion` support.
+- Added `tests/spacewar-engine.test.ts` and updated `tests/step-routes.test.ts`.
