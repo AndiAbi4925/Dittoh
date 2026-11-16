@@ -49,10 +49,20 @@ describe("UI shell configuration and negative design constraints", () => {
 
     const menuHrefs = SITE_MENU_ITEMS.map((item) => item.href);
     expect(menuHrefs).toContain("/video");
-    expect(menuHrefs).toContain("/convert");
+    expect(menuHrefs).toContain("/convert/photo");
   });
 
-  it("keeps pill styling restricted to the SiteHeader shell and blocks em dashes, emojis, and banned animation libraries", () => {
+  it("excludes Admin and GitHub links from public SiteFooter", () => {
+    const footerPath = path.resolve(
+      import.meta.dirname,
+      "../src/components/SiteFooter.tsx"
+    );
+    const footer = fs.readFileSync(footerPath, "utf8");
+    expect(footer).not.toContain('href="/admin"');
+    expect(footer).not.toContain("GitHub");
+  });
+
+  it("forbids pill styling (rounded-full), em dashes, emojis, and banned animation libraries across src", () => {
     const srcRoot = path.resolve(import.meta.dirname, "../src");
     const files = collectSourceFiles(srcRoot);
     const emojiPattern = /\p{Extended_Pictographic}/u;
@@ -63,12 +73,9 @@ describe("UI shell configuration and negative design constraints", () => {
     for (const file of files) {
       const content = fs.readFileSync(file, "utf8");
       const disallowedPillClass = ["rounded", "full"].join("-");
-      const isPillNavbar = file.endsWith(`${path.sep}SiteHeader.tsx`);
-      if (!isPillNavbar) {
-        expect(content, `${disallowedPillClass} found in ${file}`).not.toContain(
-          disallowedPillClass
-        );
-      }
+      expect(content, `${disallowedPillClass} found in ${file}`).not.toContain(
+        disallowedPillClass
+      );
       expect(content, `em/en dash found in ${file}`).not.toMatch(
         /[\u2014\u2013]/
       );
