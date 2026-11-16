@@ -23,7 +23,7 @@ const FIRST_STEP: GuideStep = {
   title: "Pick a photo or video, then upload your file",
   summary:
     "Click Convert in the top bar and pick either Photo to ASCII or Video or GIF. Drag in a file from your device, click Choose Photo, or press a sample button to test right away.",
-  tip: "Works with PNG, JPG, JPEG, WebP, HEIC, HEIF, camera RAW files, MP4 clips, and animated GIFs.",
+  tip: "Works with PNG, JPG, JPEG, WebP, HEIC, HEIF, camera RAW files, MP4, MOV, and animated GIFs.",
   gifSrc: "/guide/step-1-upload.gif",
   gifAlt:
     "Animated walkthrough showing Convert mode selection, loading the Sphere sample photo, and moving to the next step",

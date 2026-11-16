@@ -12,7 +12,7 @@ const WORKFLOW_STEPS = [
     step: "Step 1",
     title: "Pick a photo or clip",
     description:
-      "Start with a PNG, JPG, WebP, HEIC, or camera RAW photo, or pick a short MP4 or GIF.",
+      "Start with a PNG, JPG, WebP, HEIC, or camera RAW photo, or pick a short MP4, MOV, or GIF.",
   },
   {
     step: "Step 2",

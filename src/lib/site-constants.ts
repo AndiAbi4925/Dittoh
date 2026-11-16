@@ -21,7 +21,7 @@ export const SITE_MENU_ITEMS: readonly NavItem[] = [
   {
     href: "/video",
     label: "Video & GIF",
-    description: "Turn an MP4 or GIF into moving ASCII",
+    description: "Turn an MP4, MOV, or GIF into moving ASCII",
   },
   {
     href: "/guide",

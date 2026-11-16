@@ -57,7 +57,7 @@ interface VideoAsciiWorkspaceProps {
 const IDLE_VIDEO_PROGRESS: VideoProgressUpdate = {
   stage: "IDLE",
   progress: 0,
-  message: "Choose an MP4 video or animated GIF.",
+  message: "Choose an MP4, MOV video, or animated GIF.",
 };
 
 const WIDTH_CAP_OPTIONS = [480, 640, 960, 1280] as const;
@@ -531,7 +531,7 @@ export function VideoAsciiWorkspace({
               Supported files
             </p>
             <p className="mt-1 text-xs text-[#525252]">
-              MP4 videos and animated GIFs up to {maxVideoSizeMb} MB and{" "}
+              MP4, MOV, and animated GIFs up to {maxVideoSizeMb} MB and{" "}
               {maxVideoDurationSec} seconds.
             </p>
           </div>
@@ -677,7 +677,7 @@ export function VideoAsciiWorkspace({
             Drop your video or GIF here
           </h2>
           <p className="mt-2.5 max-w-md text-sm leading-relaxed text-[#525252]">
-            Works with MP4 videos and animated GIFs up to {maxVideoSizeMb} MB and{" "}
+            Works with MP4, MOV, and animated GIFs up to {maxVideoSizeMb} MB and{" "}
             {maxVideoDurationSec} seconds. Everything stays in your browser.
           </p>
 

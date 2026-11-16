@@ -54,8 +54,8 @@ export default function GuidePage() {
                 as DNG, JPG, or PNG first if needed.
               </p>
               <p>
-                <strong className="text-[#000000]">Video and GIFs:</strong> MP4
-                and animated GIFs in the{" "}
+                <strong className="text-[#000000]">Video and GIFs:</strong> MP4,
+                MOV, and animated GIFs in the{" "}
                 <Link
                   href="/video"
                   className="text-[#000000] underline underline-offset-4 hover:text-[#d71921]"

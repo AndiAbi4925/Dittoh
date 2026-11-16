@@ -117,13 +117,13 @@ export function ConvertModeSelector({
             </h2>
 
             <p className="text-sm leading-relaxed text-[#525252]">
-              Pick an MP4 video or animated GIF, preview ASCII animation frame
-              by frame, and export a new MP4 or looping GIF.
+              Pick an MP4 or MOV video, or animated GIF, preview ASCII animation
+              frame by frame, and export a new MP4 or looping GIF.
             </p>
 
             <div className="border-t border-[#e5e5e5] pt-4">
               <p className="font-mono text-xs text-[#000000]">
-                MP4 videos and animated GIFs
+                MP4, MOV, and animated GIFs
               </p>
               <p className="mt-1 text-xs text-[#737373]">
                 {enableVideoConverter

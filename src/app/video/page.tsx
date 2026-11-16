@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Video & GIF to ASCII",
   description:
-    "Turn MP4 videos and animated GIFs into ASCII animations right in your browser.",
+    "Turn MP4, MOV, and animated GIF clips into ASCII animations right in your browser.",
 };
 
 export default async function VideoPage() {
@@ -23,8 +23,8 @@ export default async function VideoPage() {
               Video &amp; GIF to ASCII
             </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#525252]">
-              Pick an MP4 video or animated GIF, preview the look frame by frame,
-              and save a new MP4 or GIF in your browser.
+              Pick an MP4 or MOV video, or an animated GIF, preview the look
+              frame by frame, and save a new MP4 or GIF in your browser.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2">
