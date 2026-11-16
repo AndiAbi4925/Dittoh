@@ -35,22 +35,22 @@ export function MinimalHomeHero() {
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="font-display text-4xl leading-tight tracking-tight text-[#000000] sm:text-6xl">
             {HERO_WORDS.map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                className="mr-[0.26em] inline-block overflow-hidden align-bottom last:mr-0"
-              >
-                <motion.span
-                  initial={{ y: "105%", opacity: 0 }}
-                  animate={{ y: "0%", opacity: 1 }}
-                  transition={{
-                    duration: 0.48,
-                    delay: index * 0.04,
-                    ease: EASE_OUT_EXPO,
-                  }}
-                  className="inline-block"
-                >
-                  {word}
-                </motion.span>
+              <span key={`${word}-${index}`}>
+                <span className="inline-block overflow-hidden align-bottom">
+                  <motion.span
+                    initial={{ y: "105%", opacity: 0 }}
+                    animate={{ y: "0%", opacity: 1 }}
+                    transition={{
+                      duration: 0.48,
+                      delay: index * 0.04,
+                      ease: EASE_OUT_EXPO,
+                    }}
+                    className="inline-block"
+                  >
+                    {word}
+                  </motion.span>
+                </span>
+                {index < HERO_WORDS.length - 1 ? " " : ""}
               </span>
             ))}
           </h1>
