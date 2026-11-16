@@ -29,7 +29,7 @@ describe("foundation constants", () => {
       "raf",
     ]);
     expect(SUPPORTED_EXPORT_FORMATS).toEqual(["png", "txt", "md", "svg", "html"]);
-    expect(SUPPORTED_VIDEO_EXTENSIONS).toEqual(["mp4", "gif"]);
+    expect(SUPPORTED_VIDEO_EXTENSIONS).toEqual(["mp4", "mov", "gif"]);
   });
 });
 

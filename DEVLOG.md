@@ -413,3 +413,9 @@
 - Removed public `Admin` and `GitHub` links from `SiteFooter.tsx` (`GITHUB_REPO_URL` removed from `site-constants.ts` / `site-config.ts`).
 - Enhanced minimalist 2D choreography (`MinimalHomeHero.tsx` masked word reveals, tactile button/card motion, pointer-reactive dot-matrix ripple in `DotMatrixHero.tsx`, animated step bar & panel transitions).
 - Recorded 4 animated UI walkthrough GIFs (`public/guide/step-{1..4}-*.gif`) directly from headless Chromium sessions and integrated interactive step demos into `/guide` via `GuideWalkthrough.tsx`.
+
+## MOV Video Input Support
+
+- Enabled `.mov` (`video/quicktime`, `video/x-quicktime`) video conversion input in `SUPPORTED_VIDEO_EXTENSIONS` (`src/lib/constants.ts`) and `src/lib/video/validation.ts` with QuickTime magic-byte sniffing (`ftypqt  `, `moov`/`wide`/`free`/`mdat` atoms, and compatible ISO-BMFF container headers).
+- Updated UI copy and file-picker `accept` attributes across `/`, `/convert`, `/video`, and `/guide`.
+- Updated `tests/video-validation.test.ts`, `tests/smoke.test.ts`, and `tests/step-routes.test.ts` to validate MOV signatures, MIME mapping, and UI acceptance.

@@ -47,7 +47,6 @@ const REMOVED_JARGON_AND_FORMATS = [
   /\bbmp\b/i,
   /\bavif\b/i,
   /\bwebm\b/i,
-  /\bmov\b/i,
   /\b(delve|tapestry|testament|realm|embark|beacon|bifurcate|symphony|crucial)\b/i,
 ];
 

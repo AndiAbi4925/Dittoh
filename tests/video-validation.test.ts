@@ -21,10 +21,19 @@ function asciiBytes(text: string): Uint8Array {
 }
 
 describe("Phase 2 video validation & magic bytes", () => {
-  it("sniffs MP4 and GIF signatures and rejects unsupported containers", () => {
+  it("sniffs MP4, MOV, and GIF signatures and rejects unsupported containers", () => {
     const mp4 = new Uint8Array(16);
     mp4.set(asciiBytes("ftypisom"), 4);
     expect(detectVideoSignature(mp4)).toBe("mp4");
+
+    const mov = new Uint8Array(16);
+    mov.set(asciiBytes("ftypqt  "), 4);
+    expect(detectVideoSignature(mov)).toBe("mov");
+
+    const legacyMov = new Uint8Array(16);
+    legacyMov[3] = 32;
+    legacyMov.set(asciiBytes("moov"), 4);
+    expect(detectVideoSignature(legacyMov)).toBe("mov");
 
     const gif = asciiBytes("GIF89a......");
     expect(detectVideoSignature(gif)).toBe("gif");
@@ -39,8 +48,9 @@ describe("Phase 2 video validation & magic bytes", () => {
   it("enforces file size, supported extensions, and signature matching", () => {
     const accept = buildVideoAcceptAttribute();
     expect(accept).toContain(".mp4");
+    expect(accept).toContain(".mov");
+    expect(accept).toContain("video/quicktime");
     expect(accept).toContain(".gif");
-    expect(accept).not.toContain(".mov");
     expect(accept).not.toContain(".webm");
 
     expect(() =>
@@ -54,9 +64,30 @@ describe("Phase 2 video validation & magic bytes", () => {
       )
     ).toThrow(/over the 100 MB/i);
 
+    const movHeader = new Uint8Array(16);
+    movHeader.set(asciiBytes("ftypqt  "), 4);
+    expect(
+      validateVideoCandidate(
+        {
+          name: "clip.MOV",
+          size: 2048,
+          type: "video/quicktime",
+          headerBytes: movHeader,
+        },
+        100
+      )
+    ).toEqual({ extension: "mov", mimeType: "video/quicktime" });
+
     expect(() =>
-      validateVideoCandidate({ name: "clip.mov", size: 1024 }, 100)
-    ).toThrow(/unsupported/i);
+      validateVideoCandidate(
+        {
+          name: "bad.mov",
+          size: 4096,
+          headerBytes: asciiBytes("MZ\x90\x00\x03\x00\x00\x00"),
+        },
+        100
+      )
+    ).toThrow(/signature/i);
 
     expect(() =>
       validateVideoCandidate({ name: "clip.webm", size: 1024 }, 100)
