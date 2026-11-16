@@ -405,3 +405,11 @@
 - Removed unused `gsap` package dependency, unused legacy icon exports (`BrandMark.tsx`), dead media/telemetry helpers (`formatKindBadge`, `writeAuditLog`), unexported internal-only helpers (`DEFAULT_PUBLIC_APP_CONFIG`, `asciiSettingsSchema`, `escapeXmlText`, `escapeHtmlText`), and unused `DotMatrixHero` / `VideoAsciiWorkspace` processing callback props.
 - Added minimalist branded `src/app/not-found.tsx`, `src/app/error.tsx`, `src/app/robots.ts`, `metadataBase` in `src/app/layout.tsx`, and `Cache-Control: no-store` on `/api/config`.
 - Fixed `BackgroundRemovalPanel` custom hex draft reset/blur synchronization when resetting cutouts or switching photos, and aligned `/admin` button targets/labels (`OPEN CONVERTER`, `BACK TO HOME`).
+
+## Sharp Navbar, Convert Hub, Motion & Visual Guide GIFs
+
+- Replaced pill `rounded-full` navbar styling in `SiteHeader.tsx` with sharp `rounded-[2px]` borders matching the minimalist 2D box aesthetic across the site, and updated `tests/ui-shell.test.ts` to disallow `rounded-full` anywhere in `src/`.
+- Added mode-first Photo vs Video selection at `/convert` (`ConvertModeSelector.tsx`) alongside dedicated `/convert/photo` Step 1 routing (`StepProgressHeader.tsx`, `ConvertStepViews.tsx`), preserving legacy `/convert?sample=...` deep links via redirect.
+- Removed public `Admin` and `GitHub` links from `SiteFooter.tsx` (`GITHUB_REPO_URL` removed from `site-constants.ts` / `site-config.ts`).
+- Enhanced minimalist 2D choreography (`MinimalHomeHero.tsx` masked word reveals, tactile button/card motion, pointer-reactive dot-matrix ripple in `DotMatrixHero.tsx`, animated step bar & panel transitions).
+- Recorded 4 animated UI walkthrough GIFs (`public/guide/step-{1..4}-*.gif`) directly from headless Chromium sessions and integrated interactive step demos into `/guide` via `GuideWalkthrough.tsx`.
