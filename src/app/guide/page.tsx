@@ -1,56 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GuideWalkthrough } from "@/components/GuideWalkthrough";
 
 export const metadata: Metadata = {
   title: "Guide",
   description:
-    "How Dottoh turns photos and short clips into ASCII art inside your browser, plus supported image formats.",
+    "Interactive visual walkthroughs and GIF demos showing how Dottoh turns photos and short clips into ASCII art inside your browser.",
 };
 
 export default function GuidePage() {
   return (
     <div className="bg-[#ffffff] text-[#000000]">
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="border-b border-[#e5e5e5] pb-8">
-          <h1 className="font-display text-4xl tracking-tight text-[#000000]">
+          <p className="font-mono text-xs text-[#d71921]">VISUAL GUIDE</p>
+          <h1 className="mt-2 font-display text-4xl tracking-tight text-[#000000]">
             HOW IT WORKS
           </h1>
-          <p className="mt-3 text-base leading-relaxed text-[#525252]">
-            Dottoh converts your photo or short clip into characters one step at
-            a time so each screen stays focused and easy to use.
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-[#525252]">
+            Watch each step in action below. Pick Photo or Video in Convert,
+            adjust your look live, and copy or download your result.
           </p>
         </div>
 
-        <div className="divide-y divide-[#e5e5e5] border-b border-[#e5e5e5]">
-          <section className="py-8">
+        <section className="border-b border-[#e5e5e5] py-8">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-sans text-lg font-medium text-[#000000]">
-              Four simple steps for photos
+              Step-by-step GIF demo
             </h2>
-            <ol className="mt-4 space-y-3 text-sm leading-relaxed text-[#525252]">
-              <li>
-                <strong className="text-[#000000]">1. Upload a photo:</strong>{" "}
-                Pick a file from your device or try a built-in sample photo.
-              </li>
-              <li>
-                <strong className="text-[#000000]">
-                  2. Remove background (optional):
-                </strong>{" "}
-                Keep the full photo or cut out the main subject and pick a clean
-                background color.
-              </li>
-              <li>
-                <strong className="text-[#000000]">3. Customize the style:</strong>{" "}
-                Change width, character style, brightness, contrast, or color
-                mode while watching the live preview.
-              </li>
-              <li>
-                <strong className="text-[#000000]">4. Save or copy:</strong>{" "}
-                Copy the text directly or download PNG, TXT, Markdown, SVG, or
-                HTML.
-              </li>
-            </ol>
-          </section>
+            <span className="font-mono text-xs text-[#525252]">
+              Click any step below to preview
+            </span>
+          </div>
 
+          <GuideWalkthrough />
+        </section>
+
+        <div className="divide-y divide-[#e5e5e5] border-b border-[#e5e5e5]">
           <section className="py-8">
             <h2 className="font-sans text-lg font-medium text-[#000000]">
               Supported files
@@ -83,12 +69,12 @@ export default function GuidePage() {
 
           <section className="py-8">
             <h2 className="font-sans text-lg font-medium text-[#000000]">
-              Your photos stay with you
+              Your files stay with you
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[#525252]">
-              All image opening, background removal, and text rendering happen
-              on your own device. Nothing is sent to a remote server, and you
-              never need an account.
+              All image opening, background removal, video frame rendering, and
+              text art export happen directly on your own device. Nothing is sent
+              to a remote server, and you never need an account.
             </p>
           </section>
         </div>
@@ -101,10 +87,16 @@ export default function GuidePage() {
             Start Converting
           </Link>
           <Link
+            href="/convert/photo"
+            className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+          >
+            Go to Photo Step
+          </Link>
+          <Link
             href="/video"
             className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
           >
-            Open Video &amp; GIF Tool
+            Go to Video &amp; GIF
           </Link>
         </div>
       </div>
