@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { AsciiControlsPanel } from "@/components/studio/AsciiControlsPanel";
 import { AsciiExportPanel } from "@/components/studio/AsciiExportPanel";
@@ -14,6 +15,8 @@ import {
   MissingPhotoCard,
   StepStatusBanners,
 } from "@/components/studio/StepProgressHeader";
+
+const STEP_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 interface StepPhotoViewProps {
   initialSample?: string;
@@ -49,14 +52,27 @@ export function StepPhotoView({ initialSample }: StepPhotoViewProps) {
   }, [decoded, handleSampleSelected, initialSample, isBusy]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <div className="space-y-1.5">
-        <h1 className="font-display text-3xl tracking-tight text-[#000000] sm:text-4xl">
-          Choose a photo
-        </h1>
-        <p className="text-sm text-[#525252]">
-          Step 1 of 4. Pick an image from your device or start with a sample.
-        </p>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.24, ease: STEP_EASE }}
+      className="mx-auto max-w-3xl space-y-6"
+    >
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="space-y-1.5">
+          <h1 className="font-display text-3xl tracking-tight text-[#000000] sm:text-4xl">
+            Choose a photo
+          </h1>
+          <p className="text-sm text-[#525252]">
+            Step 1 of 4. Pick an image from your device or start with a sample.
+          </p>
+        </div>
+        <Link
+          href="/video"
+          className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+        >
+          Convert Video Instead
+        </Link>
       </div>
 
       <StepStatusBanners />
@@ -89,7 +105,7 @@ export function StepPhotoView({ initialSample }: StepPhotoViewProps) {
           </Link>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -108,7 +124,12 @@ export function StepBackgroundView() {
   } = useConverterSession();
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.24, ease: STEP_EASE }}
+      className="space-y-6"
+    >
       <div className="space-y-1.5">
         <h1 className="font-display text-3xl tracking-tight text-[#000000] sm:text-4xl">
           Background
@@ -140,7 +161,7 @@ export function StepBackgroundView() {
 
           <div className="flex flex-col gap-3 border-t border-[#e5e5e5] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Link
-              href="/convert"
+              href="/convert/photo"
               className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               Back to Photo
@@ -154,7 +175,7 @@ export function StepBackgroundView() {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -181,7 +202,12 @@ export function StepStyleView() {
   } = useConverterSession();
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.24, ease: STEP_EASE }}
+      className="space-y-6"
+    >
       <div className="space-y-1.5">
         <h1 className="font-display text-3xl tracking-tight text-[#000000] sm:text-4xl">
           Customize style
@@ -254,7 +280,7 @@ export function StepStyleView() {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -275,7 +301,12 @@ export function StepExportView() {
   } = useConverterSession();
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.24, ease: STEP_EASE }}
+      className="mx-auto max-w-4xl space-y-6"
+    >
       <div className="space-y-1.5">
         <h1 className="font-display text-3xl tracking-tight text-[#000000] sm:text-4xl">
           Save your art
@@ -318,7 +349,7 @@ export function StepExportView() {
               type="button"
               onClick={() => {
                 handleClear();
-                router.push("/convert");
+                router.push("/convert/photo");
               }}
               className="dottoh-btn border border-[#000000] bg-[#ffffff] px-7 py-3.5 text-sm text-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
             >
@@ -327,6 +358,6 @@ export function StepExportView() {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

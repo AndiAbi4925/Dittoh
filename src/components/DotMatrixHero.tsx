@@ -21,6 +21,11 @@ const CELL_SIZES: Record<MatrixDensity, number> = {
 export function DotMatrixHero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const pointerRef = useRef<{ x: number; y: number; active: number }>({
+    x: 0,
+    y: 0,
+    active: 0,
+  });
 
   const [preset, setPreset] = useState<RampPreset>("standard");
   const [density, setDensity] = useState<MatrixDensity>("balanced");
@@ -86,6 +91,9 @@ export function DotMatrixHero() {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
+      const pointer = pointerRef.current;
+      pointer.active *= 0.94;
+
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const nx = c / Math.max(1, cols - 1) - 0.5;
@@ -94,7 +102,18 @@ export function DotMatrixHero() {
 
           const waveA = Math.sin(dist * 10.5 - timePhase * 1.35);
           const waveB = Math.cos(nx * 6.0 + ny * 4.5 + timePhase * 0.8);
-          const norm = Math.max(0, Math.min(1, (waveA + waveB + 2) * 0.25));
+          let pointerBoost = 0;
+          if (pointer.active > 0.02) {
+            const dx = nx - pointer.x;
+            const dy = ny - pointer.y;
+            const pDist = Math.hypot(dx * 1.35, dy);
+            pointerBoost = Math.max(0, 1 - pDist * 4.2) * pointer.active * 0.48;
+          }
+
+          const norm = Math.max(
+            0,
+            Math.min(1, (waveA + waveB + 2) * 0.25 + pointerBoost)
+          );
 
           const charIndex = Math.min(
             ramp.length - 1,
@@ -105,7 +124,7 @@ export function DotMatrixHero() {
             continue;
           }
 
-          ctx.fillStyle = norm > 0.86 ? accent : fg;
+          ctx.fillStyle = norm > 0.84 ? accent : fg;
           ctx.fillText(
             glyph,
             offsetX + c * cellSize + cellSize / 2,
@@ -157,9 +176,29 @@ export function DotMatrixHero() {
     };
   }, [preset, density, inverted, isPaused]);
 
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion) {
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) {
+      return;
+    }
+    pointerRef.current.x = (e.clientX - rect.left) / rect.width - 0.5;
+    pointerRef.current.y = (e.clientY - rect.top) / rect.height - 0.5;
+    pointerRef.current.active = 1;
+  };
+
   return (
     <div className="border border-[#d4d4d4] bg-[#000000]">
-      <div ref={containerRef} className="relative h-72 w-full sm:h-80">
+      <div
+        ref={containerRef}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={() => {
+          pointerRef.current.active = 0;
+        }}
+        className="relative h-72 w-full sm:h-80"
+      >
         <canvas
           ref={canvasRef}
           aria-label="Interactive ASCII dot-matrix pattern"
