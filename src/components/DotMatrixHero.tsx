@@ -2,9 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { IconPause, IconPlay } from "@/components/BrandMark";
+import {
+  createSpacewarState,
+  renderSpacewarCanvas,
+  resizeSpacewarState,
+  type SpacewarThemePalette,
+  stepSpacewar,
+  triggerSpacewarSalvo,
+} from "@/lib/spacewar-engine";
 
+type VisualMode = "spacewar" | "matrix";
 type RampPreset = "standard" | "blocks" | "binary";
-type MatrixDensity = "coarse" | "balanced" | "fine";
+type ScaleSetting = "coarse" | "balanced" | "fine";
 
 const RAMP_CHARS: Record<RampPreset, string> = {
   standard: " .:-=+*#%@",
@@ -12,23 +21,57 @@ const RAMP_CHARS: Record<RampPreset, string> = {
   binary: " .01",
 };
 
-const CELL_SIZES: Record<MatrixDensity, number> = {
+const MATRIX_CELL_SIZES: Record<ScaleSetting, number> = {
   coarse: 18,
   balanced: 14,
   fine: 11,
 };
 
+const PIXEL_SCALES: Record<ScaleSetting, number> = {
+  coarse: 3,
+  balanced: 2.5,
+  fine: 2,
+};
+
+function resolveSpacePalette(inverted: boolean): SpacewarThemePalette {
+  if (inverted) {
+    return {
+      background: "#f4f4f4",
+      hullNear: "#000000",
+      hullFar: "#737373",
+      enemyNear: "#262626",
+      enemyFar: "#a3a3a3",
+      accent: "#d71921",
+      starColor: "#a3a3a3",
+      mutedGlyph: "#737373",
+      alphaMultiplier: 1,
+    };
+  }
+  return {
+    background: "#000000",
+    hullNear: "#ffffff",
+    hullFar: "#737373",
+    enemyNear: "#d4d4d4",
+    enemyFar: "#525252",
+    accent: "#d71921",
+    starColor: "#737373",
+    mutedGlyph: "#737373",
+    alphaMultiplier: 1,
+  };
+}
+
 export function DotMatrixHero() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const pointerRef = useRef<{ x: number; y: number; active: number }>({
-    x: 0,
-    y: 0,
-    active: 0,
-  });
+  const spaceStateRef = useRef<ReturnType<typeof createSpacewarState> | null>(
+    null
+  );
+  const spacePointerRef = useRef({ x: 0, y: 0, active: false });
+  const matrixPointerRef = useRef({ x: 0, y: 0, active: 0 });
 
+  const [mode, setMode] = useState<VisualMode>("spacewar");
   const [preset, setPreset] = useState<RampPreset>("standard");
-  const [density, setDensity] = useState<MatrixDensity>("balanced");
+  const [density, setDensity] = useState<ScaleSetting>("balanced");
   const [inverted, setInverted] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -55,12 +98,11 @@ export function DotMatrixHero() {
       return;
     }
 
-    const ramp = RAMP_CHARS[preset];
-    const cellSize = CELL_SIZES[density];
     let frameId = 0;
     let width = 0;
     let height = 0;
     let phase = 0;
+    let visible = true;
 
     const resize = () => {
       const rect = container.getBoundingClientRect();
@@ -72,12 +114,20 @@ export function DotMatrixHero() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      if (!spaceStateRef.current) {
+        spaceStateRef.current = createSpacewarState(width, height, 10, 36);
+      } else {
+        resizeSpacewarState(spaceStateRef.current, width, height);
+      }
     };
 
-    const drawFrame = (timePhase: number) => {
+    const drawMatrixFrame = (timePhase: number) => {
       const bg = inverted ? "#f4f4f4" : "#000000";
       const fg = inverted ? "#000000" : "#ffffff";
       const accent = "#d71921";
+      const ramp = RAMP_CHARS[preset];
+      const cellSize = MATRIX_CELL_SIZES[density];
 
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, width, height);
@@ -91,7 +141,7 @@ export function DotMatrixHero() {
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      const pointer = pointerRef.current;
+      const pointer = matrixPointerRef.current;
       pointer.active *= 0.94;
 
       for (let r = 0; r < rows; r++) {
@@ -114,15 +164,12 @@ export function DotMatrixHero() {
             0,
             Math.min(1, (waveA + waveB + 2) * 0.25 + pointerBoost)
           );
-
           const charIndex = Math.min(
             ramp.length - 1,
             Math.floor(norm * ramp.length)
           );
           const glyph = ramp[charIndex] ?? " ";
-          if (glyph === " ") {
-            continue;
-          }
+          if (glyph === " ") continue;
 
           ctx.fillStyle = norm > 0.84 ? accent : fg;
           ctx.fillText(
@@ -134,95 +181,174 @@ export function DotMatrixHero() {
       }
     };
 
+    const drawCurrentFrame = (dt: number) => {
+      if (mode === "spacewar") {
+        const state = spaceStateRef.current;
+        if (!state) return;
+        if (dt > 0) {
+          stepSpacewar(state, dt, spacePointerRef.current);
+        }
+        renderSpacewarCanvas(
+          ctx,
+          state,
+          resolveSpacePalette(inverted),
+          PIXEL_SCALES[density],
+          spacePointerRef.current
+        );
+      } else {
+        phase += dt;
+        drawMatrixFrame(phase);
+      }
+    };
+
     resize();
-    drawFrame(phase);
+    drawCurrentFrame(0);
 
     const observer = new ResizeObserver(() => {
       resize();
-      drawFrame(phase);
+      drawCurrentFrame(0);
     });
     observer.observe(container);
 
     let lastTimestamp = performance.now();
     const tick = (now: number) => {
-      if (document.hidden || isPaused) {
+      if (!visible || document.hidden || isPaused) {
+        frameId = 0;
         return;
       }
       const dt = Math.min(0.05, (now - lastTimestamp) / 1000);
       lastTimestamp = now;
-      phase += dt;
-      drawFrame(phase);
+      drawCurrentFrame(dt);
       frameId = window.requestAnimationFrame(tick);
     };
 
-    const handleVisibilityChange = () => {
-      if (!document.hidden && !isPaused) {
+    const schedule = () => {
+      if (visible && !document.hidden && !isPaused && !frameId) {
         lastTimestamp = performance.now();
         frameId = window.requestAnimationFrame(tick);
-      } else {
+      } else if ((!visible || document.hidden || isPaused) && frameId) {
         window.cancelAnimationFrame(frameId);
+        frameId = 0;
       }
     };
 
-    if (!isPaused) {
-      frameId = window.requestAnimationFrame(tick);
-    }
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      visible = Boolean(entry?.isIntersecting);
+      schedule();
+    });
+    intersectionObserver.observe(container);
+
+    schedule();
+    document.addEventListener("visibilitychange", schedule);
 
     return () => {
-      window.cancelAnimationFrame(frameId);
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
       observer.disconnect();
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      intersectionObserver.disconnect();
+      document.removeEventListener("visibilitychange", schedule);
     };
-  }, [preset, density, inverted, isPaused]);
+  }, [mode, preset, density, inverted, isPaused]);
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion) {
-      return;
-    }
     const rect = e.currentTarget.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) {
-      return;
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    spacePointerRef.current = { x: px, y: py, active: true };
+
+    if (!prefersReducedMotion) {
+      matrixPointerRef.current.x = px / rect.width - 0.5;
+      matrixPointerRef.current.y = py / rect.height - 0.5;
+      matrixPointerRef.current.active = 1;
     }
-    pointerRef.current.x = (e.clientX - rect.left) / rect.width - 0.5;
-    pointerRef.current.y = (e.clientY - rect.top) / rect.height - 0.5;
-    pointerRef.current.active = 1;
   };
 
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (mode !== "spacewar" || !spaceStateRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    triggerSpacewarSalvo(spaceStateRef.current, px, py, 3);
+  };
+
+  const sizeLabel =
+    mode === "spacewar"
+      ? density === "coarse"
+        ? "Large"
+        : density === "balanced"
+          ? "Medium"
+          : "Small"
+      : density;
+
   return (
-    <div className="border border-[#d4d4d4] bg-[#000000]">
+    <div className="rounded-[2px] border border-[#d4d4d4] bg-[#000000]">
       <div
         ref={containerRef}
         onPointerMove={handlePointerMove}
+        onPointerDown={handlePointerDown}
         onPointerLeave={() => {
-          pointerRef.current.active = 0;
+          spacePointerRef.current.active = false;
+          matrixPointerRef.current.active = 0;
         }}
-        className="relative h-72 w-full sm:h-80"
+        className={`relative h-72 w-full sm:h-80 ${
+          mode === "spacewar" ? "cursor-crosshair" : "cursor-default"
+        }`}
       >
         <canvas
           ref={canvasRef}
-          aria-label="Interactive ASCII dot-matrix pattern"
+          aria-label={
+            mode === "spacewar"
+              ? "Interactive retro pixel Spacewar arena. Click to fire missiles."
+              : "Interactive ASCII dot-matrix pattern"
+          }
           className="block h-full w-full"
         />
+
+        {mode === "spacewar" && (
+          <div className="pointer-events-none absolute top-3 left-3 flex items-center gap-2 rounded-[2px] border border-[#262626] bg-[#000000]/80 px-2.5 py-1 font-mono text-[10px] tracking-wider text-[#ffffff]">
+            <span className="inline-block h-1.5 w-1.5 bg-[#d71921]" aria-hidden="true" />
+            <span>CLICK TO FIRE</span>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#262626] bg-[#000000] px-3 py-2.5">
-        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Character style">
-          {(["standard", "blocks", "binary"] as const).map((item) => (
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Canvas mode and style">
+          {(["spacewar", "matrix"] as const).map((item) => (
             <button
               key={item}
               type="button"
-              onClick={() => setPreset(item)}
-              aria-pressed={preset === item}
+              onClick={() => setMode(item)}
+              aria-pressed={mode === item}
               className={`dottoh-btn border px-2.5 py-1 text-[11px] ${
-                preset === item
+                mode === item
                   ? "border-[#d71921] bg-[#d71921] text-[#ffffff]"
                   : "border-[#262626] bg-[#000000] text-[#b1b3b3] hover:border-[#ffffff] hover:text-[#ffffff]"
               }`}
             >
-              {item}
+              {item === "spacewar" ? "Spacewar" : "Wave"}
             </button>
           ))}
+
+          {mode === "matrix" &&
+            (["standard", "blocks", "binary"] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setPreset(item)}
+                aria-pressed={preset === item}
+                className={`dottoh-btn border px-2.5 py-1 text-[11px] ${
+                  preset === item
+                    ? "border-[#ffffff] bg-[#ffffff] text-[#000000]"
+                    : "border-[#262626] bg-[#000000] text-[#b1b3b3] hover:border-[#ffffff] hover:text-[#ffffff]"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
@@ -233,13 +359,13 @@ export function DotMatrixHero() {
                 prev === "coarse"
                   ? "balanced"
                   : prev === "balanced"
-                  ? "fine"
-                  : "coarse"
+                    ? "fine"
+                    : "coarse"
               )
             }
             className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
           >
-            Size: {density}
+            Pixel: {sizeLabel}
           </button>
 
           <button

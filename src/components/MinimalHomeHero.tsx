@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { DotMatrixHero } from "@/components/DotMatrixHero";
+import { RetroSpaceBackdrop } from "@/components/RetroSpaceBackdrop";
 
 const HERO_WORDS = ["Turn", "photos", "and", "videos", "into", "clean", "ASCII", "art."] as const;
 const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -30,8 +31,9 @@ const WORKFLOW_STEPS = [
 
 export function MinimalHomeHero() {
   return (
-    <div className="bg-[#ffffff] text-[#000000]">
-      <section className="mx-auto max-w-4xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24">
+    <div className="relative overflow-x-clip bg-[#ffffff] text-[#000000]">
+      <RetroSpaceBackdrop />
+      <section className="relative z-10 mx-auto max-w-4xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 sm:pb-24">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="font-display text-4xl leading-tight tracking-tight text-[#000000] sm:text-6xl">
             {HERO_WORDS.map((word, index) => (
