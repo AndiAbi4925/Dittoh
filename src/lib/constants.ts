@@ -48,5 +48,5 @@ export const SUPPORTED_EXPORT_FORMATS = [
   "html",
 ] as const;
 
-export const SUPPORTED_VIDEO_EXTENSIONS = ["mp4", "gif"] as const;
+export const SUPPORTED_VIDEO_EXTENSIONS = ["mp4", "mov", "gif"] as const;
 

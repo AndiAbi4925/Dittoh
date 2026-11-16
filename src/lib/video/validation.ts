@@ -27,6 +27,7 @@ export interface VideoFileCandidate {
 
 export type VideoSignatureKind =
   | "mp4"
+  | "mov"
   | "gif"
   | "isobmff-other"
   | "unknown";
@@ -35,11 +36,14 @@ const VIDEO_EXT_SET = new Set<string>(SUPPORTED_VIDEO_EXTENSIONS);
 
 const MIME_BY_VIDEO_EXT: Record<SupportedVideoExtension, string> = {
   mp4: "video/mp4",
+  mov: "video/quicktime",
   gif: "image/gif",
 };
 
 const EXT_BY_VIDEO_MIME: Record<string, SupportedVideoExtension> = {
   "video/mp4": "mp4",
+  "video/quicktime": "mov",
+  "video/x-quicktime": "mov",
   "image/gif": "gif",
 };
 
@@ -84,6 +88,9 @@ export function detectVideoSignature(bytes: Uint8Array): VideoSignatureKind {
       bytes[10] ?? 0,
       bytes[11] ?? 0
     );
+    if (brand === "qt  ") {
+      return "mov";
+    }
     if (
       brand === "isom" ||
       brand === "iso2" ||
@@ -99,6 +106,24 @@ export function detectVideoSignature(bytes: Uint8Array): VideoSignatureKind {
     return "isobmff-other";
   }
 
+  if (bytes.length >= 8) {
+    const atomSize =
+      (((bytes[0] ?? 0) << 24) |
+        ((bytes[1] ?? 0) << 16) |
+        ((bytes[2] ?? 0) << 8) |
+        (bytes[3] ?? 0)) >>>
+      0;
+    if (
+      atomSize >= 8 &&
+      (matchesAscii(bytes, 4, "moov") ||
+        matchesAscii(bytes, 4, "wide") ||
+        matchesAscii(bytes, 4, "free") ||
+        matchesAscii(bytes, 4, "mdat"))
+    ) {
+      return "mov";
+    }
+  }
+
   return "unknown";
 }
 
@@ -111,6 +136,7 @@ function isSignatureCompatible(
   }
   if (ext === "gif") return sig === "gif";
   if (ext === "mp4") return sig === "mp4";
+  if (ext === "mov") return sig === "mov" || sig === "mp4";
   return false;
 }
 
@@ -131,7 +157,7 @@ export function extractVideoExtension(
 }
 
 export function buildVideoAcceptAttribute(): string {
-  return ".mp4,.gif,video/mp4,image/gif";
+  return ".mp4,.mov,.gif,video/mp4,video/quicktime,image/gif";
 }
 
 export function validateVideoCandidate(
@@ -141,7 +167,7 @@ export function validateVideoCandidate(
   if (candidate.size <= 0) {
     throw new VideoProcessingError(
       "EMPTY_FILE",
-      "This file is empty. Please pick another MP4 video or GIF.",
+      "This file is empty. Please pick another MP4, MOV, or GIF file.",
       false
     );
   }
@@ -160,7 +186,7 @@ export function validateVideoCandidate(
   if (!extension) {
     throw new VideoProcessingError(
       "UNSUPPORTED_FORMAT",
-      "Unsupported file type. Video mode supports MP4 and GIF only.",
+      "Unsupported file type. Video mode supports MP4, MOV, and GIF only.",
       false
     );
   }
