@@ -50,6 +50,14 @@ export function SiteHeader() {
     if (href === "/") {
       return pathname === "/";
     }
+    if (href === "/convert") {
+      return (
+        pathname === "/convert" ||
+        pathname.startsWith("/convert/") ||
+        pathname === "/video" ||
+        pathname.startsWith("/video/")
+      );
+    }
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
@@ -63,7 +71,7 @@ export function SiteHeader() {
       </a>
 
       <div ref={containerRef} className="relative mx-auto max-w-3xl">
-        <div className="flex h-14 items-center justify-between gap-3 rounded-full border border-[#d4d4d4] bg-[#ffffff]/80 px-4 shadow-[0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-5">
+        <div className="flex h-14 items-center justify-between gap-3 rounded-[2px] border border-[#d4d4d4] bg-[#ffffff]/85 px-4 shadow-[0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-5">
           <Link
             href="/"
             className="flex items-center gap-2.5 rounded-[2px] py-1 pr-2"
@@ -127,42 +135,52 @@ export function SiteHeader() {
             <motion.nav
               id="site-nav-menu"
               aria-label="Site menu"
-              initial={{ opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.16 }}
-              className="absolute right-0 mt-2 w-full max-w-sm border border-[#d4d4d4] bg-[#ffffff]/95 p-2 shadow-[0_14px_32px_rgba(0,0,0,0.08)] backdrop-blur-md"
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute right-0 mt-2 w-full max-w-sm rounded-[2px] border border-[#d4d4d4] bg-[#ffffff]/95 p-2 shadow-[0_14px_32px_rgba(0,0,0,0.08)] backdrop-blur-md"
             >
               <div className="flex flex-col divide-y divide-[#e5e5e5]">
-                {SITE_MENU_ITEMS.map((item) => {
+                {SITE_MENU_ITEMS.map((item, idx) => {
                   const active = item.href.includes("?")
                     ? false
-                    : isNavItemActive(item.href);
+                    : pathname === item.href;
 
                   return (
-                    <Link
+                    <motion.div
                       key={item.href}
-                      href={item.href}
-                      onClick={() => setOpenAtPath(null)}
-                      className="flex items-start justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-[#f4f4f4]"
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: 0.18,
+                        delay: idx * 0.03,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
                     >
-                      <div className="space-y-0.5">
-                        <span className="block font-sans text-sm font-medium text-[#000000]">
-                          {item.label}
-                        </span>
-                        {item.description && (
-                          <span className="block text-xs text-[#525252]">
-                            {item.description}
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpenAtPath(null)}
+                        className="flex items-start justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-[#f4f4f4]"
+                      >
+                        <div className="space-y-0.5">
+                          <span className="block font-sans text-sm font-medium text-[#000000]">
+                            {item.label}
                           </span>
+                          {item.description && (
+                            <span className="block text-xs text-[#525252]">
+                              {item.description}
+                            </span>
+                          )}
+                        </div>
+                        {active && (
+                          <span
+                            className="mt-1.5 inline-block h-2 w-2 shrink-0 bg-[#d71921]"
+                            aria-hidden="true"
+                          />
                         )}
-                      </div>
-                      {active && (
-                        <span
-                          className="mt-1.5 inline-block h-2 w-2 shrink-0 bg-[#d71921]"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </Link>
+                      </Link>
+                    </motion.div>
                   );
                 })}
               </div>

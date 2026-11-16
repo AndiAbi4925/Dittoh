@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { DottohMark } from "@/components/BrandMark";
 import { APP_NAME } from "@/lib/constants";
-import { GITHUB_REPO_URL } from "@/lib/site-constants";
 
 export function SiteFooter({ contactEmail }: { contactEmail: string }) {
   return (
@@ -40,22 +39,11 @@ export function SiteFooter({ contactEmail }: { contactEmail: string }) {
             <Link href="/terms" className="hover:text-[#ffffff]">
               Terms
             </Link>
-            <Link href="/admin" className="hover:text-[#ffffff]">
-              Admin
-            </Link>
             <a
               href={`mailto:${contactEmail}`}
               className="hover:text-[#ffffff]"
             >
               {contactEmail}
-            </a>
-            <a
-              href={GITHUB_REPO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#ffffff]"
-            >
-              GitHub
             </a>
           </nav>
         </div>

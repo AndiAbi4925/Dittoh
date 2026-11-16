@@ -1,5 +1,4 @@
 export const DEFAULT_CONTACT_EMAIL = "contact@dottoh.app";
-export const GITHUB_REPO_URL = "https://github.com/AndiAbi4925/Dittoh";
 
 export interface NavItem {
   href: string;
@@ -15,7 +14,7 @@ export const SITE_NAV_ITEMS: readonly NavItem[] = [
 
 export const SITE_MENU_ITEMS: readonly NavItem[] = [
   {
-    href: "/convert",
+    href: "/convert/photo",
     label: "Photo to ASCII",
     description: "Turn a photo into text art step by step",
   },
@@ -26,11 +25,11 @@ export const SITE_MENU_ITEMS: readonly NavItem[] = [
   },
   {
     href: "/guide",
-    label: "Format Guide",
-    description: "Supported file types and quick answers",
+    label: "Visual Guide",
+    description: "Step-by-step GIF demos and file types",
   },
   {
-    href: "/convert?sample=sphere",
+    href: "/convert/photo?sample=sphere",
     label: "Try a Sample Photo",
     description: "Preview the converter without uploading",
   },
