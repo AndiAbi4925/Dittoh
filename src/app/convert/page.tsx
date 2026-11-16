@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { StepPhotoView } from "@/components/studio/ConvertStepViews";
+import { redirect } from "next/navigation";
+import { ConvertModeSelector } from "@/components/studio/ConvertModeSelector";
+import { getPublicAppConfig } from "@/lib/app-config";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Step 1: Choose Photo",
-  description: "Pick an image from your device or start with a sample photo.",
+  title: "Convert Photo or Video",
+  description:
+    "Choose whether to turn a photo into ASCII art step by step or convert an MP4 video or GIF.",
 };
 
 interface ConvertPageProps {
@@ -12,5 +17,18 @@ interface ConvertPageProps {
 
 export default async function ConvertPage({ searchParams }: ConvertPageProps) {
   const params = await searchParams;
-  return <StepPhotoView initialSample={params.sample} />;
+  if (params.sample === "sphere" || params.sample === "monolith") {
+    redirect(`/convert/photo?sample=${params.sample}`);
+  }
+
+  const appConfig = await getPublicAppConfig();
+
+  return (
+    <ConvertModeSelector
+      enableVideoConverter={appConfig.enableVideoConverter}
+      maxImageSizeMb={appConfig.maxImageSizeMb}
+      maxVideoSizeMb={appConfig.maxVideoSizeMb}
+      maxVideoDurationSec={appConfig.maxVideoDurationSec}
+    />
+  );
 }

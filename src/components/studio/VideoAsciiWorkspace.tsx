@@ -518,7 +518,7 @@ export function VideoAsciiWorkspace({
             </p>
           </div>
           <Link
-            href="/convert"
+            href="/convert/photo"
             className="dottoh-btn shrink-0 border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
             Convert a Photo

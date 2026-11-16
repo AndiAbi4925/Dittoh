@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 import { IconCloseCross } from "@/components/BrandMark";
 import { useConverterSession } from "@/components/studio/ConverterSessionContext";
 
@@ -12,7 +13,7 @@ interface StepItem {
 }
 
 const STEPS: readonly StepItem[] = [
-  { number: 1, label: "Photo", href: "/convert" },
+  { number: 1, label: "Photo", href: "/convert/photo" },
   { number: 2, label: "Background", href: "/convert/background" },
   { number: 3, label: "Style", href: "/convert/style" },
   { number: 4, label: "Save", href: "/convert/export" },
@@ -21,6 +22,10 @@ const STEPS: readonly StepItem[] = [
 export function StepProgressHeader() {
   const pathname = usePathname();
   const { decoded, cutout, useCutout } = useConverterSession();
+
+  if (pathname === "/convert") {
+    return null;
+  }
 
   const activeIndex = Math.max(
     0,
@@ -41,7 +46,7 @@ export function StepProgressHeader() {
 
             const content = (
               <div
-                className={`flex items-center gap-2 border px-2.5 py-2 transition-colors sm:px-3.5 sm:py-2.5 ${
+                className={`relative flex items-center gap-2 rounded-[2px] border px-2.5 py-2 transition-colors sm:px-3.5 sm:py-2.5 ${
                   isCurrent
                     ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                     : isUnlocked
@@ -50,7 +55,7 @@ export function StepProgressHeader() {
                 }`}
               >
                 <span
-                  className={`inline-flex h-5 w-5 shrink-0 items-center justify-center font-mono text-[11px] ${
+                  className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[2px] font-mono text-[11px] ${
                     isCurrent
                       ? "bg-[#d71921] text-[#ffffff]"
                       : isDone
@@ -63,6 +68,14 @@ export function StepProgressHeader() {
                 <span className="truncate font-sans text-xs font-medium sm:text-sm">
                   {step.label}
                 </span>
+                {isCurrent && (
+                  <motion.span
+                    layoutId="step-active-indicator"
+                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    className="absolute inset-x-0 -bottom-px h-[2px] bg-[#d71921]"
+                    aria-hidden="true"
+                  />
+                )}
               </div>
             );
 
@@ -177,7 +190,7 @@ export function MissingPhotoCard() {
 
       <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Link
-          href="/convert"
+          href="/convert/photo"
           className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] sm:w-auto"
         >
           Choose a Photo
