@@ -24,6 +24,7 @@ export interface AsciiConversionSettings {
   contrast: number;
   gamma: number;
   alphaThreshold: number;
+  dithering?: boolean;
 }
 
 export interface AsciiPresetDefinition {

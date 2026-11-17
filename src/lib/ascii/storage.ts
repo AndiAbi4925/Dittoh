@@ -50,6 +50,7 @@ const asciiSettingsSchema = z.object({
   contrast: z.number().finite().min(-100).max(100),
   gamma: z.number().finite().min(0.25).max(3.0),
   alphaThreshold: z.number().finite().min(0).max(254).transform((n) => Math.round(n)),
+  dithering: z.boolean().default(false),
 });
 
 const savedPresetSchema = z.object({

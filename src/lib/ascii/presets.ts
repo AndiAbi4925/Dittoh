@@ -59,6 +59,7 @@ export const DEFAULT_ASCII_SETTINGS: AsciiConversionSettings = {
   contrast: 0,
   gamma: 1.0,
   alphaThreshold: 16,
+  dithering: false,
 };
 
 /**

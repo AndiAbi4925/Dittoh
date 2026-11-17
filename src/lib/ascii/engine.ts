@@ -99,6 +99,10 @@ export function convertRgbaToAsciiGrid(
   const cellRgba = new Uint8ClampedArray(columns * rows * 4);
   const lines: string[] = new Array<string>(rows);
 
+  const ditherEnabled = Boolean(settings.dithering);
+  let errorRow = ditherEnabled ? new Float32Array(columns) : null;
+  let nextErrorRow = ditherEnabled ? new Float32Array(columns) : null;
+
   const cellWidth = srcWidth / columns;
   const cellHeight = srcHeight / rows;
 
@@ -106,6 +110,9 @@ export function convertRgbaToAsciiGrid(
     const yStart = clamp(Math.floor(row * cellHeight), 0, srcHeight - 1);
     const yEnd = clamp(Math.ceil((row + 1) * cellHeight), yStart + 1, srcHeight);
     const rowChars = new Array<string>(columns);
+    if (nextErrorRow) {
+      nextErrorRow.fill(0);
+    }
 
     for (let col = 0; col < columns; col += 1) {
       const xStart = clamp(Math.floor(col * cellWidth), 0, srcWidth - 1);
@@ -165,8 +172,32 @@ export function convertRgbaToAsciiGrid(
         densityTone = 1 - densityTone;
       }
 
-      const rampIndex = clamp(Math.round(densityTone * rampMaxIndex), 0, rampMaxIndex);
+      let targetTone = densityTone;
+      if (errorRow && nextErrorRow) {
+        targetTone = clamp(densityTone + (errorRow[col] ?? 0), 0, 1);
+      }
+
+      const rampIndex = clamp(Math.round(targetTone * rampMaxIndex), 0, rampMaxIndex);
       rowChars[col] = ramp[rampIndex] ?? " ";
+
+      if (errorRow && nextErrorRow) {
+        const quantizedTone = rampMaxIndex > 0 ? rampIndex / rampMaxIndex : 0;
+        const quantError = targetTone - quantizedTone;
+        if (col + 1 < columns) {
+          errorRow[col + 1] = (errorRow[col + 1] ?? 0) + quantError * (7 / 16);
+        }
+        if (row + 1 < rows) {
+          if (col > 0) {
+            nextErrorRow[col - 1] =
+              (nextErrorRow[col - 1] ?? 0) + quantError * (3 / 16);
+          }
+          nextErrorRow[col] = (nextErrorRow[col] ?? 0) + quantError * (5 / 16);
+          if (col + 1 < columns) {
+            nextErrorRow[col + 1] =
+              (nextErrorRow[col + 1] ?? 0) + quantError * (1 / 16);
+          }
+        }
+      }
 
       if (settings.colorMode === "original") {
         cellRgba[cellIdx] = r;
@@ -185,6 +216,9 @@ export function convertRgbaToAsciiGrid(
     }
 
     lines[row] = rowChars.join("");
+    if (errorRow && nextErrorRow) {
+      [errorRow, nextErrorRow] = [nextErrorRow, errorRow];
+    }
   }
 
   const endedAt =

@@ -115,4 +115,39 @@ describe("ASCII engine and tonal math", () => {
     expect(custom.cellRgba[redIdx + 1]).toBe(25);
     expect(custom.cellRgba[redIdx + 2]).toBe(33);
   });
+
+  it("diffuses quantization error across mid-tone cells when dithering is enabled", () => {
+    const width = 12;
+    const height = 6;
+    const rgba = new Uint8ClampedArray(width * height * 4);
+    for (let i = 0; i < width * height; i += 1) {
+      rgba[i * 4] = 150;
+      rgba[i * 4 + 1] = 150;
+      rgba[i * 4 + 2] = 150;
+      rgba[i * 4 + 3] = 255;
+    }
+
+    const baseSettings: AsciiConversionSettings = {
+      ...DEFAULT_ASCII_SETTINGS,
+      presetId: "custom",
+      customCharacters: " #",
+      columns: 12,
+      aspectRatioCorrection: 1.0,
+      dithering: false,
+    };
+
+    const flat = convertRgbaToAsciiGrid(rgba, width, height, baseSettings);
+    const dithered = convertRgbaToAsciiGrid(rgba, width, height, {
+      ...baseSettings,
+      dithering: true,
+    });
+
+    const flatUniqueChars = new Set(flat.lines.join(""));
+    const ditheredUniqueChars = new Set(dithered.lines.join(""));
+
+    expect(flatUniqueChars.size).toBe(1);
+    expect(ditheredUniqueChars.size).toBe(2);
+    expect(ditheredUniqueChars.has(" ")).toBe(true);
+    expect(ditheredUniqueChars.has("#")).toBe(true);
+  });
 });

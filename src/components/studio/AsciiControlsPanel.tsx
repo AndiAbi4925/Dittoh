@@ -242,6 +242,15 @@ export function AsciiControlsPanel({
               className="h-4 w-4 accent-[#d71921]"
             />
           </label>
+          <label className="flex cursor-pointer items-center justify-between gap-3 border border-[#e5e5e5] bg-[#f4f4f4] px-3 py-2.5 sm:col-span-2">
+            <span className="text-xs text-[#000000]">Smooth shading (dither)</span>
+            <input
+              type="checkbox"
+              checked={Boolean(settings.dithering)}
+              onChange={(e) => patch({ dithering: e.target.checked })}
+              className="h-4 w-4 accent-[#d71921]"
+            />
+          </label>
         </div>
 
         <div className="border-t border-[#e5e5e5] pt-4">
