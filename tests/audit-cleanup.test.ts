@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
+import sitemap from "@/app/sitemap";
 
 function readRepoFile(relativePath: string): string {
   return fs.readFileSync(
@@ -26,6 +27,18 @@ describe("full-stack cleanup and route boundaries", () => {
     const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules;
     expect(rules?.allow).toBe("/");
     expect(rules?.disallow).toEqual(["/admin", "/api/"]);
+    expect(result.sitemap).toMatch(/\/sitemap\.xml$/);
+  });
+
+  it("publishes sitemap.xml entries only for public routes", () => {
+    const entries = sitemap();
+    const urls = entries.map((entry) => entry.url);
+    expect(urls.some((url) => url.endsWith("/convert"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/convert/photo"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/video"))).toBe(true);
+    expect(urls.some((url) => url.endsWith("/guide"))).toBe(true);
+    expect(urls.some((url) => url.includes("/admin"))).toBe(false);
+    expect(urls.some((url) => url.includes("/api"))).toBe(false);
   });
 
   it("provides branded 404 and error boundaries obeying strict design rules", () => {

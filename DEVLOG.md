@@ -426,3 +426,10 @@
 - Added `src/components/RetroSpaceBackdrop.tsx` on `/` so low-contrast pixelated starfighters cruise subtly across the hero background and react to clicks without blocking UI interactions.
 - Upgraded `src/components/DotMatrixHero.tsx` with `Spacewar` mode (interactive click-to-fire reticle + enemy evade reactions) alongside the existing `Wave` ASCII dot-matrix mode, `Pixel` size switch, `Light/Dark` inversion, `Play/Pause`, `IntersectionObserver`, and `prefers-reduced-motion` support.
 - Added `tests/spacewar-engine.test.ts` and updated `tests/step-routes.test.ts`.
+
+## Creative Engine, Preview UX, Admin Allowlist & CI Upgrades
+
+- Added optional Floyd-Steinberg error diffusion (`dithering?: boolean`, `Smooth shading (dither)` toggle) across `src/lib/ascii/types.ts`, `presets.ts`, `storage.ts`, `engine.ts`, and `AsciiControlsPanel.tsx`, keeping default non-dithered output unchanged.
+- Added a plain-text Discord/chat character counter (`<= 2,000` chars advisor) on Step 4 export (`AsciiExportPanel.tsx`) and an interactive Before/After split comparison slider (`Compare` toggle + pointer/keyboard `#d71921` hairline) on Step 3 preview (`AsciiPreviewCanvas.tsx` + `ConvertStepViews.tsx`).
+- Added database `AdminAllowlist` management (`/api/admin/allowlist` GET/POST/DELETE with fail-closed auth, rate limiting, `AuditLog` entries, and self-removal lockout protection) alongside an `ALLOWLIST MANAGEMENT` panel inside `/admin` (`src/lib/admin-allowlist.ts`, `src/app/admin/page.tsx`, `AdminDashboardClient.tsx`).
+- Added `src/app/sitemap.ts` (linked in `src/app/robots.ts`) and `.github/workflows/ci.yml` running Prisma generate, typecheck, lint, unit tests, and Next.js build on `main`.
