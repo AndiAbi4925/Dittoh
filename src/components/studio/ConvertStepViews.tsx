@@ -118,6 +118,7 @@ export function StepBackgroundView() {
     fill,
     isBusy,
     handleRunCutout,
+    applyManualCutout,
     setUseCutout,
     setFill,
     resetCutout,
@@ -135,8 +136,7 @@ export function StepBackgroundView() {
           Background
         </h1>
         <p className="text-sm text-[#525252]">
-          Step 2 of 4. Remove the background if you want, or leave your photo as
-          it is.
+          Step 2 of 4. Remove the background automatically or with magic-assisted manual tools, or skip as is.
         </p>
       </div>
 
@@ -154,6 +154,7 @@ export function StepBackgroundView() {
             fill={fill}
             isBusy={isBusy}
             onRunCutout={() => void handleRunCutout()}
+            onApplyManualCutout={applyManualCutout}
             onToggleUseCutout={setUseCutout}
             onChangeFill={setFill}
             onResetCutout={resetCutout}

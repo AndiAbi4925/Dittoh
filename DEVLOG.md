@@ -433,3 +433,9 @@
 - Added a plain-text Discord/chat character counter (`<= 2,000` chars advisor) on Step 4 export (`AsciiExportPanel.tsx`) and an interactive Before/After split comparison slider (`Compare` toggle + pointer/keyboard `#d71921` hairline) on Step 3 preview (`AsciiPreviewCanvas.tsx` + `ConvertStepViews.tsx`).
 - Added database `AdminAllowlist` management (`/api/admin/allowlist` GET/POST/DELETE with fail-closed auth, rate limiting, `AuditLog` entries, and self-removal lockout protection) alongside an `ALLOWLIST MANAGEMENT` panel inside `/admin` (`src/lib/admin-allowlist.ts`, `src/app/admin/page.tsx`, `AdminDashboardClient.tsx`).
 - Added `src/app/sitemap.ts` (linked in `src/app/robots.ts`) and `.github/workflows/ci.yml` running Prisma generate, typecheck, lint, unit tests, and Next.js build on `main`.
+
+## Manual + Magic-Assisted Background Removal
+
+- Created `src/lib/media/manual-mask.ts` implementing perceptual RGB Magic Wand flood-fill (`applyMagicWandMask` supporting connected region vs global color match and soft feathering), edge-aware Smart Brush and pure manual Brush strokes (`applyBrushMask`), lossless mask inversion (`invertAlphaMask`), and foreground compositing (`createCutoutFromMask`).
+- Wired `applyManualCutout` into `ConverterSessionContext.tsx` and upgraded `BackgroundRemovalPanel.tsx` with `Magic Wand`, `Smart Brush`, and `Brush` modes, `Erase` / `Restore` actions, `Color tolerance` & `Brush size` sliders, live SVG reticle cursor preview, `1:1` / `Fit` zoom, bounded undo stack (`Ctrl+Z`/`Cmd+Z`), and `Invert Mask`.
+- Added unit tests in `tests/manual-mask.test.ts` covering Magic Wand contiguous/global selection, Smart Brush edge protection, manual restore, and transparent-pixel preservation.

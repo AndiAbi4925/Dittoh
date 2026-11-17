@@ -140,6 +140,7 @@ interface ConverterSessionContextValue {
   handleFileSelected: (file: File) => Promise<void>;
   handleSampleSelected: (variant: ProceduralSampleVariant) => Promise<void>;
   handleRunCutout: () => Promise<void>;
+  applyManualCutout: (result: BackgroundRemovalResult) => void;
   setUseCutout: (enabled: boolean) => void;
   setFill: (next: BackgroundFillOption) => void;
   resetCutout: () => void;
@@ -440,6 +441,11 @@ export function ConverterSessionProvider({
     setFill(INITIAL_FILL);
   }, []);
 
+  const applyManualCutout = useCallback((result: BackgroundRemovalResult) => {
+    setCutout(result);
+    setUseCutout(true);
+  }, []);
+
   const handleCancel = useCallback(() => {
     abortRef.current?.abort();
     if (!decoded) {
@@ -615,6 +621,7 @@ export function ConverterSessionProvider({
       handleFileSelected,
       handleSampleSelected,
       handleRunCutout,
+      applyManualCutout,
       setUseCutout,
       setFill,
       resetCutout,
@@ -634,6 +641,7 @@ export function ConverterSessionProvider({
     [
       activeBufferPayload,
       activeGrid,
+      applyManualCutout,
       applySettings,
       clearHistory,
       cutout,
