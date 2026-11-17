@@ -2,6 +2,11 @@ import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { PrismaClient } from "@/generated/prisma/client";
 import {
+  getAdminAllowlistState,
+  removeAdminAllowlistEntry,
+  upsertAdminAllowlistEntry,
+} from "@/lib/admin-allowlist";
+import {
   getAdminAppConfig,
   getPublicAppConfig,
   updateAppConfig,
@@ -41,6 +46,11 @@ vi.mock("@/lib/db", () => ({
   ),
 }));
 
+import {
+  DELETE as deleteAdminAllowlist,
+  GET as getAdminAllowlist,
+  POST as postAdminAllowlist,
+} from "@/app/api/admin/allowlist/route";
 import { GET as getAuditLogs } from "@/app/api/admin/audit-logs/route";
 import {
   GET as getAdminSettings,
@@ -225,5 +235,191 @@ describe("Public and Admin API route authorization and rate limiting", () => {
       })
     );
     expect(patchNoDb.status).toBe(503);
+  });
+
+  it("enforces auth, fail-closed 503, self-removal guard, and audit logging on /api/admin/allowlist", async () => {
+    const emptyState = await getAdminAllowlistState(null);
+    expect(emptyState.databaseConfigured).toBe(false);
+    expect(emptyState.entries).toEqual([]);
+
+    // Unauthenticated caller -> 401
+    const unauthAllowlist = await getAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist")
+    );
+    expect(unauthAllowlist.status).toBe(401);
+
+    // Authenticated non-allowlisted -> 403
+    mocks.authSession = { user: { githubId: "999", githubUsername: "intruder" } };
+    mocks.allowlistResult = false;
+    const forbiddenPost = await postAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "POST",
+        body: JSON.stringify({ githubId: "1234", username: "bob", role: "ADMIN" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(forbiddenPost.status).toBe(403);
+
+    // Allowlisted admin without DB -> GET 200 (unconfigured), POST/DELETE 503
+    mocks.authSession = { user: { githubId: "777", githubUsername: "andi" } };
+    mocks.allowlistResult = true;
+
+    const getNoDb = await getAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist")
+    );
+    expect(getNoDb.status).toBe(200);
+
+    const postNoDb = await postAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "POST",
+        body: JSON.stringify({ githubId: "1234", username: "bob", role: "ADMIN" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(postNoDb.status).toBe(503);
+
+    const deleteNoDb = await deleteAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "DELETE",
+        body: JSON.stringify({ githubId: "1234" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(deleteNoDb.status).toBe(503);
+
+    // Database present -> transactional upsert, self-removal block, delete + audit log
+    const auditActions: string[] = [];
+    const storedRows = new Map<
+      string,
+      {
+        id: string;
+        githubId: string;
+        username: string;
+        role: string;
+        createdAt: Date;
+      }
+    >();
+
+    const txClient = {
+      adminAllowlist: {
+        upsert: vi.fn(
+          async ({
+            where,
+            create,
+            update,
+          }: {
+            where: { githubId: string };
+            create: { githubId: string; username: string; role: string };
+            update: { username: string; role: string };
+          }) => {
+            const existing = storedRows.get(where.githubId);
+            const next = existing
+              ? { ...existing, ...update }
+              : {
+                  id: `allow_${where.githubId}`,
+                  githubId: create.githubId,
+                  username: create.username,
+                  role: create.role,
+                  createdAt: new Date("2026-11-18T00:00:00Z"),
+                };
+            storedRows.set(where.githubId, next);
+            return next;
+          }
+        ),
+        findUnique: vi.fn(async ({ where }: { where: { githubId: string } }) =>
+          storedRows.get(where.githubId) ?? null
+        ),
+        delete: vi.fn(async ({ where }: { where: { githubId: string } }) => {
+          const existing = storedRows.get(where.githubId);
+          storedRows.delete(where.githubId);
+          return existing;
+        }),
+      },
+      auditLog: {
+        create: vi.fn(async ({ data }: { data: { action: string } }) => {
+          auditActions.push(data.action);
+          return {};
+        }),
+      },
+    };
+
+    mocks.dbClient = {
+      $transaction: vi.fn(async (cb: (tx: typeof txClient) => Promise<unknown>) =>
+        cb(txClient)
+      ),
+      adminAllowlist: {
+        findMany: vi.fn(async () => Array.from(storedRows.values())),
+      },
+    } as unknown as PrismaClient;
+
+    // Invalid payload -> 400
+    const badPost = await postAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "POST",
+        body: JSON.stringify({ githubId: "not-a-number", username: "bob" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(badPost.status).toBe(400);
+
+    // Valid POST -> 200 & audit log
+    const okPost = await postAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "POST",
+        body: JSON.stringify({ githubId: "8888", username: "teammate", role: "VIEWER" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(okPost.status).toBe(200);
+    const okPostJson = (await okPost.json()) as {
+      entry: { githubId: string; role: string };
+      state: { entries: Array<{ githubId: string }> };
+    };
+    expect(okPostJson.entry.githubId).toBe("8888");
+    expect(okPostJson.entry.role).toBe("VIEWER");
+    expect(okPostJson.state.entries).toHaveLength(1);
+    expect(auditActions).toEqual(["ALLOWLIST_UPSERTED"]);
+
+    // Prevent self-removal -> 400
+    const selfDelete = await deleteAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "DELETE",
+        body: JSON.stringify({ githubId: "777" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(selfDelete.status).toBe(400);
+
+    // Remove another allowlisted entry -> 200 & audit log
+    const okDelete = await deleteAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "DELETE",
+        body: JSON.stringify({ githubId: "8888" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(okDelete.status).toBe(200);
+    expect(auditActions).toEqual(["ALLOWLIST_UPSERTED", "ALLOWLIST_REMOVED"]);
+
+    // Missing entry removal -> 404
+    const missingDelete = await deleteAdminAllowlist(
+      new NextRequest("http://localhost:3000/api/admin/allowlist", {
+        method: "DELETE",
+        body: JSON.stringify({ githubId: "8888" }),
+        headers: { "content-type": "application/json" },
+      })
+    );
+    expect(missingDelete.status).toBe(404);
+
+    // Direct service helper coverage
+    const upsertedDirect = await upsertAdminAllowlistEntry(
+      { githubId: "9991", username: "reviewer", role: "ADMIN" },
+      { githubId: "777", ipHash: "h1" },
+      mocks.dbClient
+    );
+    expect(upsertedDirect.username).toBe("reviewer");
+    await expect(
+      removeAdminAllowlistEntry("777", { githubId: "777" }, mocks.dbClient)
+    ).rejects.toThrow(/own active admin/i);
   });
 });

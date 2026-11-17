@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth, signIn, signOut } from "@/auth";
 import { AdminDashboardClient } from "@/components/admin/AdminDashboardClient";
+import { getAdminAllowlistState } from "@/lib/admin-allowlist";
 import { verifyAdminSession } from "@/lib/admin-guard";
 import { getAdminAppConfig } from "@/lib/app-config";
 import { getOptionalServerEnv, parseAdminGithubIds } from "@/lib/env";
@@ -160,13 +161,19 @@ export default async function AdminPage() {
     );
   }
 
-  const [initialConfig, initialStats, initialAuditLogs, healthResult] =
-    await Promise.all([
-      getAdminAppConfig(),
-      getAdminTelemetryStats(30),
-      getAdminAuditLogs({ limit: 25, offset: 0 }),
-      evaluateHealth(),
-    ]);
+  const [
+    initialConfig,
+    initialStats,
+    initialAuditLogs,
+    healthResult,
+    initialAllowlist,
+  ] = await Promise.all([
+    getAdminAppConfig(),
+    getAdminTelemetryStats(30),
+    getAdminAuditLogs({ limit: 25, offset: 0 }),
+    evaluateHealth(),
+    getAdminAllowlistState(),
+  ]);
 
   async function handleAdminSignOut() {
     "use server";
@@ -182,6 +189,7 @@ export default async function AdminPage() {
         initialStats={initialStats}
         initialAuditLogs={initialAuditLogs}
         initialHealth={healthResult.body}
+        initialAllowlist={initialAllowlist}
         signOutAction={handleAdminSignOut}
       />
     </div>

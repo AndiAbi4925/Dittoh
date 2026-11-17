@@ -68,3 +68,19 @@ export interface AdminHealthPayload {
   database: "ok" | "unconfigured" | "error";
   latencyMs?: number;
 }
+
+export type AdminAllowlistRole = "ADMIN" | "VIEWER";
+
+export interface AdminAllowlistEntry {
+  id: string;
+  githubId: string;
+  username: string;
+  role: AdminAllowlistRole;
+  createdAt: string;
+}
+
+export interface AdminAllowlistState {
+  databaseConfigured: boolean;
+  envAdminIds: string[];
+  entries: AdminAllowlistEntry[];
+}

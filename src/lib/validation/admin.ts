@@ -81,3 +81,12 @@ export const allowlistCreateSchema = z
     role: z.enum(["ADMIN", "VIEWER"]).default("ADMIN"),
   })
   .strict();
+
+export const allowlistDeleteSchema = z
+  .object({
+    githubId: z
+      .string()
+      .trim()
+      .regex(NUMERIC_GITHUB_ID_PATTERN, "GitHub ID must be numeric"),
+  })
+  .strict();

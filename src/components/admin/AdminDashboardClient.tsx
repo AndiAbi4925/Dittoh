@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import type {
+  AdminAllowlistRole,
+  AdminAllowlistState,
   AdminAppConfig,
   AdminAuditLogPage,
   AdminHealthPayload,
@@ -17,6 +19,7 @@ interface AdminDashboardClientProps {
   initialStats: AdminTelemetryStats;
   initialAuditLogs: AdminAuditLogPage;
   initialHealth: AdminHealthPayload;
+  initialAllowlist?: AdminAllowlistState;
   signOutAction: () => Promise<void>;
 }
 
@@ -27,15 +30,29 @@ export function AdminDashboardClient({
   initialStats,
   initialAuditLogs,
   initialHealth,
+  initialAllowlist,
   signOutAction,
 }: AdminDashboardClientProps) {
   const [config, setConfig] = useState<AdminAppConfig>(initialConfig);
   const [stats, setStats] = useState<AdminTelemetryStats>(initialStats);
   const [health, setHealth] = useState<AdminHealthPayload>(initialHealth);
   const [auditPage, setAuditPage] = useState<AdminAuditLogPage>(initialAuditLogs);
+  const [allowlistState, setAllowlistState] = useState<AdminAllowlistState>(
+    initialAllowlist ?? {
+      databaseConfigured: initialConfig.databaseConfigured,
+      envAdminIds: [],
+      entries: [],
+    }
+  );
 
   const [days, setDays] = useState<number>(initialStats.windowDays);
   const [savingConfig, setSavingConfig] = useState(false);
+  const [savingAllowlist, setSavingAllowlist] = useState(false);
+  const [removingGithubId, setRemovingGithubId] = useState<string | null>(null);
+  const [newAllowlistGithubId, setNewAllowlistGithubId] = useState("");
+  const [newAllowlistUsername, setNewAllowlistUsername] = useState("");
+  const [newAllowlistRole, setNewAllowlistRole] =
+    useState<AdminAllowlistRole>("ADMIN");
   const [refreshingStats, setRefreshingStats] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -127,6 +144,85 @@ export function AdminDashboardClient({
       setErrorMessage("Network failure updating configuration.");
     } finally {
       setSavingConfig(false);
+    }
+  };
+
+  const handleAddAllowlistEntry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingAllowlist(true);
+    setStatusMessage(null);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/admin/allowlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          githubId: newAllowlistGithubId.trim(),
+          username: newAllowlistUsername.trim().replace(/^@/, ""),
+          role: newAllowlistRole,
+        }),
+      });
+
+      const data = (await res.json()) as {
+        state?: AdminAllowlistState;
+        error?: string;
+        issues?: string[];
+      };
+
+      if (!res.ok || !data.state) {
+        setErrorMessage(
+          data.issues?.[0] ?? data.error ?? "Failed to update AdminAllowlist."
+        );
+        return;
+      }
+
+      setAllowlistState(data.state);
+      setNewAllowlistGithubId("");
+      setNewAllowlistUsername("");
+      setNewAllowlistRole("ADMIN");
+      setStatusMessage("Allowlist entry saved and recorded to AuditLog.");
+      await refreshStatsAndLogs(days, 0);
+    } catch {
+      setErrorMessage("Network failure updating allowlist.");
+    } finally {
+      setSavingAllowlist(false);
+    }
+  };
+
+  const handleRemoveAllowlistEntry = async (githubId: string) => {
+    setRemovingGithubId(githubId);
+    setStatusMessage(null);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/admin/allowlist", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ githubId }),
+      });
+
+      const data = (await res.json()) as {
+        state?: AdminAllowlistState;
+        error?: string;
+      };
+
+      if (!res.ok || !data.state) {
+        setErrorMessage(data.error ?? "Failed to remove allowlist entry.");
+        return;
+      }
+
+      setAllowlistState(data.state);
+      setStatusMessage(`Removed GitHub ID ${githubId} from AdminAllowlist.`);
+      await refreshStatsAndLogs(days, 0);
+    } catch {
+      setErrorMessage("Network failure removing allowlist entry.");
+    } finally {
+      setRemovingGithubId(null);
     }
   };
 
@@ -490,6 +586,183 @@ export function AdminDashboardClient({
           </form>
         </section>
       </div>
+
+      <section className="border border-[#b1b3b3] bg-[#ffffff] p-6">
+        <div className="border-b border-[#b1b3b3] pb-4">
+          <p className="font-mono text-[11px] tracking-widest text-[#d71921] uppercase">
+            ZERO-TRUST ACCESS CONTROL / ADMIN ALLOWLIST
+          </p>
+          <h2 className="mt-1 font-display text-xl text-[#000000]">
+            ALLOWLIST MANAGEMENT
+          </h2>
+          <p className="mt-1 font-mono text-xs text-[#525252]">
+            Manage numeric GitHub user IDs permitted to access /admin and /api/admin endpoints.
+          </p>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="space-y-4 lg:col-span-5">
+            <div className="border border-[#b1b3b3] bg-[#f4f4f4] p-4">
+              <p className="font-mono text-[11px] font-medium uppercase text-[#000000]">
+                ENV BOOTSTRAP IDS (GITHUB_ADMIN_IDS)
+              </p>
+              {allowlistState.envAdminIds.length === 0 ? (
+                <p className="mt-2 font-mono text-xs text-[#525252]">
+                  No static IDs configured in GITHUB_ADMIN_IDS.
+                </p>
+              ) : (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {allowlistState.envAdminIds.map((id) => (
+                    <span
+                      key={id}
+                      className="rounded-[2px] border border-[#000000] bg-[#ffffff] px-2.5 py-1 font-mono text-xs text-[#000000]"
+                    >
+                      {id}
+                      {id === actorGithubId ? " (YOU)" : ""}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <p className="mt-2 font-mono text-[11px] text-[#525252]">
+                Env allowlist entries are read-only and cannot be revoked from the UI.
+              </p>
+            </div>
+
+            <form
+              onSubmit={handleAddAllowlistEntry}
+              className="space-y-3 border border-[#b1b3b3] bg-[#ffffff] p-4"
+            >
+              <p className="font-mono text-[11px] font-medium uppercase text-[#000000]">
+                ADD OR UPDATE DATABASE ADMIN
+              </p>
+
+              <label className="block font-mono text-xs text-[#000000]">
+                <span className="text-[11px] uppercase text-[#525252]">
+                  GITHUB NUMERIC ID
+                </span>
+                <input
+                  type="text"
+                  required
+                  inputMode="numeric"
+                  pattern="^\d{1,24}$"
+                  placeholder="e.g. 12345678"
+                  value={newAllowlistGithubId}
+                  onChange={(e) => setNewAllowlistGithubId(e.target.value)}
+                  className="mt-1.5 w-full rounded-[2px] border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 font-mono text-sm text-[#000000]"
+                />
+              </label>
+
+              <label className="block font-mono text-xs text-[#000000]">
+                <span className="text-[11px] uppercase text-[#525252]">
+                  GITHUB USERNAME
+                </span>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. octocat"
+                  value={newAllowlistUsername}
+                  onChange={(e) => setNewAllowlistUsername(e.target.value)}
+                  className="mt-1.5 w-full rounded-[2px] border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 font-mono text-sm text-[#000000]"
+                />
+              </label>
+
+              <label className="block font-mono text-xs text-[#000000]">
+                <span className="text-[11px] uppercase text-[#525252]">
+                  ACCESS ROLE
+                </span>
+                <select
+                  value={newAllowlistRole}
+                  onChange={(e) =>
+                    setNewAllowlistRole(
+                      e.target.value === "VIEWER" ? "VIEWER" : "ADMIN"
+                    )
+                  }
+                  className="mt-1.5 w-full rounded-[2px] border border-[#b1b3b3] bg-[#ffffff] px-3 py-2 font-mono text-sm text-[#000000]"
+                >
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="VIEWER">VIEWER</option>
+                </select>
+              </label>
+
+              <button
+                type="submit"
+                disabled={savingAllowlist || !allowlistState.databaseConfigured}
+                className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
+              >
+                {savingAllowlist ? "SAVING..." : "SAVE ALLOWLIST ENTRY"}
+              </button>
+            </form>
+          </div>
+
+          <div className="lg:col-span-7">
+            {allowlistState.entries.length === 0 ? (
+              <p className="border border-dashed border-[#b1b3b3] bg-[#f4f4f4] p-4 font-mono text-xs text-[#525252]">
+                {allowlistState.databaseConfigured
+                  ? "No database-managed AdminAllowlist entries recorded yet."
+                  : "Database unconfigured. Configure Neon PostgreSQL to manage allowlist rows."}
+              </p>
+            ) : (
+              <div className="overflow-x-auto border border-[#b1b3b3]">
+                <table className="w-full border-collapse text-left font-mono text-xs">
+                  <thead>
+                    <tr className="border-b border-[#b1b3b3] bg-[#f4f4f4] text-[11px] uppercase text-[#525252]">
+                      <th className="px-3 py-2">GITHUB ID</th>
+                      <th className="px-3 py-2">USERNAME</th>
+                      <th className="px-3 py-2">ROLE</th>
+                      <th className="px-3 py-2">ADDED</th>
+                      <th className="px-3 py-2 text-right">ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allowlistState.entries.map((entry) => {
+                      const isSelf = entry.githubId === actorGithubId;
+                      const busy = removingGithubId === entry.githubId;
+                      return (
+                        <tr key={entry.id} className="border-b border-[#e5e5e5]">
+                          <td className="px-3 py-2.5 text-[#000000]">
+                            {entry.githubId}
+                          </td>
+                          <td className="px-3 py-2.5 text-[#000000]">
+                            @{entry.username}
+                          </td>
+                          <td className="px-3 py-2.5">
+                            <span className="rounded-[2px] border border-[#b1b3b3] bg-[#f4f4f4] px-2 py-0.5 text-[11px] text-[#000000]">
+                              {entry.role}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2.5 whitespace-nowrap text-[#525252]">
+                            {entry.createdAt.slice(0, 10)}
+                          </td>
+                          <td className="px-3 py-2.5 text-right">
+                            {isSelf ? (
+                              <span className="font-mono text-[11px] text-[#525252]">
+                                CURRENT SESSION
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                disabled={
+                                  busy || !allowlistState.databaseConfigured
+                                }
+                                onClick={() => {
+                                  void handleRemoveAllowlistEntry(entry.githubId);
+                                }}
+                                className="dottoh-btn border border-[#d71921] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#d71921] hover:bg-[#d71921] hover:text-[#ffffff] disabled:opacity-40"
+                              >
+                                {busy ? "REMOVING..." : "REMOVE"}
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="border border-[#b1b3b3] bg-[#ffffff] p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#b1b3b3] pb-4">
