@@ -239,6 +239,7 @@ export function StepStyleView() {
                 isRendering={isRendering}
                 fileName={fileName ?? "dottoh-image"}
                 exportWidthPx={exportWidthPx}
+                compareImage={activeBufferPayload}
               />
             </div>
 

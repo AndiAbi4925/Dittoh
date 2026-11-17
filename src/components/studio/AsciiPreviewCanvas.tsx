@@ -8,6 +8,7 @@ import {
   resolveSafeExportConfig,
 } from "@/lib/ascii/exporters";
 import type { AsciiConversionSettings, AsciiGridResult } from "@/lib/ascii/types";
+import type { DecodedImagePayload } from "@/lib/media/types";
 
 interface AsciiPreviewCanvasProps {
   grid: AsciiGridResult | null;
@@ -15,6 +16,7 @@ interface AsciiPreviewCanvasProps {
   isRendering: boolean;
   fileName: string;
   exportWidthPx: number;
+  compareImage?: Pick<DecodedImagePayload, "width" | "height" | "rgba"> | null;
 }
 
 export function AsciiPreviewCanvas({
@@ -23,11 +25,17 @@ export function AsciiPreviewCanvas({
   isRendering,
   fileName,
   exportWidthPx,
+  compareImage = null,
 }: AsciiPreviewCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const compareCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const compareFrameRef = useRef<HTMLDivElement | null>(null);
   const [surfaceMode, setSurfaceMode] = useState<"canvas" | "text">("canvas");
   const [zoomMode, setZoomMode] = useState<"fit" | "actual">("fit");
   const [showChecker, setShowChecker] = useState(true);
+  const [compareActive, setCompareActive] = useState(false);
+  const [splitPercent, setSplitPercent] = useState(50);
+  const [isDraggingSplit, setIsDraggingSplit] = useState(false);
 
   const renderedSize = useMemo(() => {
     if (!grid) {
@@ -68,6 +76,77 @@ export function AsciiPreviewCanvas({
     showChecker,
     surfaceMode,
   ]);
+
+  useEffect(() => {
+    const compareCanvas = compareCanvasRef.current;
+    if (
+      !compareCanvas ||
+      !compareImage ||
+      !compareActive ||
+      surfaceMode !== "canvas"
+    ) {
+      return;
+    }
+
+    const { width, height, rgba } = compareImage;
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
+    compareCanvas.width = width;
+    compareCanvas.height = height;
+    const ctx = compareCanvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+
+    if (settings.transparentBackground && showChecker) {
+      const cell = Math.max(8, Math.round(Math.min(width, height) / 36));
+      ctx.fillStyle = "#ececec";
+      for (let y = 0; y < height; y += cell) {
+        for (let x = 0; x < width; x += cell) {
+          if (((x / cell + y / cell) & 1) === 1) {
+            ctx.fillRect(x, y, cell, cell);
+          }
+        }
+      }
+    }
+
+    const offscreen = document.createElement("canvas");
+    offscreen.width = width;
+    offscreen.height = height;
+    const offCtx = offscreen.getContext("2d");
+    if (!offCtx) {
+      return;
+    }
+
+    const imageData = offCtx.createImageData(width, height);
+    imageData.data.set(rgba);
+    offCtx.putImageData(imageData, 0, 0);
+    ctx.drawImage(offscreen, 0, 0);
+  }, [
+    compareActive,
+    compareImage,
+    settings.transparentBackground,
+    showChecker,
+    surfaceMode,
+  ]);
+
+  const updateSplitFromClientX = (clientX: number) => {
+    const frame = compareFrameRef.current;
+    if (!frame) {
+      return;
+    }
+    const rect = frame.getBoundingClientRect();
+    if (rect.width <= 0) {
+      return;
+    }
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    setSplitPercent(Math.min(100, Math.max(0, pct)));
+  };
 
   const rawText = useMemo(() => {
     if (!grid || surfaceMode !== "text") {
@@ -149,6 +228,21 @@ export function AsciiPreviewCanvas({
             </div>
           )}
 
+          {compareImage && surfaceMode === "canvas" && (
+            <button
+              type="button"
+              onClick={() => setCompareActive((prev) => !prev)}
+              aria-pressed={compareActive}
+              className={`rounded-[2px] border px-2.5 py-1 font-mono text-[11px] ${
+                compareActive
+                  ? "border-[#d71921] bg-[#d71921] text-[#ffffff]"
+                  : "border-[#d4d4d4] bg-[#ffffff] text-[#525252] hover:border-[#000000] hover:text-[#000000]"
+              }`}
+            >
+              Compare
+            </button>
+          )}
+
           {settings.transparentBackground && surfaceMode === "canvas" && (
             <button
               type="button"
@@ -179,15 +273,100 @@ export function AsciiPreviewCanvas({
               zoomMode === "fit" ? "justify-center" : "justify-start"
             }`}
           >
-            <canvas
-              ref={canvasRef}
-              aria-label={`ASCII preview (${grid.columns} by ${grid.rows} characters)`}
-              className={
-                zoomMode === "fit"
-                  ? "h-auto max-h-[500px] w-auto max-w-full border border-[#e5e5e5]"
-                  : "h-auto w-auto max-w-none border border-[#e5e5e5]"
+            <div
+              ref={compareFrameRef}
+              onPointerDown={
+                compareActive && compareImage
+                  ? (e) => {
+                      e.currentTarget.setPointerCapture(e.pointerId);
+                      setIsDraggingSplit(true);
+                      updateSplitFromClientX(e.clientX);
+                    }
+                  : undefined
               }
-            />
+              onPointerMove={
+                compareActive && compareImage && isDraggingSplit
+                  ? (e) => {
+                      updateSplitFromClientX(e.clientX);
+                    }
+                  : undefined
+              }
+              onPointerUp={
+                compareActive && compareImage
+                  ? () => {
+                      setIsDraggingSplit(false);
+                    }
+                  : undefined
+              }
+              onPointerCancel={
+                compareActive && compareImage
+                  ? () => {
+                      setIsDraggingSplit(false);
+                    }
+                  : undefined
+              }
+              className={`relative max-w-full ${
+                compareActive && compareImage ? "touch-none select-none cursor-ew-resize" : ""
+              }`}
+            >
+              <canvas
+                ref={canvasRef}
+                aria-label={`ASCII preview (${grid.columns} by ${grid.rows} characters)`}
+                className={
+                  zoomMode === "fit"
+                    ? "block h-auto max-h-[500px] w-auto max-w-full border border-[#e5e5e5]"
+                    : "block h-auto w-auto max-w-none border border-[#e5e5e5]"
+                }
+              />
+
+              {compareActive && compareImage && (
+                <>
+                  <canvas
+                    ref={compareCanvasRef}
+                    aria-hidden="true"
+                    style={{ clipPath: `inset(0 ${100 - splitPercent}% 0 0)` }}
+                    className="pointer-events-none absolute inset-0 block h-full w-full"
+                  />
+
+                  <span className="pointer-events-none absolute top-2 left-2 rounded-[2px] border border-[#000000] bg-[#ffffff]/90 px-1.5 py-0.5 font-mono text-[10px] text-[#000000]">
+                    Original
+                  </span>
+                  <span className="pointer-events-none absolute top-2 right-2 rounded-[2px] border border-[#000000] bg-[#000000]/85 px-1.5 py-0.5 font-mono text-[10px] text-[#ffffff]">
+                    ASCII
+                  </span>
+
+                  <div
+                    role="slider"
+                    tabIndex={0}
+                    aria-label="Comparison split position"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(splitPercent)}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+                        e.preventDefault();
+                        setSplitPercent((prev) => Math.max(0, prev - 5));
+                      } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+                        e.preventDefault();
+                        setSplitPercent((prev) => Math.min(100, prev + 5));
+                      } else if (e.key === "Home") {
+                        e.preventDefault();
+                        setSplitPercent(0);
+                      } else if (e.key === "End") {
+                        e.preventDefault();
+                        setSplitPercent(100);
+                      }
+                    }}
+                    style={{ left: `${splitPercent}%` }}
+                    className="absolute inset-y-0 w-[2px] -translate-x-1/2 bg-[#d71921] focus:outline-none"
+                  >
+                    <span className="absolute top-1/2 left-1/2 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2px] border border-[#000000] bg-[#ffffff] font-mono text-[10px] text-[#000000] shadow-xs">
+                      {"<>"}
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         )}
 

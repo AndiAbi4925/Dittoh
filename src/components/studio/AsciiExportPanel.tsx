@@ -35,6 +35,7 @@ const EXPORT_FORMATS: ReadonlyArray<{
 ];
 
 const WIDTH_PRESETS = [800, 1400, 2400, 3200] as const;
+const CHAT_CHARACTER_LIMIT = 2000;
 
 export function AsciiExportPanel({
   grid,
@@ -46,6 +47,15 @@ export function AsciiExportPanel({
   exportNotice,
 }: AsciiExportPanelProps) {
   const [copied, setCopied] = useState(false);
+
+  const plainTextLength = useMemo(() => {
+    if (!grid) {
+      return 0;
+    }
+    return exportAsciiAsTxt(grid).length;
+  }, [grid]);
+
+  const fitsChatLimit = plainTextLength > 0 && plainTextLength <= CHAT_CHARACTER_LIMIT;
 
   const outputDimensions = useMemo(() => {
     if (!grid) {
@@ -98,6 +108,33 @@ export function AsciiExportPanel({
       </div>
 
       <div className="mt-5 space-y-5">
+        {grid && (
+          <div
+            className={`flex flex-wrap items-center justify-between gap-2 border px-4 py-2.5 text-xs ${
+              fitsChatLimit
+                ? "border-[#e5e5e5] bg-[#f4f4f4] text-[#000000]"
+                : "border-[#d71921] bg-[#ffffff] text-[#d71921]"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className={`inline-block h-2 w-2 rounded-[2px] ${
+                  fitsChatLimit ? "bg-[#000000]" : "bg-[#d71921]"
+                }`}
+              />
+              <span>
+                {fitsChatLimit
+                  ? "Fits Discord and chat messages (under 2,000 characters)."
+                  : "Over 2,000 characters. Lower Detail on Step 3 for Discord or chat paste, or download a file."}
+              </span>
+            </div>
+            <span className="font-mono text-[11px] tabular-nums">
+              {plainTextLength.toLocaleString()} / {CHAT_CHARACTER_LIMIT.toLocaleString()} chars
+            </span>
+          </div>
+        )}
+
         <div className="space-y-2.5 border border-[#e5e5e5] bg-[#f4f4f4] p-4">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             <label htmlFor="export-width-px" className="font-medium text-[#000000]">
