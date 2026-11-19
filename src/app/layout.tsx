@@ -8,6 +8,7 @@ import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
 import "@fontsource/jetbrains-mono/700.css";
 import { MotionProvider } from "@/components/MotionProvider";
+import { PageScrollChrome } from "@/components/PageScrollChrome";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getPublicEnv } from "@/lib/env";
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-[#ffffff] text-[#000000] font-sans antialiased flex flex-col">
         <Script src="/theme-init.js" strategy="beforeInteractive" />
         <MotionProvider>
+          <PageScrollChrome />
           <SiteHeader />
           <main id="main-content" className="flex-1">
             {children}

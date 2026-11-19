@@ -226,6 +226,22 @@ html[data-theme="dark"] [data-theme-preserve="true"].border-\[\#d4d4d4\] {
   border-color: #333333;
 }
 
+@keyframes dottoh-pixel-pulse {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.84);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dottoh-pixel-pulse {
+  animation: dottoh-pixel-pulse 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

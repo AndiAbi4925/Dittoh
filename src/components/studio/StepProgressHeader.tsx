@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { IconCloseCross } from "@/components/BrandMark";
+import { PixelLoader } from "@/components/PixelLoader";
 import { useConverterSession } from "@/components/studio/ConverterSessionContext";
 
 interface StepItem {
@@ -34,8 +35,8 @@ export function StepProgressHeader() {
 
   return (
     <nav aria-label="Converter steps" className="border-b border-[#e5e5e5] bg-[#ffffff]">
-      <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6">
-        <ol className="grid grid-cols-4 gap-2 sm:gap-3">
+      <div className="mx-auto max-w-5xl px-3 py-3 sm:px-6 sm:py-4">
+        <ol className="grid grid-cols-4 gap-1.5 sm:gap-3">
           {STEPS.map((step, index) => {
             const isCurrent = index === activeIndex;
             const isUnlocked = index === 0 || Boolean(decoded);
@@ -46,7 +47,7 @@ export function StepProgressHeader() {
 
             const content = (
               <div
-                className={`relative flex items-center gap-2 rounded-[2px] border px-2.5 py-2 transition-colors sm:px-3.5 sm:py-2.5 ${
+                className={`relative flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-[2px] border px-1.5 py-2 text-center transition-colors sm:flex-row sm:justify-start sm:gap-2 sm:px-3.5 sm:py-2.5 sm:text-left ${
                   isCurrent
                     ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                     : isUnlocked
@@ -65,7 +66,7 @@ export function StepProgressHeader() {
                 >
                   {step.number}
                 </span>
-                <span className="truncate font-sans text-xs font-medium sm:text-sm">
+                <span className="max-w-full truncate font-sans text-[11px] font-medium leading-tight sm:text-sm">
                   {step.label}
                 </span>
                 {isCurrent && (
@@ -125,11 +126,8 @@ export function StepStatusBanners() {
           aria-live="polite"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 text-sm text-[#000000]">
-              <span
-                className="inline-block h-2.5 w-2.5 bg-[#d71921]"
-                aria-hidden="true"
-              />
+            <div className="flex items-center gap-3 text-sm text-[#000000]">
+              <PixelLoader size="sm" />
               <span className="font-medium">{progressLabel}</span>
               <span className="font-mono text-xs text-[#525252]">
                 {Math.min(100, Math.max(0, Math.round(progress.progress)))}%
