@@ -10,7 +10,7 @@ import {
   triggerSpacewarSalvo,
 } from "@/lib/spacewar-engine";
 
-const BACKDROP_PALETTE: SpacewarThemePalette = {
+const LIGHT_BACKDROP_PALETTE: SpacewarThemePalette = {
   background: null,
   hullNear: "#171717",
   hullFar: "#737373",
@@ -20,6 +20,18 @@ const BACKDROP_PALETTE: SpacewarThemePalette = {
   starColor: "#d4d4d4",
   mutedGlyph: "#a3a3a3",
   alphaMultiplier: 0.18,
+};
+
+const DARK_BACKDROP_PALETTE: SpacewarThemePalette = {
+  background: null,
+  hullNear: "#f5f5f5",
+  hullFar: "#a3a3a3",
+  enemyNear: "#d4d4d4",
+  enemyFar: "#737373",
+  accent: "#d71921",
+  starColor: "#525252",
+  mutedGlyph: "#737373",
+  alphaMultiplier: 0.24,
 };
 
 export function RetroSpaceBackdrop() {
@@ -65,7 +77,11 @@ export function RetroSpaceBackdrop() {
     };
 
     const draw = () => {
-      renderSpacewarCanvas(ctx, state, BACKDROP_PALETTE, 2.2);
+      const palette =
+        document.documentElement.dataset.theme === "dark"
+          ? DARK_BACKDROP_PALETTE
+          : LIGHT_BACKDROP_PALETTE;
+      renderSpacewarCanvas(ctx, state, palette, 2.2);
     };
 
     let last = performance.now();
@@ -129,6 +145,14 @@ export function RetroSpaceBackdrop() {
     });
     intersectionObserver.observe(container);
 
+    const themeObserver = new MutationObserver(() => {
+      draw();
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
     media.addEventListener("change", onMotionChange);
     document.addEventListener("visibilitychange", schedule);
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
@@ -141,6 +165,7 @@ export function RetroSpaceBackdrop() {
       if (rafId) {
         window.cancelAnimationFrame(rafId);
       }
+      themeObserver.disconnect();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       media.removeEventListener("change", onMotionChange);

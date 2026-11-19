@@ -284,7 +284,10 @@ export function DotMatrixHero() {
       : density;
 
   return (
-    <div className="rounded-[2px] border border-[#d4d4d4] bg-[#000000]">
+    <div
+      data-theme-preserve="true"
+      className="rounded-[2px] border border-[#d4d4d4] bg-[#000000]"
+    >
       <div
         ref={containerRef}
         onPointerMove={handlePointerMove}

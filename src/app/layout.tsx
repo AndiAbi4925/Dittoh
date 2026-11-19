@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "@fontsource/space-grotesk/400.css";
 import "@fontsource/space-grotesk/500.css";
 import "@fontsource/space-grotesk/700.css";
@@ -34,8 +35,9 @@ export default function RootLayout({
   const contactEmail = getContactEmail();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-[#ffffff] text-[#000000] font-sans antialiased flex flex-col">
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
         <MotionProvider>
           <SiteHeader />
           <main id="main-content" className="flex-1">

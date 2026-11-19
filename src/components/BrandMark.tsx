@@ -80,3 +80,49 @@ export function IconPause({ className = "h-3.5 w-3.5", ...props }: IconProps) {
     </svg>
   );
 }
+
+export function IconSunGrid({ className = "h-3.5 w-3.5", ...props }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className={className} {...props}>
+      <rect x="5.5" y="5.5" width="5" height="5" fill="currentColor" />
+      <rect x="7.25" y="1.5" width="1.5" height="2.25" fill="currentColor" />
+      <rect x="7.25" y="12.25" width="1.5" height="2.25" fill="currentColor" />
+      <rect x="1.5" y="7.25" width="2.25" height="1.5" fill="currentColor" />
+      <rect x="12.25" y="7.25" width="2.25" height="1.5" fill="currentColor" />
+      <rect x="3" y="3" width="1.5" height="1.5" fill="#d71921" />
+      <rect x="11.5" y="11.5" width="1.5" height="1.5" fill="currentColor" />
+      <rect x="11.5" y="3" width="1.5" height="1.5" fill="currentColor" />
+      <rect x="3" y="11.5" width="1.5" height="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function IconMoonGrid({ className = "h-3.5 w-3.5", ...props }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className={className} {...props}>
+      <path
+        d="M10.8 2.4A5.6 5.6 0 1 0 13.6 11a4.4 4.4 0 0 1-2.8-8.6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <rect x="11.5" y="3" width="1.75" height="1.75" fill="#d71921" />
+    </svg>
+  );
+}
+
+export function IconArrowUp({ className = "h-4 w-4", ...props }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className={className} {...props}>
+      <path d="M8 13V3.5M8 3.5L4 7.5M8 3.5L12 7.5" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+export function IconCopy({ className = "h-3.5 w-3.5", ...props }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className={className} {...props}>
+      <rect x="5.5" y="5.5" width="8" height="8" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M3.5 10.5H2.5V2.5H10.5V3.5" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}

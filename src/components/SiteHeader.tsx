@@ -9,6 +9,7 @@ import {
   IconCloseCross,
   IconMenuGrid,
 } from "@/components/BrandMark";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { SITE_MENU_ITEMS, SITE_NAV_ITEMS } from "@/lib/site-constants";
 
 export function SiteHeader() {
@@ -71,14 +72,14 @@ export function SiteHeader() {
       </a>
 
       <div ref={containerRef} className="relative mx-auto max-w-3xl">
-        <div className="flex h-14 items-center justify-between gap-3 rounded-[2px] border border-[#d4d4d4] bg-[#ffffff]/85 px-4 shadow-[0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-5">
+        <div className="flex h-14 items-center justify-between gap-2 rounded-[2px] border border-[#d4d4d4] bg-[#ffffff]/85 px-3 shadow-[0_8px_24px_rgba(0,0,0,0.06)] backdrop-blur-md sm:gap-3 sm:px-5">
           <Link
             href="/"
-            className="flex items-center gap-2.5 rounded-[2px] py-1 pr-2"
+            className="flex items-center gap-2 rounded-[2px] py-1 pr-1 sm:gap-2.5 sm:pr-2"
             onClick={() => setOpenAtPath(null)}
           >
             <DottohMark className="h-6 w-6 shrink-0" />
-            <span className="font-display text-lg tracking-wider text-[#000000]">
+            <span className="font-display text-base tracking-wider text-[#000000] sm:text-lg">
               DOTTOH
             </span>
           </Link>
@@ -111,23 +112,27 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <button
-            type="button"
-            className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff]/90 px-3.5 py-2 font-mono text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
-            aria-expanded={menuOpen}
-            aria-controls="site-nav-menu"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            onClick={() =>
-              setOpenAtPath((prev) => (prev === pathname ? null : pathname))
-            }
-          >
-            {menuOpen ? (
-              <IconCloseCross className="h-3.5 w-3.5" />
-            ) : (
-              <IconMenuGrid className="h-3.5 w-3.5" />
-            )}
-            <span>Menu</span>
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
+
+            <button
+              type="button"
+              className="dottoh-btn min-h-[38px] border border-[#d4d4d4] bg-[#ffffff]/90 px-3 py-2 font-mono text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:px-3.5"
+              aria-expanded={menuOpen}
+              aria-controls="site-nav-menu"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              onClick={() =>
+                setOpenAtPath((prev) => (prev === pathname ? null : pathname))
+              }
+            >
+              {menuOpen ? (
+                <IconCloseCross className="h-3.5 w-3.5" />
+              ) : (
+                <IconMenuGrid className="h-3.5 w-3.5" />
+              )}
+              <span>Menu</span>
+            </button>
+          </div>
         </div>
 
         <AnimatePresence>
