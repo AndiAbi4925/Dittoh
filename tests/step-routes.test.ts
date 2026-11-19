@@ -20,7 +20,6 @@ const ROUTE_FILES = [
 
 const USER_FACING_COMPONENTS = [
   "src/components/MinimalHomeHero.tsx",
-  "src/components/RetroSpaceBackdrop.tsx",
   "src/components/DotMatrixHero.tsx",
   "src/components/GuideWalkthrough.tsx",
   "src/components/SiteHeader.tsx",
