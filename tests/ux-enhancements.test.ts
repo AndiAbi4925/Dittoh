@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { GUIDE_FAQ_ITEMS } from "@/components/GuideFaq";
+import { buildPixelSquareWipeFrames } from "@/lib/theme-transition";
 
 function readRepoFile(relativePath: string): string {
   return fs.readFileSync(
@@ -25,6 +26,18 @@ describe("UX enhancements: dark mode, scroll chrome, modals, loaders, and FAQ", 
     expect(globals).toContain('html[data-theme="dark"]');
     expect(globals).toContain("dittoh-pixel-pulse");
     expect(globals).toContain("dittoh-theme-transition");
+    expect(globals).toContain("::view-transition-new(root)");
+
+    const wipeFrames = buildPixelSquareWipeFrames(
+      { top: 20, right: 1180, bottom: 58, left: 1100 },
+      1280,
+      800
+    );
+    expect(wipeFrames.length).toBe(13);
+    expect(String(wipeFrames[0]?.clipPath)).toMatch(/^inset\(\d+px \d+px \d+px \d+px round 2px\)$/);
+    expect(wipeFrames[wipeFrames.length - 1]?.clipPath).toBe(
+      "inset(0px 0px 0px 0px round 0px)"
+    );
   });
 
   it("provides accessible confirmation modals for destructive actions", () => {

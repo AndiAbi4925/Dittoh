@@ -3,6 +3,10 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useSyncExternalStore } from "react";
 import { IconMoonGrid, IconSunGrid } from "@/components/BrandMark";
+import {
+  buildPixelSquareWipeFrames,
+  type OriginRectLike,
+} from "@/lib/theme-transition";
 
 export type ThemeMode = "light" | "dark";
 
@@ -10,6 +14,7 @@ const THEME_STORAGE_KEY = "dittoh-theme";
 const THEME_CHANGE_EVENT = "dittoh-theme-change";
 const THEME_TRANSITION_CLASS = "dittoh-theme-transition";
 const THEME_TRANSITION_MS = 320;
+const PIXEL_WIPE_DURATION_MS = 360;
 
 let themeTransitionTimer: number | null = null;
 
@@ -42,7 +47,22 @@ function subscribeTheme(onStoreChange: () => void): () => void {
   };
 }
 
-export function applyThemeMode(next: ThemeMode): void {
+function commitThemeState(next: ThemeMode): void {
+  const root = document.documentElement;
+  root.dataset.theme = next;
+  root.style.colorScheme = next;
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, next);
+  } catch {
+    // Ignore restricted storage contexts
+  }
+  window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+}
+
+export function applyThemeMode(
+  next: ThemeMode,
+  originRect?: OriginRectLike
+): void {
   if (typeof document === "undefined") {
     return;
   }
@@ -52,25 +72,57 @@ export function applyThemeMode(next: ThemeMode): void {
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (!prefersReduced && typeof window !== "undefined") {
-    root.classList.add(THEME_TRANSITION_CLASS);
-    if (themeTransitionTimer !== null) {
-      window.clearTimeout(themeTransitionTimer);
-    }
-    themeTransitionTimer = window.setTimeout(() => {
-      root.classList.remove(THEME_TRANSITION_CLASS);
-      themeTransitionTimer = null;
-    }, THEME_TRANSITION_MS);
+  if (prefersReduced || typeof window === "undefined") {
+    commitThemeState(next);
+    return;
   }
 
-  root.dataset.theme = next;
-  root.style.colorScheme = next;
-  try {
-    window.localStorage.setItem(THEME_STORAGE_KEY, next);
-  } catch {
-    // Ignore restricted storage contexts
+  if (typeof document.startViewTransition === "function") {
+    root.classList.remove(THEME_TRANSITION_CLASS);
+    const fallbackRect: OriginRectLike = originRect ?? {
+      top: 20,
+      right: window.innerWidth - 20,
+      bottom: 58,
+      left: window.innerWidth - 96,
+    };
+
+    try {
+      const transition = document.startViewTransition(() => {
+        commitThemeState(next);
+      });
+
+      void transition.ready
+        .then(() => {
+          const frames = buildPixelSquareWipeFrames(
+            fallbackRect,
+            window.innerWidth,
+            window.innerHeight
+          );
+          root.animate(frames, {
+            duration: PIXEL_WIPE_DURATION_MS,
+            easing: "steps(1, end)",
+            pseudoElement: "::view-transition-new(root)",
+          });
+        })
+        .catch(() => {
+          // Ignore aborted/skipped view transitions
+        });
+      return;
+    } catch {
+      // Fall through to CSS crossfade fallback
+    }
   }
-  window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+
+  root.classList.add(THEME_TRANSITION_CLASS);
+  if (themeTransitionTimer !== null) {
+    window.clearTimeout(themeTransitionTimer);
+  }
+  themeTransitionTimer = window.setTimeout(() => {
+    root.classList.remove(THEME_TRANSITION_CLASS);
+    themeTransitionTimer = null;
+  }, THEME_TRANSITION_MS);
+
+  commitThemeState(next);
 }
 
 export function ThemeToggle() {
@@ -85,7 +137,15 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={() => applyThemeMode(isDark ? "light" : "dark")}
+      onClick={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        applyThemeMode(isDark ? "light" : "dark", {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left,
+        });
+      }}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       title={isDark ? "Light mode" : "Dark mode"}

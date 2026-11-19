@@ -242,6 +242,20 @@ html[data-theme="dark"] [data-theme-preserve="true"].border-\[\#d4d4d4\] {
   animation: dittoh-pixel-pulse 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+}
+
 html.dittoh-theme-transition,
 html.dittoh-theme-transition *,
 html.dittoh-theme-transition *::before,

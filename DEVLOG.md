@@ -447,3 +447,9 @@
 - Added accessible sharp-cornered `ConfirmDialog.tsx` (`role="dialog"`, `Escape` dismiss) protecting Background Reset, saved style Delete, Clear History, and `/admin` allowlist entry removal.
 - Unified form validation errors (`role="alert"`) and success confirmations (`role="status"`) in `AsciiPresetsHistoryPanel.tsx` and `AsciiExportPanel.tsx`, and added quick Copy buttons in Step 3 preview (`AsciiPreviewCanvas.tsx`) and legal contact boxes (`CopyEmailButton.tsx`).
 - Added expandable FAQ accordion (`GuideFaq.tsx`) to `/guide`, updated `Last updated: 2026-11-19` dates across `/guide`, `/privacy`, and `/terms`, refined narrow-mobile tap targets and step-bar stacking, and added `tests/ux-enhancements.test.ts`.
+
+## Dittoh Rebrand, Box-Scoped Spacewar & Pixelated Square Wipe Theme Transition
+
+- Removed `RetroSpaceBackdrop.tsx` so Spacewar plays strictly inside the framed `DotMatrixHero` box.
+- Completed full repository rebranding from previous brand naming to `Dittoh` (`dittoh`, `Dittoh`, `DITTOH`) across components, metadata, storage keys, session cookies, URLs (`https://dittoh.vercel.app`), docs, and tests.
+- Upgraded Dark/Light switching (`src/lib/theme-transition.ts`, `ThemeToggle.tsx`, `globals.css`) to a native View Transitions API pixelated square wipe expanding in 8px-snapped ease-out `clip-path: inset(...)` steps directly from the toggle button, with CSS crossfade fallback and `prefers-reduced-motion` support.
