@@ -24,6 +24,7 @@ describe("UX enhancements: dark mode, scroll chrome, modals, loaders, and FAQ", 
     const globals = readRepoFile("src/app/globals.css");
     expect(globals).toContain('html[data-theme="dark"]');
     expect(globals).toContain("dittoh-pixel-pulse");
+    expect(globals).toContain("dittoh-theme-transition");
   });
 
   it("provides accessible confirmation modals for destructive actions", () => {
