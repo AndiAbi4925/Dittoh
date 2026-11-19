@@ -1,0 +1,67 @@
+import fs from "node:fs";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+import { GUIDE_FAQ_ITEMS } from "@/components/GuideFaq";
+
+function readRepoFile(relativePath: string): string {
+  return fs.readFileSync(
+    path.resolve(import.meta.dirname, "..", relativePath),
+    "utf8"
+  );
+}
+
+describe("UX enhancements: dark mode, scroll chrome, modals, loaders, and FAQ", () => {
+  it("ships CSP-safe static theme initialization without dangerouslySetInnerHTML", () => {
+    const bootScript = readRepoFile("public/theme-init.js");
+    expect(bootScript).toContain("dottoh-theme");
+    expect(bootScript).toContain("dataset.theme");
+
+    const layout = readRepoFile("src/app/layout.tsx");
+    expect(layout).toContain('src="/theme-init.js"');
+    expect(layout).toContain("PageScrollChrome");
+    expect(layout).not.toContain("dangerouslySetInnerHTML");
+
+    const globals = readRepoFile("src/app/globals.css");
+    expect(globals).toContain('html[data-theme="dark"]');
+    expect(globals).toContain("dottoh-pixel-pulse");
+  });
+
+  it("provides accessible confirmation modals for destructive actions", () => {
+    const dialog = readRepoFile("src/components/ConfirmDialog.tsx");
+    expect(dialog).toContain('role="dialog"');
+    expect(dialog).toContain('aria-modal="true"');
+    expect(dialog).toContain("Escape");
+
+    for (const consumer of [
+      "src/components/studio/BackgroundRemovalPanel.tsx",
+      "src/components/studio/AsciiPresetsHistoryPanel.tsx",
+      "src/components/admin/AdminDashboardClient.tsx",
+    ]) {
+      expect(readRepoFile(consumer)).toContain("ConfirmDialog");
+    }
+  });
+
+  it("includes route loading UI, scroll progress bar, back-to-top button, and FAQ entries", () => {
+    const loading = readRepoFile("src/app/loading.tsx");
+    expect(loading).toContain("PixelLoader");
+
+    const scrollChrome = readRepoFile("src/components/PageScrollChrome.tsx");
+    expect(scrollChrome).toContain('role="progressbar"');
+    expect(scrollChrome).toContain('aria-label="Back to top"');
+
+    expect(GUIDE_FAQ_ITEMS.length).toBeGreaterThanOrEqual(5);
+    for (const item of GUIDE_FAQ_ITEMS) {
+      expect(item.question.length).toBeGreaterThan(10);
+      expect(item.answer.length).toBeGreaterThan(20);
+      expect(item.answer).not.toMatch(/[\u2013\u2014]/);
+    }
+
+    for (const page of [
+      "src/app/guide/page.tsx",
+      "src/app/privacy/page.tsx",
+      "src/app/terms/page.tsx",
+    ]) {
+      expect(readRepoFile(page)).toContain("Last updated:");
+    }
+  });
+});

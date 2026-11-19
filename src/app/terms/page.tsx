@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CopyEmailButton } from "@/components/CopyEmailButton";
 import { DEFAULT_MAX_IMAGE_SIZE_MB } from "@/lib/constants";
 import { getContactEmail } from "@/lib/site-config";
 
@@ -49,7 +50,7 @@ export default function TermsPage() {
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="border-b border-[#e5e5e5] pb-8">
           <p className="font-mono text-xs text-[#525252]">
-            Effective 2026-11-15
+            Effective 2026-11-15 / Last updated: 2026-11-19
           </p>
           <h1 className="mt-3 font-display text-4xl tracking-tight text-[#000000]">
             TERMS &amp; CONDITIONS
@@ -75,12 +76,15 @@ export default function TermsPage() {
         <div className="mt-8 flex flex-col justify-between gap-4 border border-[#d4d4d4] bg-[#f4f4f4] p-6 sm:flex-row sm:items-center">
           <div>
             <div className="font-mono text-xs text-[#525252]">Questions</div>
-            <a
-              href={`mailto:${contactEmail}`}
-              className="mt-1 inline-block text-sm font-medium text-[#000000] underline underline-offset-4 hover:text-[#d71921]"
-            >
-              {contactEmail}
-            </a>
+            <div className="mt-1.5 flex flex-wrap items-center gap-3">
+              <a
+                href={`mailto:${contactEmail}`}
+                className="inline-block text-sm font-medium text-[#000000] underline underline-offset-4 hover:text-[#d71921]"
+              >
+                {contactEmail}
+              </a>
+              <CopyEmailButton email={contactEmail} />
+            </div>
           </div>
           <Link
             href="/convert"

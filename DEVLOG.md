@@ -439,3 +439,11 @@
 - Created `src/lib/media/manual-mask.ts` implementing perceptual RGB Magic Wand flood-fill (`applyMagicWandMask` supporting connected region vs global color match and soft feathering), edge-aware Smart Brush and pure manual Brush strokes (`applyBrushMask`), lossless mask inversion (`invertAlphaMask`), and foreground compositing (`createCutoutFromMask`).
 - Wired `applyManualCutout` into `ConverterSessionContext.tsx` and upgraded `BackgroundRemovalPanel.tsx` with `Magic Wand`, `Smart Brush`, and `Brush` modes, `Erase` / `Restore` actions, `Color tolerance` & `Brush size` sliders, live SVG reticle cursor preview, `1:1` / `Fit` zoom, bounded undo stack (`Ctrl+Z`/`Cmd+Z`), and `Invert Mask`.
 - Added unit tests in `tests/manual-mask.test.ts` covering Magic Wand contiguous/global selection, Smart Brush edge protection, manual restore, and transparent-pixel preservation.
+
+## Dark Mode, Mobile Ergonomics, Confirmation Modals, Loading UI & FAQ
+
+- Added CSP-safe flash-free dark mode (`public/theme-init.js`, `ThemeToggle.tsx`, `html[data-theme="dark"]` monochrome palette in `globals.css`, dark palette in `RetroSpaceBackdrop.tsx`, and `data-theme-preserve="true"` protection on `DotMatrixHero.tsx` and raw `<pre>` output).
+- Added global top scroll progress hairline and conditional Back-to-Top arrow button (`PageScrollChrome.tsx`), plus a 3x3 pixel pulse loader (`PixelLoader.tsx`, `src/app/loading.tsx`, `StepStatusBanners`, `AsciiPreviewCanvas`).
+- Added accessible sharp-cornered `ConfirmDialog.tsx` (`role="dialog"`, `Escape` dismiss) protecting Background Reset, saved style Delete, Clear History, and `/admin` allowlist entry removal.
+- Unified form validation errors (`role="alert"`) and success confirmations (`role="status"`) in `AsciiPresetsHistoryPanel.tsx` and `AsciiExportPanel.tsx`, and added quick Copy buttons in Step 3 preview (`AsciiPreviewCanvas.tsx`) and legal contact boxes (`CopyEmailButton.tsx`).
+- Added expandable FAQ accordion (`GuideFaq.tsx`) to `/guide`, updated `Last updated: 2026-11-19` dates across `/guide`, `/privacy`, and `/terms`, refined narrow-mobile tap targets and step-bar stacking, and added `tests/ux-enhancements.test.ts`.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GuideFaq } from "@/components/GuideFaq";
 import { GuideWalkthrough } from "@/components/GuideWalkthrough";
 
 export const metadata: Metadata = {
@@ -13,7 +14,12 @@ export default function GuidePage() {
     <div className="bg-[#ffffff] text-[#000000]">
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="border-b border-[#e5e5e5] pb-8">
-          <p className="font-mono text-xs text-[#d71921]">VISUAL GUIDE</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-mono text-xs text-[#d71921]">VISUAL GUIDE</p>
+            <p className="font-mono text-xs text-[#525252]">
+              Last updated: 2026-11-19
+            </p>
+          </div>
           <h1 className="mt-2 font-display text-4xl tracking-tight text-[#000000]">
             HOW IT WORKS
           </h1>
@@ -76,6 +82,19 @@ export default function GuidePage() {
               text art export happen directly on your own device. Nothing is sent
               to a remote server, and you never need an account.
             </p>
+          </section>
+
+          <section className="py-8">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-sans text-lg font-medium text-[#000000]">
+                Frequently asked questions
+              </h2>
+              <span className="font-mono text-xs text-[#525252]">
+                Select any question to expand
+              </span>
+            </div>
+
+            <GuideFaq />
           </section>
         </div>
 

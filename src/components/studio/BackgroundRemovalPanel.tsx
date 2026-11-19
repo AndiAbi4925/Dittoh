@@ -685,7 +685,7 @@ export function BackgroundRemovalPanel({
                       }
                     }}
                     aria-pressed={active}
-                    className={`dottoh-btn border px-2 py-2 text-[11px] disabled:opacity-40 ${
+                    className={`dottoh-btn min-h-[40px] border px-2 py-2 text-[11px] disabled:opacity-40 ${
                       active
                         ? "border-[#d71921] bg-[#d71921] text-[#ffffff]"
                         : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -713,7 +713,7 @@ export function BackgroundRemovalPanel({
                         type="button"
                         onClick={() => setMaskAction(mode.id)}
                         aria-pressed={active}
-                        className={`dottoh-btn border px-2 py-1.5 text-[11px] ${
+                        className={`dottoh-btn min-h-[40px] border px-2 py-2 text-[11px] ${
                           active
                             ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                             : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
