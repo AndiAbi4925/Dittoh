@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import {
   compositeRgbaBackground,
   isValidHexColor,
@@ -94,6 +95,7 @@ export function BackgroundRemovalPanel({
     []
   );
   const [cursorReticle, setCursorReticle] = useState<CursorReticle | null>(null);
+  const [confirmResetOpen, setConfirmResetOpen] = useState(false);
 
   const effectiveViewMode =
     cutout && viewMode === "cutout" ? "cutout" : "original";
@@ -637,13 +639,8 @@ export function BackgroundRemovalPanel({
               <button
                 type="button"
                 disabled={isBusy}
-                onClick={() => {
-                  setViewMode("original");
-                  setHexDraft("#000000");
-                  setUndoStack([]);
-                  onResetCutout();
-                }}
-                className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-3 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-50"
+                onClick={() => setConfirmResetOpen(true)}
+                className="dottoh-btn min-h-[42px] border border-[#d4d4d4] bg-[#ffffff] px-4 py-3 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-50"
               >
                 Reset
               </button>
@@ -905,6 +902,22 @@ export function BackgroundRemovalPanel({
           </span>
         </p>
       </div>
+
+      <ConfirmDialog
+        open={confirmResetOpen}
+        title="Reset background cutout?"
+        description="This clears your automatic cutout, manual brush strokes, and background fill color so you can start over from the original photo."
+        confirmLabel="Reset cutout"
+        onCancel={() => setConfirmResetOpen(false)}
+        onConfirm={() => {
+          setConfirmResetOpen(false);
+          setViewMode("original");
+          setHexDraft("#000000");
+          setUndoStack([]);
+          setActiveTool("view");
+          onResetCutout();
+        }}
+      />
     </div>
   );
 }

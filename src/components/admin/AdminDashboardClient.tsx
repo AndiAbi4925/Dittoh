@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type {
   AdminAllowlistRole,
   AdminAllowlistState,
@@ -49,6 +50,10 @@ export function AdminDashboardClient({
   const [savingConfig, setSavingConfig] = useState(false);
   const [savingAllowlist, setSavingAllowlist] = useState(false);
   const [removingGithubId, setRemovingGithubId] = useState<string | null>(null);
+  const [pendingRemoveEntry, setPendingRemoveEntry] = useState<{
+    githubId: string;
+    username: string;
+  } | null>(null);
   const [newAllowlistGithubId, setNewAllowlistGithubId] = useState("");
   const [newAllowlistUsername, setNewAllowlistUsername] = useState("");
   const [newAllowlistRole, setNewAllowlistRole] =
@@ -744,9 +749,12 @@ export function AdminDashboardClient({
                                 disabled={
                                   busy || !allowlistState.databaseConfigured
                                 }
-                                onClick={() => {
-                                  void handleRemoveAllowlistEntry(entry.githubId);
-                                }}
+                                onClick={() =>
+                                  setPendingRemoveEntry({
+                                    githubId: entry.githubId,
+                                    username: entry.username,
+                                  })
+                                }
                                 className="dottoh-btn border border-[#d71921] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#d71921] hover:bg-[#d71921] hover:text-[#ffffff] disabled:opacity-40"
                               >
                                 {busy ? "REMOVING..." : "REMOVE"}
@@ -849,6 +857,25 @@ export function AdminDashboardClient({
           </div>
         )}
       </section>
+
+      <ConfirmDialog
+        open={pendingRemoveEntry !== null}
+        title="Remove admin access?"
+        description={
+          pendingRemoveEntry
+            ? `Revoke database AdminAllowlist access for @${pendingRemoveEntry.username} (GitHub ID ${pendingRemoveEntry.githubId}).`
+            : ""
+        }
+        confirmLabel="Remove admin"
+        onCancel={() => setPendingRemoveEntry(null)}
+        onConfirm={() => {
+          if (pendingRemoveEntry) {
+            const targetId = pendingRemoveEntry.githubId;
+            setPendingRemoveEntry(null);
+            void handleRemoveAllowlistEntry(targetId);
+          }
+        }}
+      />
     </div>
   );
 }

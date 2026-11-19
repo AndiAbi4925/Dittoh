@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type {
   AsciiConversionSettings,
   AsciiHistoryEntry,
@@ -32,15 +33,34 @@ export function AsciiPresetsHistoryPanel({
 }: AsciiPresetsHistoryPanelProps) {
   const [presetName, setPresetName] = useState("");
   const [activeTab, setActiveTab] = useState<"presets" | "history">("presets");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formSuccess, setFormSuccess] = useState<string | null>(null);
+  const [pendingDeletePreset, setPendingDeletePreset] =
+    useState<SavedAsciiPreset | null>(null);
+  const [confirmClearHistory, setConfirmClearHistory] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = presetName.trim();
+    setFormError(null);
+    setFormSuccess(null);
+
     if (!trimmed) {
+      setFormError("Enter a style name before saving.");
       return;
     }
+
+    const duplicate = savedPresets.some(
+      (item) => item.name.trim().toLowerCase() === trimmed.toLowerCase()
+    );
+    if (duplicate) {
+      setFormError(`A saved style named "${trimmed}" already exists.`);
+      return;
+    }
+
     onSavePreset(trimmed);
     setPresetName("");
+    setFormSuccess(`Saved style "${trimmed}".`);
   };
 
   return (
@@ -80,24 +100,48 @@ export function AsciiPresetsHistoryPanel({
 
       {activeTab === "presets" ? (
         <div className="mt-4 space-y-4">
-          <form onSubmit={handleSave} className="flex flex-col gap-2 sm:flex-row">
+          <form onSubmit={handleSave} noValidate className="flex flex-col gap-2 sm:flex-row">
             <input
               type="text"
               aria-label="New style name"
+              aria-invalid={Boolean(formError)}
               value={presetName}
-              onChange={(e) => setPresetName(e.target.value)}
+              onChange={(e) => {
+                setPresetName(e.target.value);
+                if (formError) setFormError(null);
+              }}
               maxLength={60}
               placeholder="Style name (e.g. Clean High Contrast)"
-              className="flex-1 border border-[#d4d4d4] bg-[#ffffff] px-3 py-2 text-xs text-[#000000]"
+              className={`min-h-[40px] flex-1 border bg-[#ffffff] px-3 py-2 text-xs text-[#000000] ${
+                formError ? "border-[#d71921]" : "border-[#d4d4d4]"
+              }`}
             />
             <button
               type="submit"
-              disabled={presetName.trim().length === 0}
-              className="dottoh-btn border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
+              className="dottoh-btn min-h-[40px] border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               Save
             </button>
           </form>
+
+          {formError && (
+            <p
+              role="alert"
+              className="border border-[#d71921] bg-[#ffffff] px-3 py-2 font-mono text-xs text-[#d71921]"
+            >
+              {formError}
+            </p>
+          )}
+
+          {formSuccess && (
+            <p
+              role="status"
+              aria-live="polite"
+              className="border border-[#000000] bg-[#f4f4f4] px-3 py-2 font-mono text-xs text-[#000000]"
+            >
+              {formSuccess}
+            </p>
+          )}
 
           {savedPresets.length === 0 ? (
             <p className="border border-dashed border-[#d4d4d4] bg-[#f4f4f4] p-4 text-xs text-[#525252]">
@@ -122,15 +166,19 @@ export function AsciiPresetsHistoryPanel({
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => onApplyPreset(preset.settings)}
-                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
+                      onClick={() => {
+                        onApplyPreset(preset.settings);
+                        setFormError(null);
+                        setFormSuccess(`Applied style "${preset.name}".`);
+                      }}
+                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
                     >
                       Apply
                     </button>
                     <button
                       type="button"
-                      onClick={() => onDeletePreset(preset.id)}
-                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#525252] hover:border-[#d71921] hover:text-[#d71921]"
+                      onClick={() => setPendingDeletePreset(preset)}
+                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#525252] hover:border-[#d71921] hover:text-[#d71921]"
                     >
                       Delete
                     </button>
@@ -155,13 +203,23 @@ export function AsciiPresetsHistoryPanel({
 
             <button
               type="button"
-              onClick={onClearHistory}
+              onClick={() => setConfirmClearHistory(true)}
               disabled={history.length === 0}
               className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-40"
             >
               Clear
             </button>
           </div>
+
+          {formSuccess && (
+            <p
+              role="status"
+              aria-live="polite"
+              className="border border-[#000000] bg-[#f4f4f4] px-3 py-2 font-mono text-xs text-[#000000]"
+            >
+              {formSuccess}
+            </p>
+          )}
 
           {history.length === 0 ? (
             <p className="border border-dashed border-[#d4d4d4] bg-[#f4f4f4] p-4 text-xs text-[#525252]">
@@ -203,6 +261,41 @@ export function AsciiPresetsHistoryPanel({
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={pendingDeletePreset !== null}
+        title="Delete saved style?"
+        description={
+          pendingDeletePreset
+            ? `Remove "${pendingDeletePreset.name}" from your saved styles in this browser.`
+            : ""
+        }
+        confirmLabel="Delete style"
+        onCancel={() => setPendingDeletePreset(null)}
+        onConfirm={() => {
+          if (pendingDeletePreset) {
+            const name = pendingDeletePreset.name;
+            onDeletePreset(pendingDeletePreset.id);
+            setPendingDeletePreset(null);
+            setFormError(null);
+            setFormSuccess(`Deleted style "${name}".`);
+          }
+        }}
+      />
+
+      <ConfirmDialog
+        open={confirmClearHistory}
+        title="Clear recent history?"
+        description="This removes all locally saved export entries from this browser."
+        confirmLabel="Clear history"
+        onCancel={() => setConfirmClearHistory(false)}
+        onConfirm={() => {
+          setConfirmClearHistory(false);
+          onClearHistory();
+          setFormError(null);
+          setFormSuccess("Recent history cleared.");
+        }}
+      />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { IconCopy } from "@/components/BrandMark";
+import { PixelLoader } from "@/components/PixelLoader";
 import {
   computeGridMetrics,
   exportAsciiAsTxt,
@@ -36,6 +38,21 @@ export function AsciiPreviewCanvas({
   const [compareActive, setCompareActive] = useState(false);
   const [splitPercent, setSplitPercent] = useState(50);
   const [isDraggingSplit, setIsDraggingSplit] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "error">("idle");
+
+  const handleQuickCopyText = async () => {
+    if (!grid || typeof navigator === "undefined" || !navigator.clipboard) {
+      setCopyStatus("error");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(exportAsciiAsTxt(grid));
+      setCopyStatus("copied");
+      window.setTimeout(() => setCopyStatus("idle"), 1800);
+    } catch {
+      setCopyStatus("error");
+    }
+  };
 
   const renderedSize = useMemo(() => {
     if (!grid) {
@@ -243,6 +260,31 @@ export function AsciiPreviewCanvas({
             </button>
           )}
 
+          {grid && (
+            <button
+              type="button"
+              onClick={() => {
+                void handleQuickCopyText();
+              }}
+              className={`inline-flex items-center gap-1.5 rounded-[2px] border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+                copyStatus === "error"
+                  ? "border-[#d71921] bg-[#ffffff] text-[#d71921]"
+                  : copyStatus === "copied"
+                    ? "border-[#000000] bg-[#000000] text-[#ffffff]"
+                    : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
+              }`}
+            >
+              <IconCopy className="h-3 w-3" />
+              <span>
+                {copyStatus === "copied"
+                  ? "Copied"
+                  : copyStatus === "error"
+                    ? "Copy failed"
+                    : "Copy"}
+              </span>
+            </button>
+          )}
+
           {settings.transparentBackground && surfaceMode === "canvas" && (
             <button
               type="button"
@@ -263,7 +305,11 @@ export function AsciiPreviewCanvas({
       <div className="relative min-h-[280px] max-h-[560px] overflow-auto bg-[#fafafa] p-4">
         {!grid && (
           <div className="flex min-h-[240px] items-center justify-center text-sm text-[#525252]">
-            {isRendering ? "Updating preview..." : "Waiting for a photo"}
+            {isRendering ? (
+              <PixelLoader size="md" label="Updating preview..." />
+            ) : (
+              "Waiting for a photo"
+            )}
           </div>
         )}
 
@@ -372,6 +418,7 @@ export function AsciiPreviewCanvas({
 
         {grid && surfaceMode === "text" && (
           <pre
+            data-theme-preserve="true"
             className="overflow-auto border border-[#e5e5e5] p-3 font-mono leading-[1.18] whitespace-pre"
             style={{
               backgroundColor: grid.backgroundColorHex ?? "transparent",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { IconCopy } from "@/components/BrandMark";
 import {
   computeGridMetrics,
   exportAsciiAsTxt,
@@ -47,6 +48,7 @@ export function AsciiExportPanel({
   exportNotice,
 }: AsciiExportPanelProps) {
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const plainTextLength = useMemo(() => {
     if (!grid) {
@@ -71,7 +73,10 @@ export function AsciiExportPanel({
   }, [exportWidthPx, grid, settings.characterSpacingPx, settings.fontSizePx]);
 
   const handleCopyText = async () => {
+    setCopyError(null);
     if (!grid || typeof navigator === "undefined" || !navigator.clipboard) {
+      setCopied(false);
+      setCopyError("Clipboard access is unavailable in this browser. Download TXT instead.");
       return;
     }
     try {
@@ -80,6 +85,7 @@ export function AsciiExportPanel({
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
       setCopied(false);
+      setCopyError("Could not copy to clipboard. Download the TXT file below instead.");
     }
   };
 
@@ -101,9 +107,10 @@ export function AsciiExportPanel({
           onClick={() => {
             void handleCopyText();
           }}
-          className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
+          className="dottoh-btn min-h-[42px] border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
         >
-          {copied ? "Copied!" : "Copy Text"}
+          <IconCopy className="h-3.5 w-3.5" />
+          <span>{copied ? "Copied!" : "Copy Text"}</span>
         </button>
       </div>
 
@@ -203,6 +210,25 @@ export function AsciiExportPanel({
             );
           })}
         </div>
+
+        {copyError && (
+          <div
+            role="alert"
+            className="border border-[#d71921] bg-[#ffffff] px-4 py-2.5 text-xs text-[#d71921]"
+          >
+            {copyError}
+          </div>
+        )}
+
+        {copied && !copyError && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="border border-[#000000] bg-[#f4f4f4] px-4 py-2.5 text-xs text-[#000000]"
+          >
+            Plain ASCII text copied to your clipboard.
+          </div>
+        )}
 
         {exportNotice && (
           <div
