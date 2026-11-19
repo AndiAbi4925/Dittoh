@@ -38,7 +38,7 @@ export function extractClientIp(headers: Headers): string {
 
 export function hashClientIp(ip: string, salt?: string): string {
   const secretSalt =
-    salt ?? getOptionalServerEnv().AUTH_SECRET ?? "dottoh-default-salt";
+    salt ?? getOptionalServerEnv().AUTH_SECRET ?? "dittoh-default-salt";
   return createHash("sha256")
     .update(`${secretSalt}:${ip}`)
     .digest("hex")

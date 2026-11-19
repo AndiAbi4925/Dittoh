@@ -10,7 +10,7 @@ import {
 
 describe("foundation constants", () => {
   it("defines expected MVP defaults and supported formats", () => {
-    expect(APP_NAME).toBe("Dottoh");
+    expect(APP_NAME).toBe("Dittoh");
     expect(DEFAULT_MAX_IMAGE_SIZE_MB).toBe(50);
     expect(SUPPORTED_RASTER_EXTENSIONS).toEqual([
       "png",

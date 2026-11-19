@@ -85,7 +85,7 @@ export function PageScrollChrome() {
             onClick={handleBackToTop}
             aria-label="Back to top"
             title="Back to top"
-            className="dottoh-btn fixed right-4 bottom-5 z-40 h-11 w-11 border border-[#000000] bg-[#ffffff] p-0 text-[#000000] shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:border-[#d71921] hover:bg-[#d71921] hover:text-[#ffffff] sm:right-6 sm:bottom-6"
+            className="dittoh-btn fixed right-4 bottom-5 z-40 h-11 w-11 border border-[#000000] bg-[#ffffff] p-0 text-[#000000] shadow-[0_8px_20px_rgba(0,0,0,0.14)] hover:border-[#d71921] hover:bg-[#d71921] hover:text-[#ffffff] sm:right-6 sm:bottom-6"
           >
             <IconArrowUp className="h-4 w-4" />
           </motion.button>

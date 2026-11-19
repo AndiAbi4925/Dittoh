@@ -32,7 +32,7 @@ export default async function AdminPage() {
 
   if (!oauthReady) {
     return (
-      <div className="dottoh-dot-grid min-h-[70vh] px-4 py-14 sm:px-6">
+      <div className="dittoh-dot-grid min-h-[70vh] px-4 py-14 sm:px-6">
         <div className="mx-auto max-w-2xl border border-[#000000] bg-[#ffffff] p-8">
           <p className="font-mono text-xs tracking-widest text-[#d71921] uppercase">
             ADMIN ACCESS LOCKED / CONFIGURATION REQUIRED
@@ -41,7 +41,7 @@ export default async function AdminPage() {
             AUTHENTICATION SETUP INCOMPLETE
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-[#525252]">
-            Dottoh protects /admin with server-side Auth.js GitHub OAuth and
+            Dittoh protects /admin with server-side Auth.js GitHub OAuth and
             strict GITHUB_ADMIN_IDS allowlist enforcement. Configure the missing
             server environment variables in Vercel or .env.local to activate
             administrative sign-in.
@@ -77,7 +77,7 @@ export default async function AdminPage() {
           <div className="mt-6">
             <Link
               href="/"
-              className="dottoh-btn border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               BACK TO HOME
             </Link>
@@ -110,7 +110,7 @@ export default async function AdminPage() {
     }
 
     return (
-      <div className="dottoh-dot-grid min-h-[70vh] px-4 py-14 sm:px-6">
+      <div className="dittoh-dot-grid min-h-[70vh] px-4 py-14 sm:px-6">
         <div className="mx-auto max-w-xl border border-[#000000] bg-[#ffffff] p-8">
           <p className="font-mono text-xs tracking-widest text-[#d71921] uppercase">
             {isForbidden
@@ -120,7 +120,7 @@ export default async function AdminPage() {
           <h1 className="mt-2 font-display text-3xl text-[#000000]">
             {isForbidden
               ? "ACCOUNT NOT IN ALLOWLIST"
-              : "DOTTOH ADMIN SIGN IN"}
+              : "DITTOH ADMIN SIGN IN"}
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-[#525252]">
             {verification.error} Only numeric GitHub user IDs explicitly listed
@@ -133,7 +133,7 @@ export default async function AdminPage() {
               <form action={handleSignOutForbidden}>
                 <button
                   type="submit"
-                  className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+                  className="dittoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                 >
                   SIGN OUT
                 </button>
@@ -142,7 +142,7 @@ export default async function AdminPage() {
               <form action={handleGithubSignIn}>
                 <button
                   type="submit"
-                  className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+                  className="dittoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                 >
                   SIGN IN WITH GITHUB
                 </button>
@@ -151,7 +151,7 @@ export default async function AdminPage() {
 
             <Link
               href="/convert"
-              className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000]"
+              className="dittoh-btn border border-[#b1b3b3] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000]"
             >
               Go to Converter
             </Link>

@@ -26,7 +26,7 @@ export const GUIDE_FAQ_ITEMS: readonly FaqEntry[] = [
     id: "raw-support",
     question: "Why did my camera RAW photo fail to open?",
     answer:
-      "Dottoh supports DNG, Canon CR2/CR3, Sony ARW, Fujifilm RAF, and standard Nikon NEF files. Very recent camera high-efficiency compression formats (such as Nikon Z6 III 8-bit HE NEF) are not yet decoded by the browser RAW library; converting those to DNG, PNG, or JPG first works immediately.",
+      "Dittoh supports DNG, Canon CR2/CR3, Sony ARW, Fujifilm RAF, and standard Nikon NEF files. Very recent camera high-efficiency compression formats (such as Nikon Z6 III 8-bit HE NEF) are not yet decoded by the browser RAW library; converting those to DNG, PNG, or JPG first works immediately.",
   },
   {
     id: "discord-limit",

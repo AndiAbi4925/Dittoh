@@ -8,9 +8,9 @@ import type {
 import { normalizeHexColor } from "@/lib/media/colors";
 
 export const STORAGE_KEYS = {
-  presets: "dottoh:custom-presets:v1",
-  history: "dottoh:history:v1",
-  historyEnabled: "dottoh:history-enabled:v1",
+  presets: "dittoh:custom-presets:v1",
+  history: "dittoh:history:v1",
+  historyEnabled: "dittoh:history-enabled:v1",
 } as const;
 
 const MAX_SAVED_PRESETS = 24;

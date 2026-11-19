@@ -1,4 +1,4 @@
-export const APP_NAME = "Dottoh";
+export const APP_NAME = "Dittoh";
 export const APP_VERSION = "0.1.0";
 
 export const DEFAULT_MAX_IMAGE_SIZE_MB = 50;

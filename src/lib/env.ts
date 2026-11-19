@@ -24,7 +24,7 @@ export function parseAdminGithubIds(raw: string | undefined): Set<string> {
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z
     .url("NEXT_PUBLIC_APP_URL must be a valid URL")
-    .default("https://dottoh.vercel.app"),
+    .default("https://dittoh.vercel.app"),
   NEXT_PUBLIC_TELEMETRY_ENABLED: z
     .enum(["true", "false"])
     .default("true")

@@ -106,7 +106,7 @@ describe("ASCII exporters and XSS neutralization", () => {
   it("sanitizes unsafe filenames for browser download attributes", () => {
     expect(sanitizeDownloadFilename("../../../etc/passwd.png")).toBe("etc-passwd");
     expect(sanitizeDownloadFilename("My Photo (RAW).ARW")).toBe("my-photo-raw");
-    expect(sanitizeDownloadFilename("...")).toBe("dottoh-ascii");
+    expect(sanitizeDownloadFilename("...")).toBe("dittoh-ascii");
   });
 });
 

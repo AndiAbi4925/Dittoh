@@ -3,8 +3,8 @@ import { PrismaClient } from "@/generated/prisma/client";
 import { getOptionalServerEnv } from "@/lib/env";
 
 const globalForPrisma = globalThis as unknown as {
-  __dottohPrisma?: PrismaClient;
-  __dottohPrismaUrl?: string;
+  __dittohPrisma?: PrismaClient;
+  __dittohPrismaUrl?: string;
 };
 
 /**
@@ -18,18 +18,18 @@ export function getDb(): PrismaClient | null {
   }
 
   if (
-    globalForPrisma.__dottohPrisma &&
-    globalForPrisma.__dottohPrismaUrl === DATABASE_URL
+    globalForPrisma.__dittohPrisma &&
+    globalForPrisma.__dittohPrismaUrl === DATABASE_URL
   ) {
-    return globalForPrisma.__dottohPrisma;
+    return globalForPrisma.__dittohPrisma;
   }
 
   const adapter = new PrismaNeon({ connectionString: DATABASE_URL });
   const client = new PrismaClient({ adapter });
 
   if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.__dottohPrisma = client;
-    globalForPrisma.__dottohPrismaUrl = DATABASE_URL;
+    globalForPrisma.__dittohPrisma = client;
+    globalForPrisma.__dittohPrismaUrl = DATABASE_URL;
   }
 
   return client;

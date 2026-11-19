@@ -1,4 +1,4 @@
-# Dottoh
+# Dittoh
 
 Browser-first media-to-ASCII conversion studio built with Next.js App Router, TypeScript, Tailwind CSS v4, Prisma, and Auth.js.
 

@@ -171,7 +171,7 @@ export function GuideWalkthrough() {
                 type="button"
                 disabled={activeIdx === 0}
                 onClick={() => setActiveIdx((prev) => Math.max(0, prev - 1))}
-                className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-40"
+                className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-40"
               >
                 Prev
               </button>
@@ -180,13 +180,13 @@ export function GuideWalkthrough() {
                 onClick={() =>
                   setActiveIdx((prev) => (prev + 1) % GUIDE_STEPS.length)
                 }
-                className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000]"
+                className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000]"
               >
                 Next
               </button>
               <Link
                 href={current.ctaHref}
-                className="dottoh-btn border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+                className="dittoh-btn border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
               >
                 {current.ctaLabel}
               </Link>

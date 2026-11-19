@@ -23,7 +23,7 @@ export function PixelLoader({ size = "sm", label }: PixelLoaderProps) {
           <span
             key={delayMs}
             style={{ animationDelay: `${delayMs}ms` }}
-            className={`dottoh-pixel-pulse block ${cellSize} ${
+            className={`dittoh-pixel-pulse block ${cellSize} ${
               index === 4 ? "bg-[#d71921]" : "bg-[#000000]"
             }`}
           />

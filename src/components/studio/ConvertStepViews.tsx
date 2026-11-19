@@ -69,7 +69,7 @@ export function StepPhotoView({ initialSample }: StepPhotoViewProps) {
         </div>
         <Link
           href="/video"
-          className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+          className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
         >
           Convert Video Instead
         </Link>
@@ -93,13 +93,13 @@ export function StepPhotoView({ initialSample }: StepPhotoViewProps) {
         <div className="flex flex-col gap-3 border-t border-[#e5e5e5] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/convert/style"
-            className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+            className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
           >
             Skip to Style
           </Link>
           <Link
             href="/convert/background"
-            className="dottoh-btn border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+            className="dittoh-btn border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
             Next: Remove Background
           </Link>
@@ -163,13 +163,13 @@ export function StepBackgroundView() {
           <div className="flex flex-col gap-3 border-t border-[#e5e5e5] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/convert/photo"
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               Back to Photo
             </Link>
             <Link
               href="/convert/style"
-              className="dottoh-btn border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               {cutout ? "Next: Style" : "Skip & Choose Style"}
             </Link>
@@ -238,7 +238,7 @@ export function StepStyleView() {
                 grid={activeGrid}
                 settings={settings}
                 isRendering={isRendering}
-                fileName={fileName ?? "dottoh-image"}
+                fileName={fileName ?? "dittoh-image"}
                 exportWidthPx={exportWidthPx}
                 compareImage={activeBufferPayload}
               />
@@ -269,13 +269,13 @@ export function StepStyleView() {
           <div className="flex flex-col gap-3 border-t border-[#e5e5e5] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/convert/background"
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               Back to Background
             </Link>
             <Link
               href="/convert/export"
-              className="dottoh-btn border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               Next: Save &amp; Copy
             </Link>
@@ -336,14 +336,14 @@ export function StepExportView() {
             grid={activeGrid}
             settings={settings}
             isRendering={isRendering}
-            fileName={fileName ?? "dottoh-image"}
+            fileName={fileName ?? "dittoh-image"}
             exportWidthPx={exportWidthPx}
           />
 
           <div className="flex flex-col gap-3 border-t border-[#e5e5e5] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Link
               href="/convert/style"
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               Back to Style
             </Link>
@@ -353,7 +353,7 @@ export function StepExportView() {
                 handleClear();
                 router.push("/convert/photo");
               }}
-              className="dottoh-btn border border-[#000000] bg-[#ffffff] px-7 py-3.5 text-sm text-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
+              className="dittoh-btn border border-[#000000] bg-[#ffffff] px-7 py-3.5 text-sm text-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
             >
               Convert Another Photo
             </button>

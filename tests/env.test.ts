@@ -9,7 +9,7 @@ import {
 
 const VALID_SERVER_ENV = {
   NODE_ENV: "production",
-  DATABASE_URL: "postgresql://user:supersecretpass@host.neon.tech/dottoh?sslmode=require",
+  DATABASE_URL: "postgresql://user:supersecretpass@host.neon.tech/dittoh?sslmode=require",
   AUTH_SECRET: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
   AUTH_GITHUB_ID: "Ov23liTestClientId",
   AUTH_GITHUB_SECRET: "super-secret-oauth-value",
@@ -69,15 +69,15 @@ describe("env configuration", () => {
 
   it("returns public env defaults and parses overrides", () => {
     const defaults = getPublicEnv({});
-    expect(defaults.NEXT_PUBLIC_APP_URL).toBe("https://dottoh.vercel.app");
+    expect(defaults.NEXT_PUBLIC_APP_URL).toBe("https://dittoh.vercel.app");
     expect(defaults.NEXT_PUBLIC_TELEMETRY_ENABLED).toBe(true);
 
     const custom = getPublicEnv({
-      NEXT_PUBLIC_APP_URL: "https://preview.dottoh.vercel.app",
+      NEXT_PUBLIC_APP_URL: "https://preview.dittoh.vercel.app",
       NEXT_PUBLIC_TELEMETRY_ENABLED: "false",
     });
     expect(custom.NEXT_PUBLIC_APP_URL).toBe(
-      "https://preview.dottoh.vercel.app"
+      "https://preview.dittoh.vercel.app"
     );
     expect(custom.NEXT_PUBLIC_TELEMETRY_ENABLED).toBe(false);
   });
@@ -85,7 +85,7 @@ describe("env configuration", () => {
   it("allows boot without admin credentials while flagging missing vars and failing on invalid values", () => {
     const boot = validateBootEnv({ NODE_ENV: "production" });
     expect(boot.publicEnv.NEXT_PUBLIC_APP_URL).toBe(
-      "https://dottoh.vercel.app"
+      "https://dittoh.vercel.app"
     );
     expect(boot.missingAdminVars).toContain("DATABASE_URL");
     expect(boot.missingAdminVars).toContain("AUTH_SECRET");

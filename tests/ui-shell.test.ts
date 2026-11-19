@@ -30,8 +30,8 @@ describe("UI shell configuration and negative design constraints", () => {
     delete process.env.ADMIN_CONTACT_EMAIL;
     expect(getContactEmail()).toBe(DEFAULT_CONTACT_EMAIL);
 
-    process.env.ADMIN_CONTACT_EMAIL = "legal@dottoh.app";
-    expect(getContactEmail()).toBe("legal@dottoh.app");
+    process.env.ADMIN_CONTACT_EMAIL = "legal@dittoh.app";
+    expect(getContactEmail()).toBe("legal@dittoh.app");
 
     if (previous === undefined) {
       delete process.env.ADMIN_CONTACT_EMAIL;

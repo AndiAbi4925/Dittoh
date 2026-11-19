@@ -6,7 +6,7 @@ import { getContactEmail } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "How Dottoh handles photos on your device and follows Indonesia's personal data protection law (UU No. 27 Tahun 2022).",
+    "How Dittoh handles photos on your device and follows Indonesia's personal data protection law (UU No. 27 Tahun 2022).",
 };
 
 const DATA_SUMMARY = [
@@ -14,7 +14,7 @@ const DATA_SUMMARY = [
     area: "Photo and Video Tools",
     where: "Your Device",
     details:
-      "Photos, camera RAW files, background edits, and saved styles stay in your browser. They are never transmitted to Dottoh servers.",
+      "Photos, camera RAW files, background edits, and saved styles stay in your browser. They are never transmitted to Dittoh servers.",
     retention:
       "Saved styles and optional history stay in browser localStorage until you clear them.",
   },
@@ -92,10 +92,10 @@ export default function PrivacyPage() {
         <div className="divide-y divide-[#e5e5e5] border-b border-[#e5e5e5]">
           <section className="py-7">
             <h2 className="font-sans text-base font-medium text-[#000000]">
-              1. Who runs Dottoh
+              1. Who runs Dittoh
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-[#525252]">
-              Dottoh operates under Indonesian law. If you have questions or data
+              Dittoh operates under Indonesian law. If you have questions or data
               requests under UU No. 27 Tahun 2022, write to{" "}
               <a
                 href={`mailto:${contactEmail}`}
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
             <p className="mt-2 text-sm leading-relaxed text-[#525252]">
               Opening photos, cutting out backgrounds, and generating ASCII
               artwork run locally inside your browser. File bytes, EXIF photo
-              details, and filenames are never transmitted to Dottoh servers.
+              details, and filenames are never transmitted to Dittoh servers.
               Saved styles and optional history stay in your own browser
               localStorage and can be cleared anytime.
             </p>
@@ -162,7 +162,7 @@ export default function PrivacyPage() {
           </div>
           <Link
             href="/convert"
-            className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+            className="dittoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
             Start Converting
           </Link>

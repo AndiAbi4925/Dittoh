@@ -6,7 +6,7 @@ import { GuideWalkthrough } from "@/components/GuideWalkthrough";
 export const metadata: Metadata = {
   title: "Guide",
   description:
-    "Interactive visual walkthroughs and GIF demos showing how Dottoh turns photos and short clips into ASCII art inside your browser.",
+    "Interactive visual walkthroughs and GIF demos showing how Dittoh turns photos and short clips into ASCII art inside your browser.",
 };
 
 export default function GuidePage() {
@@ -101,19 +101,19 @@ export default function GuidePage() {
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Link
             href="/convert"
-            className="dottoh-btn border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+            className="dittoh-btn border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
             Start Converting
           </Link>
           <Link
             href="/convert/photo"
-            className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+            className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
           >
             Go to Photo Step
           </Link>
           <Link
             href="/video"
-            className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+            className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
           >
             Go to Video &amp; GIF
           </Link>

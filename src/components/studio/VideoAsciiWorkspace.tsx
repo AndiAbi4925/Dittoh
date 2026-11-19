@@ -519,7 +519,7 @@ export function VideoAsciiWorkspace({
           </div>
           <Link
             href="/convert/photo"
-            className="dottoh-btn shrink-0 border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+            className="dittoh-btn shrink-0 border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
             Convert a Photo
           </Link>
@@ -569,7 +569,7 @@ export function VideoAsciiWorkspace({
               <button
                 type="button"
                 onClick={handleResetVideo}
-                className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-xs text-[#000000] hover:border-[#d71921] hover:text-[#d71921]"
+                className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-xs text-[#000000] hover:border-[#d71921] hover:text-[#d71921]"
               >
                 <IconCloseCross className="h-3.5 w-3.5" />
                 <span>Remove</span>
@@ -580,7 +580,7 @@ export function VideoAsciiWorkspace({
               <button
                 type="button"
                 onClick={handleCancelActive}
-                className="dottoh-btn border border-[#d71921] bg-[#d71921] px-3 py-1.5 text-xs text-[#ffffff] hover:border-[#000000] hover:bg-[#000000]"
+                className="dittoh-btn border border-[#d71921] bg-[#d71921] px-3 py-1.5 text-xs text-[#ffffff] hover:border-[#000000] hover:bg-[#000000]"
               >
                 <IconCloseCross className="h-3.5 w-3.5" />
                 <span>Cancel</span>
@@ -689,7 +689,7 @@ export function VideoAsciiWorkspace({
               type="button"
               disabled={isBusy}
               onClick={() => inputRef.current?.click()}
-              className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40 sm:w-auto"
+              className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40 sm:w-auto"
             >
               Choose Video or GIF
             </button>
@@ -697,7 +697,7 @@ export function VideoAsciiWorkspace({
               type="button"
               disabled={isBusy}
               onClick={() => void handleLoadSampleGif()}
-              className="dottoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-5 py-3.5 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-40 sm:w-auto"
+              className="dittoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-5 py-3.5 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-40 sm:w-auto"
             >
               Try Sample GIF
             </button>
@@ -918,7 +918,7 @@ export function VideoAsciiWorkspace({
                           );
                         }
                       }}
-                      className="dottoh-btn w-full border border-[#000000] bg-[#f4f4f4] px-3 py-2 text-xs text-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
+                      className="dittoh-btn w-full border border-[#000000] bg-[#f4f4f4] px-3 py-2 text-xs text-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
                     >
                       Update Preview ({currentOptions.targetFps} fps)
                     </button>
@@ -1062,7 +1062,7 @@ export function VideoAsciiWorkspace({
                     <button
                       type="button"
                       onClick={() => setIsPlaying((prev) => !prev)}
-                      className="dottoh-btn border border-[#000000] bg-[#000000] px-3.5 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+                      className="dittoh-btn border border-[#000000] bg-[#000000] px-3.5 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                     >
                       {isPlaying ? (
                         <IconPause className="h-3.5 w-3.5" />
@@ -1081,7 +1081,7 @@ export function VideoAsciiWorkspace({
                     type="button"
                     disabled={isBusy}
                     onClick={() => void handleEncodeOutput()}
-                    className="dottoh-btn border border-[#d71921] bg-[#d71921] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#000000] hover:bg-[#000000] disabled:opacity-40"
+                    className="dittoh-btn border border-[#d71921] bg-[#d71921] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#000000] hover:bg-[#000000] disabled:opacity-40"
                   >
                     <IconDownloadBox className="h-3.5 w-3.5" />
                     <span>Save as {outputFormat.toUpperCase()}</span>
@@ -1109,7 +1109,7 @@ export function VideoAsciiWorkspace({
                 grid={previewGrid}
                 settings={asciiSettings}
                 isRendering={isBusy}
-                fileName={sanitizeDownloadFilename(sourceFile?.name ?? "dottoh-video")}
+                fileName={sanitizeDownloadFilename(sourceFile?.name ?? "dittoh-video")}
                 exportWidthPx={currentOptions.targetMaxWidthPx}
               />
 
@@ -1136,7 +1136,7 @@ export function VideoAsciiWorkspace({
                           encodedResult.fileName
                         )
                       }
-                      className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+                      className="dittoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
                     >
                       <IconDownloadBox className="h-3.5 w-3.5" />
                       <span>Download {encodedResult.format.toUpperCase()}</span>

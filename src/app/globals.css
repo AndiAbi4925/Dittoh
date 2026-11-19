@@ -33,12 +33,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.dottoh-dot-grid {
+.dittoh-dot-grid {
   background-image: radial-gradient(var(--color-muted) 1px, transparent 1px);
   background-size: 16px 16px;
 }
 
-.dottoh-btn {
+.dittoh-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -51,7 +51,7 @@ body {
   transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 
-.dottoh-btn:focus-visible,
+.dittoh-btn:focus-visible,
 a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -226,7 +226,7 @@ html[data-theme="dark"] [data-theme-preserve="true"].border-\[\#d4d4d4\] {
   border-color: #333333;
 }
 
-@keyframes dottoh-pixel-pulse {
+@keyframes dittoh-pixel-pulse {
   0%,
   100% {
     opacity: 0.22;
@@ -238,8 +238,8 @@ html[data-theme="dark"] [data-theme-preserve="true"].border-\[\#d4d4d4\] {
   }
 }
 
-.dottoh-pixel-pulse {
-  animation: dottoh-pixel-pulse 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.dittoh-pixel-pulse {
+  animation: dittoh-pixel-pulse 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

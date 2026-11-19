@@ -77,13 +77,13 @@ export function ConvertModeSelector({
           <div className="mt-8 flex flex-col gap-3">
             <Link
               href="/convert/photo"
-              className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-6 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-6 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               Choose Photo
             </Link>
             <Link
               href="/convert/photo?sample=sphere"
-              className="dottoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-6 py-3 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+              className="dittoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-6 py-3 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               Try Sample Photo
             </Link>
@@ -136,13 +136,13 @@ export function ConvertModeSelector({
           <div className="mt-8 flex flex-col gap-3">
             <Link
               href="/video"
-              className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-6 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-6 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               Choose Video or GIF
             </Link>
             <Link
               href="/guide"
-              className="dottoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-6 py-3 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+              className="dittoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-6 py-3 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               See Visual Guide
             </Link>

@@ -99,7 +99,7 @@ export function AsciiControlsPanel({
         <button
           type="button"
           onClick={onReset}
-          className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000]"
+          className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000]"
         >
           Reset
         </button>
@@ -125,7 +125,7 @@ export function AsciiControlsPanel({
                   type="button"
                   aria-pressed={active}
                   onClick={() => patch({ presetId: preset.id })}
-                  className={`dottoh-btn border px-2.5 py-2 text-left text-[11px] ${
+                  className={`dittoh-btn border px-2.5 py-2 text-left text-[11px] ${
                     active
                       ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                       : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -179,7 +179,7 @@ export function AsciiControlsPanel({
                   type="button"
                   aria-pressed={active}
                   onClick={() => patch({ colorMode: mode.id })}
-                  className={`dottoh-btn border px-2 py-2 text-[11px] ${
+                  className={`dittoh-btn border px-2 py-2 text-[11px] ${
                     active
                       ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                       : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -258,7 +258,7 @@ export function AsciiControlsPanel({
             type="button"
             aria-expanded={showAdvanced}
             onClick={() => setShowAdvanced((prev) => !prev)}
-            className="dottoh-btn flex w-full items-center justify-between border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+            className="dittoh-btn flex w-full items-center justify-between border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
           >
             <span>More options</span>
             <span className="font-mono text-[#d71921]">

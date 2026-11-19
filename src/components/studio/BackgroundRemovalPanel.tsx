@@ -493,7 +493,7 @@ export function BackgroundRemovalPanel({
                 type="button"
                 onClick={() => setViewMode("original")}
                 aria-pressed={effectiveViewMode === "original"}
-                className={`dottoh-btn border px-2.5 py-1.5 text-[11px] ${
+                className={`dittoh-btn border px-2.5 py-1.5 text-[11px] ${
                   effectiveViewMode === "original"
                     ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                     : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -506,7 +506,7 @@ export function BackgroundRemovalPanel({
                 disabled={!cutout}
                 onClick={() => setViewMode("cutout")}
                 aria-pressed={effectiveViewMode === "cutout"}
-                className={`dottoh-btn border px-2.5 py-1.5 text-[11px] disabled:opacity-40 ${
+                className={`dittoh-btn border px-2.5 py-1.5 text-[11px] disabled:opacity-40 ${
                   effectiveViewMode === "cutout"
                     ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                     : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -520,7 +520,7 @@ export function BackgroundRemovalPanel({
               type="button"
               onClick={() => setZoomActual((prev) => !prev)}
               aria-pressed={zoomActual}
-              className={`dottoh-btn border px-2.5 py-1.5 text-[11px] ${
+              className={`dittoh-btn border px-2.5 py-1.5 text-[11px] ${
                 zoomActual
                   ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                   : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -533,7 +533,7 @@ export function BackgroundRemovalPanel({
               type="button"
               disabled={undoStack.length === 0 || isBusy}
               onClick={handleUndo}
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-40"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-40"
             >
               Undo
             </button>
@@ -630,7 +630,7 @@ export function BackgroundRemovalPanel({
               type="button"
               disabled={isBusy}
               onClick={handleTriggerCutout}
-              className="dottoh-btn flex-1 border border-[#000000] bg-[#000000] px-4 py-3 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-50"
+              className="dittoh-btn flex-1 border border-[#000000] bg-[#000000] px-4 py-3 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-50"
             >
               {cutout ? "Run Auto Again" : "Remove Background"}
             </button>
@@ -640,7 +640,7 @@ export function BackgroundRemovalPanel({
                 type="button"
                 disabled={isBusy}
                 onClick={() => setConfirmResetOpen(true)}
-                className="dottoh-btn min-h-[42px] border border-[#d4d4d4] bg-[#ffffff] px-4 py-3 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-50"
+                className="dittoh-btn min-h-[42px] border border-[#d4d4d4] bg-[#ffffff] px-4 py-3 text-xs text-[#000000] hover:border-[#000000] disabled:opacity-50"
               >
                 Reset
               </button>
@@ -685,7 +685,7 @@ export function BackgroundRemovalPanel({
                       }
                     }}
                     aria-pressed={active}
-                    className={`dottoh-btn min-h-[40px] border px-2 py-2 text-[11px] disabled:opacity-40 ${
+                    className={`dittoh-btn min-h-[40px] border px-2 py-2 text-[11px] disabled:opacity-40 ${
                       active
                         ? "border-[#d71921] bg-[#d71921] text-[#ffffff]"
                         : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -713,7 +713,7 @@ export function BackgroundRemovalPanel({
                         type="button"
                         onClick={() => setMaskAction(mode.id)}
                         aria-pressed={active}
-                        className={`dottoh-btn min-h-[40px] border px-2 py-2 text-[11px] ${
+                        className={`dittoh-btn min-h-[40px] border px-2 py-2 text-[11px] ${
                           active
                             ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                             : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -789,7 +789,7 @@ export function BackgroundRemovalPanel({
                     type="button"
                     disabled={undoStack.length === 0 || isBusy}
                     onClick={handleUndo}
-                    className="dottoh-btn flex-1 border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-40"
+                    className="dittoh-btn flex-1 border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-40"
                   >
                     Undo ({undoStack.length})
                   </button>
@@ -797,7 +797,7 @@ export function BackgroundRemovalPanel({
                     type="button"
                     disabled={isBusy}
                     onClick={handleInvertMask}
-                    className="dottoh-btn flex-1 border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-40"
+                    className="dittoh-btn flex-1 border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-40"
                   >
                     Invert Mask
                   </button>
@@ -844,7 +844,7 @@ export function BackgroundRemovalPanel({
                     disabled={!cutout}
                     onClick={() => handleModeButton(item.id)}
                     aria-pressed={active}
-                    className={`dottoh-btn border px-2 py-2 text-[11px] disabled:opacity-40 ${
+                    className={`dittoh-btn border px-2 py-2 text-[11px] disabled:opacity-40 ${
                       active
                         ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                         : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"

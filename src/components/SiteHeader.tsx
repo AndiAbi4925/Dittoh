@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import {
-  DottohMark,
+  DittohMark,
   IconCloseCross,
   IconMenuGrid,
 } from "@/components/BrandMark";
@@ -78,9 +78,9 @@ export function SiteHeader() {
             className="flex items-center gap-2 rounded-[2px] py-1 pr-1 sm:gap-2.5 sm:pr-2"
             onClick={() => setOpenAtPath(null)}
           >
-            <DottohMark className="h-6 w-6 shrink-0" />
+            <DittohMark className="h-6 w-6 shrink-0" />
             <span className="font-display text-base tracking-wider text-[#000000] sm:text-lg">
-              DOTTOH
+              DITTOH
             </span>
           </Link>
 
@@ -117,7 +117,7 @@ export function SiteHeader() {
 
             <button
               type="button"
-              className="dottoh-btn min-h-[38px] border border-[#d4d4d4] bg-[#ffffff]/90 px-3 py-2 font-mono text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:px-3.5"
+              className="dittoh-btn min-h-[38px] border border-[#d4d4d4] bg-[#ffffff]/90 px-3 py-2 font-mono text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:px-3.5"
               aria-expanded={menuOpen}
               aria-controls="site-nav-menu"
               aria-label={menuOpen ? "Close menu" : "Open menu"}

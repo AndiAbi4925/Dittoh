@@ -30,13 +30,13 @@ export default async function VideoPage() {
           <div className="flex shrink-0 flex-wrap items-center gap-2">
             <Link
               href="/convert"
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
             >
               Switch Mode
             </Link>
             <Link
               href="/convert/photo"
-              className="dottoh-btn border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               Convert a Photo
             </Link>

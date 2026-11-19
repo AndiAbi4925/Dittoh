@@ -1,5 +1,5 @@
 /**
- * Generates an uncompressed GIF89a animation of concentric Dottoh dot-matrix pulses
+ * Generates an uncompressed GIF89a animation of concentric Dittoh dot-matrix pulses
  * using pure TypeScript (valid 9-bit LZW blocks with periodic Clear codes),
  * avoiding external fixture files or AI-generated assets.
  */
@@ -142,7 +142,7 @@ export function createProceduralSampleGifBytes(options?: {
 
 export function createProceduralSampleGifFile(): File {
   const bytes = createProceduralSampleGifBytes();
-  return new File([Uint8Array.from(bytes)], "dottoh-motion-sample.gif", {
+  return new File([Uint8Array.from(bytes)], "dittoh-motion-sample.gif", {
     type: "image/gif",
   });
 }

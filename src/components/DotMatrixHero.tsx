@@ -326,7 +326,7 @@ export function DotMatrixHero() {
               type="button"
               onClick={() => setMode(item)}
               aria-pressed={mode === item}
-              className={`dottoh-btn border px-2.5 py-1 text-[11px] ${
+              className={`dittoh-btn border px-2.5 py-1 text-[11px] ${
                 mode === item
                   ? "border-[#d71921] bg-[#d71921] text-[#ffffff]"
                   : "border-[#262626] bg-[#000000] text-[#b1b3b3] hover:border-[#ffffff] hover:text-[#ffffff]"
@@ -343,7 +343,7 @@ export function DotMatrixHero() {
                 type="button"
                 onClick={() => setPreset(item)}
                 aria-pressed={preset === item}
-                className={`dottoh-btn border px-2.5 py-1 text-[11px] ${
+                className={`dittoh-btn border px-2.5 py-1 text-[11px] ${
                   preset === item
                     ? "border-[#ffffff] bg-[#ffffff] text-[#000000]"
                     : "border-[#262626] bg-[#000000] text-[#b1b3b3] hover:border-[#ffffff] hover:text-[#ffffff]"
@@ -366,7 +366,7 @@ export function DotMatrixHero() {
                     : "coarse"
               )
             }
-            className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
+            className="dittoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
           >
             Pixel: {sizeLabel}
           </button>
@@ -375,7 +375,7 @@ export function DotMatrixHero() {
             type="button"
             onClick={() => setInverted((prev) => !prev)}
             aria-pressed={inverted}
-            className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
+            className="dittoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff]"
           >
             {inverted ? "Dark" : "Light"}
           </button>
@@ -385,7 +385,7 @@ export function DotMatrixHero() {
             onClick={() => setUserPaused((prev) => !prev)}
             disabled={prefersReducedMotion}
             aria-label={isPaused ? "Play animation" : "Pause animation"}
-            className="dottoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff] disabled:opacity-50"
+            className="dittoh-btn border border-[#262626] bg-[#000000] px-2.5 py-1 text-[11px] text-[#ffffff] hover:border-[#ffffff] disabled:opacity-50"
           >
             {isPaused ? (
               <>

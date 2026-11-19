@@ -1,4 +1,4 @@
-Dottoh Client-Side Media Runtime Third-Party License Notices
+Dittoh Client-Side Media Runtime Third-Party License Notices
 ============================================================
 
 1. libraw-wasm (v1.6.0)

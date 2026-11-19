@@ -7,7 +7,7 @@ import { getContactEmail } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "Terms & Conditions",
   description:
-    "Simple terms explaining how you can use Dottoh and that you keep full ownership of every file.",
+    "Simple terms explaining how you can use Dittoh and that you keep full ownership of every file.",
 };
 
 interface LegalSection {
@@ -20,12 +20,12 @@ export default function TermsPage() {
 
   const sections: LegalSection[] = [
     {
-      title: "1. What Dottoh does",
-      body: "Dottoh is a free browser tool for turning photos and short clips into ASCII art. No account or sign-up is needed.",
+      title: "1. What Dittoh does",
+      body: "Dittoh is a free browser tool for turning photos and short clips into ASCII art. No account or sign-up is needed.",
     },
     {
       title: "2. Your files remain yours",
-      body: "You retain full ownership of every image you open and every result you download or copy. Since everything runs on your device, Dottoh never claims rights over your pictures. Make sure you have permission to use any file you convert.",
+      body: "You retain full ownership of every image you open and every result you download or copy. Since everything runs on your device, Dittoh never claims rights over your pictures. Make sure you have permission to use any file you convert.",
     },
     {
       title: "3. File limits and device speed",
@@ -37,7 +37,7 @@ export default function TermsPage() {
     },
     {
       title: "5. As-is service",
-      body: "Dottoh uses open-source tools inside your browser and is provided as-is. Support for camera RAW files can vary between camera models.",
+      body: "Dittoh uses open-source tools inside your browser and is provided as-is. Support for camera RAW files can vary between camera models.",
     },
     {
       title: "6. Governing law",
@@ -56,7 +56,7 @@ export default function TermsPage() {
             TERMS &amp; CONDITIONS
           </h1>
           <p className="mt-3 text-base leading-relaxed text-[#525252]">
-            Clear, plain rules for using Dottoh.
+            Clear, plain rules for using Dittoh.
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function TermsPage() {
           </div>
           <Link
             href="/convert"
-            className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+            className="dittoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
           >
             Start Converting
           </Link>

@@ -18,8 +18,8 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(getPublicEnv().NEXT_PUBLIC_APP_URL),
   title: {
-    default: "Dottoh | Photo to ASCII Art",
-    template: "%s | Dottoh",
+    default: "Dittoh | Photo to ASCII Art",
+    template: "%s | Dittoh",
   },
   description:
     "Turn photos and short clips into ASCII art right in your browser, step by step.",

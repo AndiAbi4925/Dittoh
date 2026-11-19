@@ -506,12 +506,12 @@ export function ConverterSessionProvider({
         return;
       }
 
-      const activeFileName = fileName ?? "dottoh-image";
+      const activeFileName = fileName ?? "dittoh-image";
       setIsExporting(format);
       setExportNotice(null);
 
       try {
-        const baseName = sanitizeDownloadFilename(activeFileName, "dottoh-ascii");
+        const baseName = sanitizeDownloadFilename(activeFileName, "dittoh-ascii");
         const exportConfig = {
           targetWidthPx: exportWidthPx,
           fontSizePx: settings.fontSizePx,

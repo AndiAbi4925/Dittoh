@@ -1,6 +1,6 @@
 (function () {
   try {
-    var stored = window.localStorage.getItem("dottoh-theme");
+    var stored = window.localStorage.getItem("dittoh-theme");
     var theme =
       stored === "dark" || stored === "light"
         ? stored

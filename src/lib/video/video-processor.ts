@@ -42,7 +42,7 @@ import {
 function stripExtension(name: string): string {
   const clean = name.trim().replace(/[<>:"/\\|?*\x00-\x1f]/g, "_");
   const idx = clean.lastIndexOf(".");
-  return idx > 0 ? clean.slice(0, idx) : clean || "dottoh-video";
+  return idx > 0 ? clean.slice(0, idx) : clean || "dittoh-video";
 }
 
 function throwIfAborted(signal?: AbortSignal): void {

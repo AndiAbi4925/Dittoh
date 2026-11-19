@@ -73,7 +73,7 @@ export function MediaDropzone({
               type="button"
               disabled={disabled}
               onClick={() => inputRef.current?.click()}
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] disabled:opacity-50"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] disabled:opacity-50"
             >
               Change Photo
             </button>
@@ -82,7 +82,7 @@ export function MediaDropzone({
               disabled={disabled}
               onClick={onClear}
               aria-label="Remove selected photo"
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-50"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3.5 py-2.5 text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-50"
             >
               <IconCloseCross className="h-4 w-4" />
               <span>Remove</span>
@@ -158,7 +158,7 @@ export function MediaDropzone({
             type="button"
             disabled={disabled}
             onClick={() => inputRef.current?.click()}
-            className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-50 sm:w-auto"
+            className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-50 sm:w-auto"
           >
             Choose Photo
           </button>
@@ -169,7 +169,7 @@ export function MediaDropzone({
               type="button"
               disabled={disabled}
               onClick={() => onSampleSelected("sphere")}
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
             >
               Sphere
             </button>
@@ -177,7 +177,7 @@ export function MediaDropzone({
               type="button"
               disabled={disabled}
               onClick={() => onSampleSelected("monolith")}
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] disabled:opacity-50"
             >
               Monolith
             </button>

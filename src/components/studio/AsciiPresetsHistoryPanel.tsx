@@ -118,7 +118,7 @@ export function AsciiPresetsHistoryPanel({
             />
             <button
               type="submit"
-              className="dottoh-btn min-h-[40px] border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn min-h-[40px] border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               Save
             </button>
@@ -171,14 +171,14 @@ export function AsciiPresetsHistoryPanel({
                         setFormError(null);
                         setFormSuccess(`Applied style "${preset.name}".`);
                       }}
-                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
+                      className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
                     >
                       Apply
                     </button>
                     <button
                       type="button"
                       onClick={() => setPendingDeletePreset(preset)}
-                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#525252] hover:border-[#d71921] hover:text-[#d71921]"
+                      className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1.5 text-[11px] text-[#525252] hover:border-[#d71921] hover:text-[#d71921]"
                     >
                       Delete
                     </button>
@@ -205,7 +205,7 @@ export function AsciiPresetsHistoryPanel({
               type="button"
               onClick={() => setConfirmClearHistory(true)}
               disabled={history.length === 0}
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-40"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#d71921] hover:text-[#d71921] disabled:opacity-40"
             >
               Clear
             </button>
@@ -245,7 +245,7 @@ export function AsciiPresetsHistoryPanel({
                     <button
                       type="button"
                       onClick={() => onApplyHistoryEntry(entry)}
-                      className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
+                      className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff]"
                     >
                       Use style
                     </button>

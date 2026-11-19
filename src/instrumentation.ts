@@ -9,7 +9,7 @@ export async function register() {
     const { missingAdminVars } = validateBootEnv(process.env);
     if (missingAdminVars.length > 0 && process.env.NODE_ENV === "production") {
       console.warn(
-        `[dottoh] Server booted in client-only mode; missing admin env vars: ${missingAdminVars.join(", ")}`
+        `[dittoh] Server booted in client-only mode; missing admin env vars: ${missingAdminVars.join(", ")}`
       );
     }
   }

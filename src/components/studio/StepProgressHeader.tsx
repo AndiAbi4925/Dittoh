@@ -137,7 +137,7 @@ export function StepStatusBanners() {
             <button
               type="button"
               onClick={handleCancel}
-              className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#d71921] hover:text-[#d71921]"
+              className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] hover:border-[#d71921] hover:text-[#d71921]"
             >
               Cancel
             </button>
@@ -162,7 +162,7 @@ export function StepStatusBanners() {
           <button
             type="button"
             onClick={dismissError}
-            className="dottoh-btn shrink-0 border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[#000000] hover:border-[#000000]"
+            className="dittoh-btn shrink-0 border border-[#d4d4d4] bg-[#ffffff] px-3 py-1.5 text-[#000000] hover:border-[#000000]"
           >
             <IconCloseCross className="h-3.5 w-3.5" />
             <span>Close</span>
@@ -189,7 +189,7 @@ export function MissingPhotoCard() {
       <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Link
           href="/convert/photo"
-          className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] sm:w-auto"
+          className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] sm:w-auto"
         >
           Choose a Photo
         </Link>
@@ -197,7 +197,7 @@ export function MissingPhotoCard() {
           type="button"
           disabled={isBusy}
           onClick={() => void handleSampleSelected("sphere")}
-          className="dottoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] disabled:opacity-50 sm:w-auto"
+          className="dittoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] disabled:opacity-50 sm:w-auto"
         >
           Load Sample Sphere
         </button>

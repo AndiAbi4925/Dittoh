@@ -1,4 +1,4 @@
-export const DEFAULT_CONTACT_EMAIL = "contact@dottoh.app";
+export const DEFAULT_CONTACT_EMAIL = "contact@dittoh.app";
 
 export interface NavItem {
   href: string;

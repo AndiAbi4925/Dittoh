@@ -88,7 +88,7 @@ export function ConfirmDialog({
                 type="button"
                 onClick={onCancel}
                 aria-label="Close confirmation dialog"
-                className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] p-1.5 text-[#000000] hover:border-[#000000]"
+                className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] p-1.5 text-[#000000] hover:border-[#000000]"
               >
                 <IconCloseCross className="h-3.5 w-3.5" />
               </button>
@@ -106,14 +106,14 @@ export function ConfirmDialog({
                 ref={cancelBtnRef}
                 type="button"
                 onClick={onCancel}
-                className="dottoh-btn min-h-[42px] border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+                className="dittoh-btn min-h-[42px] border border-[#d4d4d4] bg-[#ffffff] px-4 py-2.5 text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
               >
                 {cancelLabel}
               </button>
               <button
                 type="button"
                 onClick={onConfirm}
-                className={`dottoh-btn min-h-[42px] border px-5 py-2.5 text-xs ${
+                className={`dittoh-btn min-h-[42px] border px-5 py-2.5 text-xs ${
                   destructive
                     ? "border-[#d71921] bg-[#d71921] text-[#ffffff] hover:border-[#000000] hover:bg-[#000000]"
                     : "border-[#000000] bg-[#000000] text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"

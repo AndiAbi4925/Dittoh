@@ -79,7 +79,7 @@ export function MinimalHomeHero() {
             >
               <Link
                 href="/convert"
-                className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] sm:w-auto"
+                className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-8 py-4 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] sm:w-auto"
               >
                 Start Converting
               </Link>
@@ -92,7 +92,7 @@ export function MinimalHomeHero() {
             >
               <Link
                 href="/guide"
-                className="dottoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-7 py-4 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:w-auto"
+                className="dittoh-btn w-full border border-[#d4d4d4] bg-[#ffffff] px-7 py-4 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:w-auto"
               >
                 How It Works
               </Link>

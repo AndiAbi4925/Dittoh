@@ -63,7 +63,7 @@ export class LibRawWorkerClient {
     if (typeof globalThis !== "undefined" && globalThis.crossOriginIsolated === false) {
       throw new MediaProcessingError(
         "DECODE_FAILED",
-        "RAW WebAssembly decoding requires Cross-Origin Isolation (SharedArrayBuffer). Reload the page directly from Dottoh or convert the RAW file to DNG/PNG."
+        "RAW WebAssembly decoding requires Cross-Origin Isolation (SharedArrayBuffer). Reload the page directly from Dittoh or convert the RAW file to DNG/PNG."
       );
     }
 

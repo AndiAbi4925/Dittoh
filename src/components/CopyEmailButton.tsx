@@ -27,7 +27,7 @@ export function CopyEmailButton({ email }: { email: string }) {
         onClick={() => {
           void handleCopy();
         }}
-        className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+        className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
       >
         <IconCopy className="h-3 w-3" />
         <span>

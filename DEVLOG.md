@@ -1,4 +1,4 @@
-# Dottoh Development Log
+# Dittoh Development Log
 
 ## Milestone 1: Foundation, Database, Auth, and Security Baseline
 
@@ -178,7 +178,7 @@
    - Built proportional cell-averaging, Rec. 709 luminance, Brightness/Contrast/Gamma curve adjustment, alpha cutout transparency space preservation, Monochrome / Original / Custom FG+BG color mapping, and dark-background ramp balancing in `src/lib/ascii/engine.ts`.
 2. **Five XSS-Safe Exporters, Zod Storage, and Phase 2 Hook**
    - Implemented deterministic `.TXT` (space-padded), `.MD` (dynamic fence expansion preventing triple-backtick breakout), `.SVG` (XML-escaped text spans, transparent background option, sanitized hex attributes only), `.HTML` (standalone HTML5 with strict `default-src 'none'; style-src 'unsafe-inline'` CSP and escaped metadata), and `.PNG` (HiDPI offscreen Canvas renderer preserving alpha transparency and configurable `targetWidthPx`) in `src/lib/ascii/exporters.ts`.
-   - Implemented Zod-validated `localStorage` helpers (`dottoh:custom-presets:v1`, `dottoh:history:v1`, `dottoh:history-enabled:v1`) with strict bounds and corrupt-JSON recovery in `src/lib/ascii/storage.ts`.
+   - Implemented Zod-validated `localStorage` helpers (`dittoh:custom-presets:v1`, `dittoh:history:v1`, `dittoh:history-enabled:v1`) with strict bounds and corrupt-JSON recovery in `src/lib/ascii/storage.ts`.
    - Added `PHASE2_VIDEO_CONSTRAINTS` and `createDisabledVideoAdapter` in `src/lib/ascii/video-hook.ts` matching Phase 2 limits (`100 MB`, `30s`, `1080p`, `30 FPS`; `720p/12 FPS` MP4 and `15s` GIF targets) without bundling `ffmpeg.wasm` in Phase 1.
 3. **Web Worker ASCII Pipeline and Studio UI Components**
    - Built `src/workers/ascii-render.worker.ts` and `AsciiWorkerClient` (`src/lib/ascii/worker-client.ts`) with transferable `cellRgba` buffers and latest-request debouncing.

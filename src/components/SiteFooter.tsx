@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DottohMark } from "@/components/BrandMark";
+import { DittohMark } from "@/components/BrandMark";
 import { APP_NAME } from "@/lib/constants";
 
 export function SiteFooter({ contactEmail }: { contactEmail: string }) {
@@ -9,7 +9,7 @@ export function SiteFooter({ contactEmail }: { contactEmail: string }) {
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <DottohMark className="h-5 w-5 border border-[#262626]" />
+              <DittohMark className="h-5 w-5 border border-[#262626]" />
               <span className="font-display text-base tracking-wider text-[#ffffff]">
                 {APP_NAME.toUpperCase()}
               </span>

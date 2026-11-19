@@ -15,13 +15,13 @@ export default function NotFoundPage() {
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <Link
           href="/convert"
-          className="dottoh-btn border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+          className="dittoh-btn border border-[#000000] bg-[#000000] px-7 py-3.5 text-sm text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
         >
           Convert a photo
         </Link>
         <Link
           href="/"
-          className="dottoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
+          className="dittoh-btn border border-[#d4d4d4] bg-[#ffffff] px-6 py-3.5 text-sm text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4]"
         >
           Go home
         </Link>

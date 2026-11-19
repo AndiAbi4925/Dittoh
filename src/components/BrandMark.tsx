@@ -2,7 +2,7 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-export function DottohMark({ className = "h-6 w-6", ...props }: IconProps) {
+export function DittohMark({ className = "h-6 w-6", ...props }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"

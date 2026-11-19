@@ -23,8 +23,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     cookies: {
       sessionToken: {
         name: isProd
-          ? "__Secure-dottoh.session-token"
-          : "dottoh.session-token",
+          ? "__Secure-dittoh.session-token"
+          : "dittoh.session-token",
         options: {
           httpOnly: true,
           sameSite: "lax",

@@ -44,7 +44,7 @@ describe("full-stack cleanup and route boundaries", () => {
   it("provides branded 404 and error boundaries obeying strict design rules", () => {
     for (const file of ["src/app/not-found.tsx", "src/app/error.tsx"]) {
       const source = readRepoFile(file);
-      expect(source).toContain("dottoh-btn");
+      expect(source).toContain("dittoh-btn");
       expect(source).not.toContain("rounded-full");
       expect(source).not.toMatch(/[\u2013\u2014]/);
     }

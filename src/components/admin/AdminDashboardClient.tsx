@@ -239,7 +239,7 @@ export function AdminDashboardClient({
             PROTECTED CONTROL PLANE / ALLOWLIST VERIFIED
           </p>
           <h1 className="mt-1 font-display text-3xl text-[#000000]">
-            DOTTOH ADMIN CONSOLE
+            DITTOH ADMIN CONSOLE
           </h1>
           <p className="mt-1 font-mono text-xs text-[#525252]">
             SIGNED IN AS {actorUsername ? `@${actorUsername}` : "GITHUB ADMIN"} (ID{" "}
@@ -250,14 +250,14 @@ export function AdminDashboardClient({
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/convert"
-            className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-4 py-2 text-xs text-[#000000] hover:border-[#000000]"
+            className="dittoh-btn border border-[#b1b3b3] bg-[#ffffff] px-4 py-2 text-xs text-[#000000] hover:border-[#000000]"
           >
             OPEN CONVERTER
           </Link>
           <form action={signOutAction}>
             <button
               type="submit"
-              className="dottoh-btn border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
+              className="dittoh-btn border border-[#000000] bg-[#000000] px-4 py-2 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921]"
             >
               SIGN OUT
             </button>
@@ -366,7 +366,7 @@ export function AdminDashboardClient({
                     setDays(windowOption);
                     void refreshStatsAndLogs(windowOption, auditPage.offset);
                   }}
-                  className={`dottoh-btn border px-2.5 py-1 text-[11px] ${
+                  className={`dittoh-btn border px-2.5 py-1 text-[11px] ${
                     days === windowOption
                       ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                       : "border-[#b1b3b3] bg-[#ffffff] text-[#000000]"
@@ -381,7 +381,7 @@ export function AdminDashboardClient({
                 onClick={() => {
                   void refreshStatsAndLogs(days, auditPage.offset);
                 }}
-                className="dottoh-btn border border-[#b1b3b3] bg-[#f4f4f4] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000]"
+                className="dittoh-btn border border-[#b1b3b3] bg-[#f4f4f4] px-2.5 py-1 text-[11px] text-[#000000] hover:border-[#000000]"
               >
                 {refreshingStats ? "..." : "REFRESH"}
               </button>
@@ -583,7 +583,7 @@ export function AdminDashboardClient({
               <button
                 type="submit"
                 disabled={savingConfig || !config.databaseConfigured}
-                className="dottoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
+                className="dittoh-btn border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
               >
                 {savingConfig ? "SAVING..." : "SAVE APPCONFIG"}
               </button>
@@ -692,7 +692,7 @@ export function AdminDashboardClient({
               <button
                 type="submit"
                 disabled={savingAllowlist || !allowlistState.databaseConfigured}
-                className="dottoh-btn w-full border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
+                className="dittoh-btn w-full border border-[#000000] bg-[#000000] px-4 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
               >
                 {savingAllowlist ? "SAVING..." : "SAVE ALLOWLIST ENTRY"}
               </button>
@@ -755,7 +755,7 @@ export function AdminDashboardClient({
                                     username: entry.username,
                                   })
                                 }
-                                className="dottoh-btn border border-[#d71921] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#d71921] hover:bg-[#d71921] hover:text-[#ffffff] disabled:opacity-40"
+                                className="dittoh-btn border border-[#d71921] bg-[#ffffff] px-2.5 py-1 text-[11px] text-[#d71921] hover:bg-[#d71921] hover:text-[#ffffff] disabled:opacity-40"
                               >
                                 {busy ? "REMOVING..." : "REMOVE"}
                               </button>
@@ -791,7 +791,7 @@ export function AdminDashboardClient({
                 const prevOffset = Math.max(0, auditPage.offset - auditPage.limit);
                 void refreshStatsAndLogs(days, prevOffset);
               }}
-              className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] disabled:opacity-40"
+              className="dittoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] disabled:opacity-40"
             >
               PREV
             </button>
@@ -805,7 +805,7 @@ export function AdminDashboardClient({
                 const nextOffset = auditPage.offset + auditPage.limit;
                 void refreshStatsAndLogs(days, nextOffset);
               }}
-              className="dottoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] disabled:opacity-40"
+              className="dittoh-btn border border-[#b1b3b3] bg-[#ffffff] px-3 py-1.5 text-[11px] text-[#000000] disabled:opacity-40"
             >
               NEXT
             </button>

@@ -107,7 +107,7 @@ export function AsciiExportPanel({
           onClick={() => {
             void handleCopyText();
           }}
-          className="dottoh-btn min-h-[42px] border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
+          className="dittoh-btn min-h-[42px] border border-[#000000] bg-[#000000] px-5 py-2.5 text-xs text-[#ffffff] hover:border-[#d71921] hover:bg-[#d71921] disabled:opacity-40"
         >
           <IconCopy className="h-3.5 w-3.5" />
           <span>{copied ? "Copied!" : "Copy Text"}</span>
@@ -160,7 +160,7 @@ export function AsciiExportPanel({
                 key={preset}
                 type="button"
                 onClick={() => onChangeExportWidthPx(preset)}
-                className={`dottoh-btn border px-3 py-1.5 text-[11px] ${
+                className={`dittoh-btn border px-3 py-1.5 text-[11px] ${
                   exportWidthPx === preset
                     ? "border-[#000000] bg-[#000000] text-[#ffffff]"
                     : "border-[#d4d4d4] bg-[#ffffff] text-[#000000] hover:border-[#000000]"
@@ -198,7 +198,7 @@ export function AsciiExportPanel({
                 onClick={() => {
                   void onExport(item.format);
                 }}
-                className="dottoh-btn flex flex-col items-start border border-[#d4d4d4] bg-[#ffffff] px-4 py-3.5 text-left text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff] disabled:opacity-40"
+                className="dittoh-btn flex flex-col items-start border border-[#d4d4d4] bg-[#ffffff] px-4 py-3.5 text-left text-[#000000] hover:border-[#000000] hover:bg-[#000000] hover:text-[#ffffff] disabled:opacity-40"
               >
                 <span className="font-mono text-sm font-medium">
                   {busy ? "Saving..." : item.label}

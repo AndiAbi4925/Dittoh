@@ -27,7 +27,7 @@ function escapeHtmlText(input: string): string {
 
 export function sanitizeDownloadFilename(
   rawName: string,
-  fallback = "dottoh-ascii"
+  fallback = "dittoh-ascii"
 ): string {
   const withoutExt = rawName.replace(/\.[^/.]+$/, "");
   const cleaned = withoutExt
@@ -237,7 +237,7 @@ export function exportAsciiAsSvg(
       : "";
 
   return [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${metrics.width} ${metrics.height}" width="${metrics.width}" height="${metrics.height}" role="img" aria-label="Dottoh ASCII art export">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${metrics.width} ${metrics.height}" width="${metrics.width}" height="${metrics.height}" role="img" aria-label="Dittoh ASCII art export">`,
     bgRect +
       `  <g font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="${metrics.fontSizePx.toFixed(
         2
@@ -251,11 +251,11 @@ export function exportAsciiAsSvg(
 
 export function exportAsciiAsHtml(
   grid: AsciiGridResult,
-  rawTitle = "Dottoh ASCII Export",
+  rawTitle = "Dittoh ASCII Export",
   partialConfig?: Partial<AsciiExportConfig>
 ): string {
   const config = resolveSafeExportConfig(grid, partialConfig);
-  const safeTitle = escapeHtmlText(stripXmlControlChars(rawTitle).slice(0, 80) || "Dottoh ASCII Export");
+  const safeTitle = escapeHtmlText(stripXmlControlChars(rawTitle).slice(0, 80) || "Dittoh ASCII Export");
   const bgHex = grid.backgroundColorHex
     ? normalizeHexColor(grid.backgroundColorHex)
     : null;

@@ -5,8 +5,8 @@ import { IconMoonGrid, IconSunGrid } from "@/components/BrandMark";
 
 export type ThemeMode = "light" | "dark";
 
-const THEME_STORAGE_KEY = "dottoh-theme";
-const THEME_CHANGE_EVENT = "dottoh-theme-change";
+const THEME_STORAGE_KEY = "dittoh-theme";
+const THEME_CHANGE_EVENT = "dittoh-theme-change";
 
 function readClientTheme(): ThemeMode {
   if (typeof document === "undefined") {
@@ -67,7 +67,7 @@ export function ThemeToggle() {
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       title={isDark ? "Light mode" : "Dark mode"}
-      className="dottoh-btn min-h-[38px] border border-[#d4d4d4] bg-[#ffffff]/90 px-2.5 py-2 font-mono text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:px-3"
+      className="dittoh-btn min-h-[38px] border border-[#d4d4d4] bg-[#ffffff]/90 px-2.5 py-2 font-mono text-xs text-[#000000] hover:border-[#000000] hover:bg-[#f4f4f4] sm:px-3"
     >
       {isDark ? (
         <IconSunGrid className="h-3.5 w-3.5" />

@@ -82,7 +82,7 @@ export async function createGeometricSampleFile(
   canvas.width = 0;
   canvas.height = 0;
 
-  return new File([blob], `dottoh-sample-${variant}.png`, {
+  return new File([blob], `dittoh-sample-${variant}.png`, {
     type: "image/png",
   });
 }

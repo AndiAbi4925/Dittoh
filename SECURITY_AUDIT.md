@@ -1,6 +1,6 @@
-# Dottoh Security Audit and Verification Report
+# Dittoh Security Audit and Verification Report
 
-- **Project**: Dottoh (Next.js 16 App Router, TypeScript, Tailwind CSS v4, Prisma 7, Auth.js v5)
+- **Project**: Dittoh (Next.js 16 App Router, TypeScript, Tailwind CSS v4, Prisma 7, Auth.js v5)
 - **Branch**: `feat/step-8-raw-and-ui-polish` (extending verified `main` baseline)
 - **Audit Scope**: HTTP security headers, COOP/COEP isolation across `/`, `/convert`, `/convert/:path*`, and `/video`, CORS and Fetch Metadata enforcement, Content-Type and body size validation, authentication/allowlist fail-closed behavior, XSS/export sanitization, client bundle secret isolation, dependency audit (`npm audit`), exposed config/sensitive file probes, full Git history secret scan, and self-hosted LibRaw/ONNX/FFmpeg WASM review.
 - **Last Verified Date**: 2026-11-16
@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-Dottoh completes Phase 1 MVP with client-only media/RAW/ONNX/ASCII processing in Web Workers, strict fail-closed authentication and allowlisting on `/admin` and `/api/admin/*`, and zero production dependency vulnerabilities (`npm audit --omit=dev`).
+Dittoh completes Phase 1 MVP with client-only media/RAW/ONNX/ASCII processing in Web Workers, strict fail-closed authentication and allowlisting on `/admin` and `/api/admin/*`, and zero production dependency vulnerabilities (`npm audit --omit=dev`).
 
 During Step 6 verification, three real hardening issues were uncovered and remediated before signing off:
 

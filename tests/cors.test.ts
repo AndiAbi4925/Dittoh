@@ -5,18 +5,18 @@ describe("strict API CORS policy", () => {
   it("allows same-origin browser requests and preflight checks", () => {
     const decision = evaluateApiCors({
       method: "POST",
-      originHeader: "https://dottoh.vercel.app",
-      requestUrl: "https://dottoh.vercel.app/api/telemetry",
-      configuredAppUrl: "https://dottoh.vercel.app",
+      originHeader: "https://dittoh.vercel.app",
+      requestUrl: "https://dittoh.vercel.app/api/telemetry",
+      configuredAppUrl: "https://dittoh.vercel.app",
     });
 
     expect(decision.allowed).toBe(true);
-    expect(decision.allowOrigin).toBe("https://dottoh.vercel.app");
+    expect(decision.allowOrigin).toBe("https://dittoh.vercel.app");
 
     const headers = new Headers();
     applyCorsHeaders(headers, decision.allowOrigin);
     expect(headers.get("Access-Control-Allow-Origin")).toBe(
-      "https://dottoh.vercel.app"
+      "https://dittoh.vercel.app"
     );
     expect(headers.get("Access-Control-Allow-Origin")).not.toBe("*");
   });
@@ -25,15 +25,15 @@ describe("strict API CORS policy", () => {
     const crossOrigin = evaluateApiCors({
       method: "POST",
       originHeader: "https://evil.example.com",
-      requestUrl: "https://dottoh.vercel.app/api/telemetry",
-      configuredAppUrl: "https://dottoh.vercel.app",
+      requestUrl: "https://dittoh.vercel.app/api/telemetry",
+      configuredAppUrl: "https://dittoh.vercel.app",
     });
     expect(crossOrigin.allowed).toBe(false);
 
     const missingOriginPreflight = evaluateApiCors({
       method: "OPTIONS",
       originHeader: null,
-      requestUrl: "https://dottoh.vercel.app/api/telemetry",
+      requestUrl: "https://dittoh.vercel.app/api/telemetry",
     });
     expect(missingOriginPreflight.allowed).toBe(false);
   });
@@ -43,7 +43,7 @@ describe("strict API CORS policy", () => {
       method: "POST",
       originHeader: "https://dittoh.vercel.app",
       requestUrl: "https://dittoh-preview.vercel.app/api/telemetry",
-      configuredAppUrl: "https://dottoh.vercel.app",
+      configuredAppUrl: "https://dittoh.vercel.app",
       vercelProductionUrl: "dittoh.vercel.app",
     });
 

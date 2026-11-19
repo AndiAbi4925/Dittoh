@@ -13,7 +13,7 @@ function readRepoFile(relativePath: string): string {
 describe("UX enhancements: dark mode, scroll chrome, modals, loaders, and FAQ", () => {
   it("ships CSP-safe static theme initialization without dangerouslySetInnerHTML", () => {
     const bootScript = readRepoFile("public/theme-init.js");
-    expect(bootScript).toContain("dottoh-theme");
+    expect(bootScript).toContain("dittoh-theme");
     expect(bootScript).toContain("dataset.theme");
 
     const layout = readRepoFile("src/app/layout.tsx");
@@ -23,7 +23,7 @@ describe("UX enhancements: dark mode, scroll chrome, modals, loaders, and FAQ", 
 
     const globals = readRepoFile("src/app/globals.css");
     expect(globals).toContain('html[data-theme="dark"]');
-    expect(globals).toContain("dottoh-pixel-pulse");
+    expect(globals).toContain("dittoh-pixel-pulse");
   });
 
   it("provides accessible confirmation modals for destructive actions", () => {
